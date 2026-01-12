@@ -1,0 +1,90 @@
+name: Bug report
+description: Create a report to help us improve
+title: '[Bug]: '
+labels: ['bug', 'triage']
+type: Bug
+assignees: []
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+      - label: I have searched the existing issues
+        required: true
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: A concise description of the current behavior.
+      placeholder: A concise description of the current experience.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A concise description of the expected behavior.
+      placeholder: A concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps To Reproduce
+      description: Step-by-step instructions that reproduce the error.
+      placeholder: | 
+        Steps to reproduce the behavior.
+        1. In this environment...
+        1. With this config...
+        1. Run '...'
+        1. See error...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The version number for software that produces the error.
+      placeholder: Please provide the package version.
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browsers are you seeing the problem on?
+      description: Browswers on which the problem occurs. Check all that apply.
+      multiple: true
+      options:
+        - Chrome
+        - Firefox
+        - Microsoft Edge
+        - Safari
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: What operating system are you using?
+      description: Provide the operation system on which the problem occurs.
+      multiple: false
+      options:
+        - MacOS
+        - Ubuntu/Debian
+        - Window
+        - Android
+        - iOS
+    validations:
+      required: true
+  - type: input
+    id: operating-system-version
+    attributes:
+      label: What version is your operating system?
+      description: Provide the version number for the operating system.
+      placeholder: e.g., Ubuntu 24.04, Android 16, Windows 11 24H2, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+    validations:
+      required: false
+  

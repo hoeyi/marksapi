@@ -1,0 +1,43 @@
+name: Feature request
+description: Suggest an idea for this project
+title: '[Request]: '
+type: Feature
+labels: ['feature', 'triage']
+assignees: []
+body:
+- type: textarea
+  id: problem-statement
+  attributes:
+    label: Problem description
+    description: Is your request related to a problem? Please describe.
+    placeholder: | 
+      Please use the format: When I try to do something... a problem / difficulty arises.
+  validations:
+    required: true
+- type: textarea
+  id: desired-solution
+  attributes:
+    label: Desired outcome
+    description: Describe your desired outcome
+    placeholder: |
+      Please use the format: I would like the app to...
+  validations:
+    required: true
+- type: textarea
+  id: workaround-optional
+  attributes:
+    label: Workarounds
+    description: Please provide any workarounds or alternatives you currently use.
+    placeholder: |
+      Please describe your current alternative (optional).
+  validations:
+    required: false
+- type: textarea
+  id: context-optional
+  attributes:
+    label: Additional details
+    description: Please provide any other details you believe are relevant.
+    placeholder: |
+      Please additional context (optional).
+  validations:
+    required: false
