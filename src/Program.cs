@@ -1,4 +1,4 @@
-﻿namespace MarketStack.Api.Client;
+﻿namespace ApiClient.Marketstack;
 
 class Program
 {
