@@ -1,8 +1,4 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace ApiClient.Marketstack
 {
@@ -15,43 +11,43 @@ namespace ApiClient.Marketstack
         /// Ticker symbol.
         /// </summary>
         [JsonProperty("symbol")]
-        public string Symbol { get; set; }
+        public string Symbol { get; set; } = string.Empty;
 
         /// <summary>
         /// Company name.
         /// </summary>
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// MIC of the exchange.
         /// </summary>
         [JsonProperty("exchange")]
-        public string Exchange { get; set; }
+        public string Exchange { get; set; } = string.Empty;
 
         /// <summary>
         /// Human-friendly exchange code (for example NASDAQ).
         /// </summary>
         [JsonProperty("exchange_code")]
-        public string ExchangeCode { get; set; }
+        public string ExchangeCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Asset class.
         /// </summary>
         [JsonProperty("asset_type")]
-        public string AssetType { get; set; }
+        public string AssetType { get; set; } = string.Empty;
 
         /// <summary>
         /// Price currency (ISO code in lower case).
         /// </summary>
         [JsonProperty("price_currency")]
-        public string PriceCurrency { get; set; }
+        public string PriceCurrency { get; set; } = string.Empty;
 
         /// <summary>
         /// Timestamp of the bar in ISO8601 with timezone.
         /// </summary>      
         [JsonProperty("date")]
-        public string Date { get; set; }
+        public string Date { get; set; } = string.Empty;
 
         /// <summary>
         /// Closing price of the session.
