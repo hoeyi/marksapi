@@ -15,13 +15,14 @@ namespace ApiClient.Marketstack
     {
         private readonly string _baseUrl = "https://api.marketstack.com/v2/eod";
         private readonly HttpClient _httpClient;
-        private readonly QueryBuilder queryBuilder;
+        private readonly QueryBuilder _queryBuilder;
         private readonly string _apiKey;
         private readonly string[] endpoints = [];
 
         public MarketstackApi(string apiKey)
         {
             _apiKey = apiKey;
+            _queryBuilder = new QueryBuilder();
             _httpClient = new HttpClient();
         }
         
@@ -57,6 +58,11 @@ namespace ApiClient.Marketstack
         /// </summary>        
         class QueryBuilder
         {
+            /// <summary>
+            /// Helper method for building a query for an abitrary number of parameters.
+            /// </summary>
+            /// <param name="queryParameters">Key-value collection of parameters and values.</param>
+            /// <returns></returns>
             public static string BuildQuery(params KeyValuePair<string, string>[] queryParameters)
             {
                 var queryString = new StringBuilder("?");
