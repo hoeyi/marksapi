@@ -15,12 +15,12 @@ namespace ApiClient.Marketstack
         /// Gets or sets the <b><em>data</em></b> of the response.
         /// </summary>
         [JsonProperty("data")]
-        public EodData[] Data { get; set; }
+        public EodData[] Data { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the <see cref="Pagination"> data of the response.
         /// </summary>
         [JsonProperty("pagination")]
-        public Pagination Pagination { get; set; }
+        public Pagination Pagination { get; set; } = default!;
     }
 }

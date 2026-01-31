@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace ApiClient.Marketstack
 {
-    public class Pagination
+    public record Pagination
     {
         [JsonProperty("limit")]
         public int Limit { get; set; }
