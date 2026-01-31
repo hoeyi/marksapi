@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,15 +15,13 @@ namespace ApiClient.Marketstack
     {
         private readonly string _baseUrl = "https://api.marketstack.com/v2/eod";
         private readonly HttpClient _httpClient;
-        private readonly IQueryBuilder queryBuilder;
+        private readonly QueryBuilder queryBuilder;
         private readonly string _apiKey;
-        private readonly string _baseUrl;
         private readonly string[] endpoints = [];
 
         public MarketstackApi(string apiKey)
         {
             _apiKey = apiKey;
-            _baseUrl = ;
             _httpClient = new HttpClient();
         }
         
@@ -32,15 +32,17 @@ namespace ApiClient.Marketstack
 
             try
             {
-                using var httpClient = HttpFactory.CreateClient();
-
-                HttpResponseMessage response = await httpClient.GetAsync(requestUrl);
+                HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
                 // Parse the JSON response
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                 EodResponse eodResponse = JsonConvert.DeserializeObject<EodResponse>(responseBody);
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+#pragma warning disable CS8603 // Possible null reference return.
                 return eodResponse;
+#pragma warning restore CS8603 // Possible null reference return.
             }
             catch (HttpRequestException e)
             {
@@ -55,7 +57,7 @@ namespace ApiClient.Marketstack
         /// </summary>        
         class QueryBuilder
         {
-            public string BuildQuery(params KeyValuePair<string, string>[] queryParameters)
+            public static string BuildQuery(params KeyValuePair<string, string>[] queryParameters)
             {
                 var queryString = new StringBuilder("?");
 
