@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
  using Microsoft.Extensions.Configuration;
  
@@ -37,25 +38,29 @@ namespace ApiClient.Marketstack.xUnitTests
         public MarketstackTestsIntegration(ConfigurationFixture fixture)
         {
             _fixture = fixture;
-        }
-
-        [Fact]
-        public void Configuration_ApiKey_IsDefined()
-        {
-            // Arrange
-            
-            // Act
-            var api_key = _fixture.Configuration["api_key"];
-            Debug.WriteLine($"Found api_key={api_key}");
-            
-            // Assert
-            Assert.False(string.IsNullOrEmpty(api_key));
+            ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_key"]);
+            ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_base_uri"]);
         }
 
         [Fact]
         public async Task GetEodDataAsync_ReturnSuccessResponse()
         {
-            Assert.Fail();
+            // Arrange
+            var apiClient = new MarketstackApi(_fixture.Configuration["api_key"]!);
+            var symbol = "MSFT";
+            var date = new DateTime(2026, 1, 5);
+
+            // Act
+            var result = await apiClient.GetEodDataAsync(symbol, date);
+
+            // Assert
+            Assert.IsType<EodResponse>(result);
+            Assert.IsType<EodData[]>(result.Data);
+            Assert.IsType<Pagination>(result.Pagination);
+
+            Assert.True(result.Data.Length > 0);
+            
+            Debug.WriteLine(result.Data.First());
         }
     }
 }
