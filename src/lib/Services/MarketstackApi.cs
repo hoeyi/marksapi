@@ -1,35 +1,43 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Logging;
+using ApiClient.Marketstack.Services;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace ApiClient.Marketstack
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     /// <summary>
     /// Service class for handling sending and receiving requests to Marketstack API.
     /// </summary>
     public class MarketstackApi
     {
-        private readonly string _baseUrl = "https://api.marketstack.com/v2/eod";
+        private readonly string _baseUrl = "https://api.marketstack.com/v2";
         private readonly HttpClient _httpClient;
-        private readonly QueryBuilder _queryBuilder;
         private readonly string _apiKey;
-        private readonly string[] endpoints = [];
+        private readonly string[] endpoints = ["eod"];
 
-        public MarketstackApi(string apiKey)
+        public MarketstackApi(string apiKey, ILogger? logger = null)
         {
             _apiKey = apiKey;
-            _queryBuilder = new QueryBuilder();
             _httpClient = new HttpClient();
         }
-        
+    
         /// <inheritdoc/>
-        public async Task<EodResponse> GetEodDataAsync(string symbol, DateTime date)
+        public async Task<EodResponse> GetEodDataAsync(string[] symbols, DateTime date)
         {
-            var requestUrl = $"{_baseUrl}?access_key={_apiKey}&symbols={symbol}&date={date:yyyy-MM-dd}";
+            var queryBuilder = new QueryBuilder();
+            var symbolsDelimited = string.Join(',', symbols);
+
+            queryBuilder.AddParameter("symbols", symbolsDelimited);
+            queryBuilder.AddParameter("date", date, format: "yyyy-MM-dd");
+
+            var uriBuilder = GetUriBuilder(endpoint: "eod");
+            uriBuilder.Query = queryBuilder.ToString();
+
+            var requestUrl = $"{_baseUrl}/eod?access_key={_apiKey}&symbols={symbolsDelimited}&date={date:yyyy-MM-dd}";
 
             try
             {
@@ -53,30 +61,6 @@ namespace ApiClient.Marketstack
             }
         }
 
-        /// <summary>
-        /// Helper class for appending parameters to an API endpoint URL.
-        /// </summary>        
-        class QueryBuilder
-        {
-            /// <summary>
-            /// Helper method for building a query for an abitrary number of parameters.
-            /// </summary>
-            /// <param name="queryParameters">Key-value collection of parameters and values.</param>
-            /// <returns></returns>
-            public static string BuildQuery(params KeyValuePair<string, string>[] queryParameters)
-            {
-                var queryString = new StringBuilder("?");
-
-                foreach (var queryParameter in queryParameters)
-                {
-                    if (queryParameter.Value != string.Empty)
-                    {
-                        queryString.Append(queryParameter.Key.ToLower() + "=" + queryParameter.Value + "&");
-                    }
-                }
-
-                return queryString.ToString().TrimEnd('&');
-            }
-        }
+        private UriBuilder GetUriBuilder(string endpoint) => new(uri: $"{_baseUrl}/{endpoint}");
     }
 }
