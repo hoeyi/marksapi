@@ -422,3 +422,6 @@ FodyWeavers.xsd
 
 # Ignore vs code
 .vscode/
+
+# Ignore test logs
+src/test/*.log
