@@ -6,11 +6,10 @@ using System.Collections.ObjectModel;
 
 namespace ApiClient.Marketstack.Services
 {
-    
     /// <summary>
     /// Helper class for constructing parameters to pass as a URI query.
     /// </summary>        
-    class QueryBuilder
+    public class QueryBuilder
     {
         private readonly Dictionary<string, string> _params = [];
 
