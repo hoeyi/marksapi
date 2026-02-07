@@ -1,41 +1,15 @@
-using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
- using Microsoft.Extensions.Configuration;
- 
-namespace ApiClient.Marketstack.xUnitTests
+
+namespace ApiClient.Marketstack.xUnitTests.Integration
 {
-    public class ConfigurationFixture : IDisposable
-    {
-        public ConfigurationFixture()
-        {
-            Configuration = new ConfigurationBuilder()
-                .AddUserSecrets<ConfigurationFixture>()
-                .Build();
-        }
-        
-        public IConfiguration Configuration { get; }
-
-        public void Dispose() => GC.SuppressFinalize(this);
-    }
-
-    [Trait(nameof(TestAttributeNames.Category), "Unit")]
-    public class MarketstackTestsUnit
-    {
-        [Fact]
-        public void AssertTrue_ReturnsTrue()
-        {
-            Assert.True(true);
-        }
-    }
-
     [Trait(nameof(TestAttributeNames.Category), "Integration")]
-    public class MarketstackTestsIntegration : IClassFixture<ConfigurationFixture>
+    public class MarketstackApi_Test: IClassFixture<ConfigurationFixture>
     {
         ConfigurationFixture _fixture;
 
-        public MarketstackTestsIntegration(ConfigurationFixture fixture)
+        public MarketstackApi_Test(ConfigurationFixture fixture)
         {
             _fixture = fixture;
             ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_key"]);
@@ -47,7 +21,7 @@ namespace ApiClient.Marketstack.xUnitTests
         {
             // Arrange
             var apiClient = new MarketstackApi(_fixture.Configuration["api_key"]!);
-            var symbol = "MSFT";
+            string[] symbol = ["MSFT"];
             var date = new DateTime(2026, 1, 5);
 
             // Act
