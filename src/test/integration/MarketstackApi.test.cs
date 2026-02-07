@@ -16,16 +16,17 @@ namespace ApiClient.Marketstack.xUnitTests.Integration
             ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_base_uri"]);
         }
 
-        [Fact]
-        public async Task GetEodDataAsync_ReturnSuccessResponse()
+        [Theory]
+        [InlineData(new[]{"MSFT"}, "2026-01-05")]
+        [InlineData(new[]{"AAPL"}, "2026-01-05")]
+        public async Task GetEodDataAsync_ReturnSuccessResponse(string[] symbols, string dateStr)
         {
             // Arrange
             var apiClient = new MarketstackApi(_fixture.Configuration["api_key"]!);
-            string[] symbol = ["MSFT"];
-            var date = new DateTime(2026, 1, 5);
+            var date = DateTime.Parse(dateStr);
 
             // Act
-            var result = await apiClient.GetEodDataAsync(symbol, date);
+            var result = await apiClient.GetEodDataAsync(symbols, date);
 
             // Assert
             Assert.IsType<EodResponse>(result);
@@ -34,7 +35,9 @@ namespace ApiClient.Marketstack.xUnitTests.Integration
             Assert.True(result.Data.Length > 0);
 
             // Print result            
-            _fixture.Logger.LogInformation("{result}", result);
+            _fixture.Logger.LogInformation("{@pagination}", result.Pagination);
+            _fixture.Logger.LogInformation("{@data}", result.Data);
+
             Debug.WriteLine(result.Data.First());
         }
     }
