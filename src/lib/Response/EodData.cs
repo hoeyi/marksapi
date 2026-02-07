@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace ApiClient.Marketstack
 {
+    [ExcludeFromCodeCoverage]
     /// <summary>
     /// Represents the response data from the <b><em>/eod</em></b> endpoint.
     /// </summary>

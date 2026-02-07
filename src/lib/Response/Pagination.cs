@@ -1,11 +1,9 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace ApiClient.Marketstack
 {
+    [ExcludeFromCodeCoverage]
     public record Pagination
     {
         [JsonProperty("limit")]

@@ -24,14 +24,14 @@ namespace ApiClient.Marketstack.Services
         /// <summary>
         /// Creates a new instance of <see cref="QueryBuilder"/>.
         /// </summary>
-        /// <param name="requiredParameters"></param>
+        /// <param name="initParameters">The initial parameter key-value pairs to include.</param>
         /// <exception cref="ArgumentException">Too many required parameters provided.</exception>
-        public QueryBuilder(params KeyValuePair<string, string>[] requiredParameters)
+        public QueryBuilder(params KeyValuePair<string, string>[] initParameters)
         {
-            if(requiredParameters.Length > 5) 
+            if(initParameters.Length > 5) 
                 throw new ArgumentException(message: "Required parameters cannot be longer than 5");
 
-            foreach(var kv in requiredParameters)
+            foreach(var kv in initParameters)
             {
                 AddParameter(key: kv.Key, value: kv.Value);
             }
@@ -48,11 +48,14 @@ namespace ApiClient.Marketstack.Services
         /// <param name="key">The parameter name / key.</param>
         /// <param name="value">The parameter value.</param>
         /// <param name="format"><em>optional</em>: the format for the parameter value.</param>
+        /// <exception cref="ArgumentException"><paramref name="key"/> was null, empty or whitespace.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> was null.</exception>
         public void  AddParameter<T>(string key, T value, string? format = null)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(key);
+            ArgumentException.ThrowIfNullOrEmpty(key);
             ArgumentNullException.ThrowIfNull(value);
-        
+
             if(string.IsNullOrEmpty(format)) _params.Add(key.ToLower(), $"{value}".ToLower());
             else _params.Add(key.ToLower(), $"{value}:{format}".ToLower());
         }

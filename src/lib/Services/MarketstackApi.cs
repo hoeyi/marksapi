@@ -5,9 +5,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using ApiClient.Marketstack.Services;
 
-#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace ApiClient.Marketstack
-#pragma warning restore IDE0130 // Namespace does not match folder structure
 {
     /// <summary>
     /// Service class for handling sending and receiving requests to Marketstack API.
@@ -17,14 +15,15 @@ namespace ApiClient.Marketstack
         private readonly string _baseUrl = "https://api.marketstack.com/v2";
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
-        private readonly string[] endpoints = ["eod"];
-
         private readonly ILogger? _logger;
 
 #pragma warning disable IDE0290 // Use primary constructor
         public MarketstackApi(string apiKey, ILogger? logger = null)
 #pragma warning restore IDE0290 // Use primary constructor
         {
+            ArgumentException.ThrowIfNullOrEmpty(apiKey);
+            ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
+            
             _apiKey = apiKey;
             _httpClient = new HttpClient();
             _logger = logger;
