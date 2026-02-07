@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Marketstack.xUnitTests.Integration
 {
@@ -8,7 +9,6 @@ namespace ApiClient.Marketstack.xUnitTests.Integration
     public class MarketstackApi_Test: IClassFixture<ConfigurationFixture>
     {
         ConfigurationFixture _fixture;
-
         public MarketstackApi_Test(ConfigurationFixture fixture)
         {
             _fixture = fixture;
@@ -31,9 +31,10 @@ namespace ApiClient.Marketstack.xUnitTests.Integration
             Assert.IsType<EodResponse>(result);
             Assert.IsType<EodData[]>(result.Data);
             Assert.IsType<Pagination>(result.Pagination);
-
             Assert.True(result.Data.Length > 0);
-            
+
+            // Print result            
+            _fixture.Logger.LogInformation("{result}", result);
             Debug.WriteLine(result.Data.First());
         }
     }
