@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.Marshalling;
 using ApiClient.Marketstack.Services;
 
 namespace ApiClient.Marketstack.xUnitTests.Unit

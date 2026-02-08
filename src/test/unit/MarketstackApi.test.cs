@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Marketstack.Services;

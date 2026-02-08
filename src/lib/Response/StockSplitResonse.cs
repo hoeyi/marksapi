@@ -3,10 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 namespace ApiClient.Marketstack
 {
     /// <summary>
-    /// Represents the resonse body from the '/eod'endpoint.
+    /// Represents the resonse body from the '/splits'endpoint.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record EodResponse : GenericArrayResponse<EodData>
+    public record StockSplitResponse() : GenericArrayResponse<StockSplitData>
     {
     }
 }
