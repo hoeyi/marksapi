@@ -15,7 +15,7 @@ namespace ApiClient.Marketstack.xUnitTests.Unit
     public class MarketstackApi_Test(ConfigurationFixture fixture) : IClassFixture<ConfigurationFixture>
     {
         ConfigurationFixture _fixture = fixture;
-
+        const string Test_ApiKey = "test-string";
         [Fact]
         public void Constructor_ReturnsNewInstance()
         {
@@ -53,11 +53,12 @@ namespace ApiClient.Marketstack.xUnitTests.Unit
         {
             // Arrange
             // Act
-            var apiClient = new MarketstackApi(apiKey: "test-string", logger: _fixture.Logger);
+            var apiClient = new MarketstackApi(apiKey: Test_ApiKey, logger: _fixture.Logger);
             
             // Assert
             Assert.IsType<MarketstackApi>(apiClient);
         }
+
         [Fact]
         public async Task GetEodResponse_ResponseIsValid_ReturnsEodResponse()
         {
@@ -72,14 +73,11 @@ namespace ApiClient.Marketstack.xUnitTests.Unit
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent(JsonConvert.SerializeObject(validResponse))
-                    }
-                );
+                {
+                    Content = new StringContent(JsonConvert.SerializeObject(validResponse))
+                });
             var client = new HttpClient(mocks.HttpMessageHandler.Object);
-
-
-            var service = new MarketstackApi(client, "test-string");
+            var service = new MarketstackApi(client, Test_ApiKey);
             var symbol = "MSFT";
             var date = new DateTime(2026, 1, 5);
 
@@ -90,6 +88,60 @@ namespace ApiClient.Marketstack.xUnitTests.Unit
             Assert.NotNull(result);
             Assert.Equal(validResponse, result);
         }
+
+        [Fact]
+        public async Task GetEodResponse_ResponseIsInvalid_ThrowsInvaliddOperationException()
+        {
+            // Arrange
+            var mocks = new Mocks()
+            {
+                HttpMessageHandler = new Mock<HttpMessageHandler>()
+            };
+            mocks.HttpMessageHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent(string.Empty)
+                });
+            
+            var client = new HttpClient(mocks.HttpMessageHandler.Object);
+            var service = new MarketstackApi(client, Test_ApiKey);
+            var symbol = "MSFT";
+            var date = new DateTime(2026, 1, 5);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<InvalidOperationException>(() => 
+                service.GetEodResponseAsync([symbol], date));
+        }
+
+        [Fact]
+        public async Task GetEodResponse_WhenEnsureSuccessStatusException_ThrowsHttpRequestException()
+        {
+            // Arrange
+            var mocks = new Mocks()
+            {
+                HttpMessageHandler = new Mock<HttpMessageHandler>()
+            };
+            mocks.HttpMessageHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError));
+            
+            var client = new HttpClient(mocks.HttpMessageHandler.Object);
+            var service = new MarketstackApi(client, Test_ApiKey);
+            var symbol = "MSFT";
+            var date = new DateTime(2026, 1, 5);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<HttpRequestException>(() => 
+                service.GetEodResponseAsync([symbol], date));
+        }
+
+
+
         record Mocks
         {
             public Mock<MarketstackApi>? MarketstackApi { get; set; }
