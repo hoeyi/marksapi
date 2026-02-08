@@ -21,7 +21,7 @@ namespace ApiClient.Marketstack.xUnitTests.Unit
         {
             // Arrange
             // Act
-            var apiClient = new MarketstackApi(apiKey: "test-string");            
+            var apiClient = new MarketstackApi(apiKey: Test_ApiKey);            
             
             // Assert
             Assert.IsType<MarketstackApi>(apiClient);
