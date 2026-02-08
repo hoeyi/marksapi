@@ -7,7 +7,7 @@ namespace ApiClient.Marketstack
     /// <summary>
     /// Represents the resonse body from the <b><em>/eod</em></b> endpoint.
     /// </summary>
-    public class EodResponse
+    public record EodResponse
     {
         /// <summary>
         /// Gets or sets the <b><em>data</em></b> of the response.

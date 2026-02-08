@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using ApiClient.Marketstack.Services;
+using System.Collections.Generic;
+// using Serilog;
 
 namespace ApiClient.Marketstack
 {
@@ -14,34 +16,44 @@ namespace ApiClient.Marketstack
     {
         private readonly string _baseUrl = "https://api.marketstack.com/v2";
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
         private readonly ILogger? _logger;
+        private readonly KeyValuePair<string, string> _requiredParams;
 
-#pragma warning disable IDE0290 // Use primary constructor
-        public MarketstackApi(string apiKey, ILogger? logger = null)
-#pragma warning restore IDE0290 // Use primary constructor
+        internal MarketstackApi(
+            HttpClient httpClient, string apiKey, ILogger? logger = null)
         {
             ArgumentException.ThrowIfNullOrEmpty(apiKey);
             ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
             
-            _apiKey = apiKey;
-            _httpClient = new HttpClient();
+            _requiredParams = new("access_key", apiKey);
+            _httpClient = httpClient;
             _logger = logger;
         }
+
+        public MarketstackApi(string apiKey, ILogger? logger = null)
+            : this(new HttpClient(), apiKey, logger)
+        {
+        }
     
-        /// <inheritdoc/>
-        public async Task<EodResponse> GetEodDataAsync(string[] symbols, DateTime date)
+        /// <summary>
+        /// Gets Eod data for the given symbols and date.
+        /// </summary>
+        /// <param name="symbols">Array of stock or bond tickers.</param>
+        /// <param name="date">Date to fetch data for.</param>
+        /// <returns>A <see cref="Task"/> containing an <see cref="EodResponse"/>.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public async Task<EodResponse> GetEodResponseAsync(string[] symbols, DateTime date)
         {
             var queryBuilder = new QueryBuilder();
             var symbolsDelimited = string.Join(',', symbols);
 
             queryBuilder.AddParameter("symbols", symbolsDelimited);
-            queryBuilder.AddParameter("date", date, format: "yyyy-MM-dd");
+            queryBuilder.AddParameter("date", date.ToString("yyyy-MM-dd"));
 
             var uriBuilder = GetUriBuilder(endpoint: Endpoints.Eod);
             uriBuilder.Query = queryBuilder.ToString();
 
-            var requestUrl = $"{_baseUrl}/eod?access_key={_apiKey}&symbols={symbolsDelimited}&date={date:yyyy-MM-dd}";
+            var requestUrl = uriBuilder.Uri.AbsoluteUri;
 
             try
             {
@@ -64,6 +76,8 @@ namespace ApiClient.Marketstack
         }
 
         private UriBuilder GetUriBuilder(string endpoint) => new(uri: $"{_baseUrl}/{endpoint}");
+
+        private QueryBuilder GetQueryBuilder() => new(initParameters: _requiredParams);
 
         /// <summary>
         /// Collection of the relative endpoints for the api as stirng patterns.

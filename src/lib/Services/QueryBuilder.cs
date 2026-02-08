@@ -42,7 +42,7 @@ namespace ApiClient.Marketstack.Services
         public IReadOnlyDictionary<string, string> Parameters { get; }
 
         /// <summary>
-        /// Adds the given key and <typeparamref name="T"/> value to the query.
+        /// Adds the given key and value to the query.
         /// </summary>
         /// <typeparam name="T">The input type for the parameter value.</typeparam>
         /// <param name="key">The parameter name / key.</param>
@@ -50,14 +50,13 @@ namespace ApiClient.Marketstack.Services
         /// <param name="format"><em>optional</em>: the format for the parameter value.</param>
         /// <exception cref="ArgumentException"><paramref name="key"/> was null, empty or whitespace.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> was null.</exception>
-        public void  AddParameter<T>(string key, T value, string? format = null)
+        public void  AddParameter(string key, string value)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(key);
             ArgumentException.ThrowIfNullOrEmpty(key);
             ArgumentNullException.ThrowIfNull(value);
 
-            if(string.IsNullOrEmpty(format)) _params.Add(key.ToLower(), $"{value}".ToLower());
-            else _params.Add(key.ToLower(), $"{value}:{format}".ToLower());
+            _params.Add(key.ToLower(), value);
         }
 
         /// <summary>

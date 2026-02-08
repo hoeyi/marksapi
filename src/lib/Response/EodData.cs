@@ -7,7 +7,7 @@ namespace ApiClient.Marketstack
     /// <summary>
     /// Represents the response data from the <b><em>/eod</em></b> endpoint.
     /// </summary>
-    public class EodData
+    public record EodData
     {
         /// <summary>
         /// Ticker symbol.
