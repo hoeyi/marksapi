@@ -44,7 +44,7 @@ namespace ApiClient.Marketstack
         /// <exception cref="InvalidOperationException"></exception>
         public async Task<EodResponse> GetEodResponseAsync(string[] symbols, DateTime date)
         {
-            var queryBuilder = new QueryBuilder();
+            var queryBuilder = GetQueryBuilder();
             var symbolsDelimited = string.Join(',', symbols);
 
             queryBuilder.AddParameter("symbols", symbolsDelimited);
