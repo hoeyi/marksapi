@@ -16,25 +16,18 @@ namespace ApiClient.Marketstack.Services
         /// <summary>
         /// Creates a new instance of <see cref="QueryBuilder"/>.
         /// </summary>
-        public QueryBuilder()
+        public QueryBuilder() : this(initParameters: [])
         {
-            Parameters = new ReadOnlyDictionary<string, string>(_params);
         }
 
         /// <summary>
         /// Creates a new instance of <see cref="QueryBuilder"/>.
         /// </summary>
         /// <param name="initParameters">The initial parameter key-value pairs to include.</param>
-        /// <exception cref="ArgumentException">Too many required parameters provided.</exception>
         public QueryBuilder(params KeyValuePair<string, string>[] initParameters)
         {
-            if(initParameters.Length > 5) 
-                throw new ArgumentException(message: "Required parameters cannot be longer than 5");
-
-            foreach(var kv in initParameters)
-            {
+            foreach(var kv in initParameters ?? [])
                 AddParameter(key: kv.Key, value: kv.Value);
-            }
 
             Parameters = new ReadOnlyDictionary<string, string>(_params);
         }
