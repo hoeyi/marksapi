@@ -1,4 +1,13 @@
+using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using ApiClient.Marketstack.Services;
+using Castle.Core.Logging;
+using Moq;
+using Moq.Protected;
+using Newtonsoft.Json;
 
 namespace ApiClient.Marketstack.xUnitTests.Unit
 {
@@ -48,6 +57,45 @@ namespace ApiClient.Marketstack.xUnitTests.Unit
             
             // Assert
             Assert.IsType<MarketstackApi>(apiClient);
+        }
+        [Fact]
+        public async Task GetEodResponse_ResponseIsValid_ReturnsEodResponse()
+        {
+            // Arrange
+            var validResponse = new EodResponse();
+            var mocks = new Mocks()
+            {
+                HttpMessageHandler = new Mock<HttpMessageHandler>()
+            };
+            mocks.HttpMessageHandler
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+                    {
+                        Content = new StringContent(JsonConvert.SerializeObject(validResponse))
+                    }
+                );
+            var client = new HttpClient(mocks.HttpMessageHandler.Object);
+
+
+            var service = new MarketstackApi(client, "test-string");
+            var symbol = "MSFT";
+            var date = new DateTime(2026, 1, 5);
+
+            // Act
+            var result = await service.GetEodResponseAsync([symbol], date);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(validResponse, result);
+        }
+        record Mocks
+        {
+            public Mock<MarketstackApi>? MarketstackApi { get; set; }
+            public Mock<QueryBuilder>? QueryBuilder { get; set; }
+            public Mock<HttpMessageHandler>? HttpMessageHandler { get; set; }
+            public Mock<ILogger>? Logger { get; set; }
         }
     }
 }

@@ -26,7 +26,7 @@ namespace ApiClient.Marketstack.xUnitTests.Integration
             var date = DateTime.Parse(dateStr);
 
             // Act
-            var result = await apiClient.GetEodDataAsync(symbols, date);
+            var result = await apiClient.GetEodResponseAsync(symbols, date);
 
             // Assert
             Assert.IsType<EodResponse>(result);
