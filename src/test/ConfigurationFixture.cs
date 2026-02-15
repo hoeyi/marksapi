@@ -1,5 +1,4 @@
 
-using Extensions.Configuration.DockerSecrets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -11,7 +10,6 @@ namespace ApiClient.Marketstack.xUnitTests;
         {
             Configuration = new ConfigurationBuilder()
                 .AddUserSecrets<ConfigurationFixture>()
-                .AddDockerSecrets()
                 .Build();
             
             Logger = CreateLogger();

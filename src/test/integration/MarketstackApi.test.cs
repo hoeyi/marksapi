@@ -17,8 +17,7 @@ namespace ApiClient.Marketstack.xUnitTests.Integration
         }
 
         [Theory]
-        [InlineData(new[]{"MSFT"}, "2026-01-05")]
-        [InlineData(new[]{"AAPL"}, "2026-01-05")]
+        [InlineData(new[]{"AAPL", "MSFT"}, "2026-01-05")]
         public async Task GetEodDataAsync_ReturnSuccessResponse(string[] symbols, string dateStr)
         {
             // Arrange

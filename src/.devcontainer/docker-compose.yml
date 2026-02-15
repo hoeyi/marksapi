@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  devcontainer:
+  api_client_marketstack:
     image: "mcr.microsoft.com/devcontainers/dotnet:1-8.0-noble"
     volumes:
       - ../..:/workspaces:cached
