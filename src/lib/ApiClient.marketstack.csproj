@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <RootNamespace>ApiClient.Marketstack</RootNamespace>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>e2d3a2a3-e696-4093-af98-17e33a7ee5bc</UserSecretsId>
