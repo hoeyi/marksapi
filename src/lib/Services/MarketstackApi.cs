@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using ApiClient.Marketstack.Services;
 using System.Collections.Generic;
 using System.Linq;
-// using Serilog;
 
 namespace ApiClient.Marketstack
 {
