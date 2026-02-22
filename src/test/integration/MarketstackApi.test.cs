@@ -29,7 +29,7 @@ namespace ApiClient.Marketstack.xUnitTests.Integration
 
             // Assert
             Assert.IsType<EodResponse>(result);
-            Assert.IsType<EodData[]>(result.Data);
+            Assert.IsType<EodBar[]>(result.Data);
             Assert.IsType<Pagination>(result.Pagination);
             Assert.True(result.Data.Length > 0);
 

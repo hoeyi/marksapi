@@ -6,7 +6,7 @@ namespace ApiClient.Marketstack
     /// Represents the resonse body from the '/eod'endpoint.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record EodResponse : GenericArrayResponse<EodData>
+    public record EodResponse : GenericArrayResponse<EodBar>
     {
     }
 }

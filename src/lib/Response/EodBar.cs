@@ -7,7 +7,7 @@ namespace ApiClient.Marketstack
     /// Represents the response data from the <b><em>/eod</em></b> endpoint.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record EodData
+    public record EodBar
     {
         /// <summary>
         /// Ticker symbol.
@@ -123,4 +123,11 @@ namespace ApiClient.Marketstack
         [JsonProperty("dividend")]
         public double Dividend { get; set; }
     }    
+
+    /// <summary>
+    /// Represents the response data from the <b><em>/intraday</em></b> endpoint.
+    /// </summary>
+    public record IntradayBar : EodBar
+    {
+    }
 }
