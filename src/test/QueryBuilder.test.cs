@@ -42,7 +42,8 @@ namespace ApiClient.Marketstack.xUnitTests.Unit
         [Theory]
         [InlineData("")]
         [InlineData(" ")]
-        [InlineData("   ")]
+        [InlineData("\t")]
+        [InlineData("\r")]
         public void AddParameter_EmptyKey_ThrowsException(string? paramKey)
         {
             // Arrange

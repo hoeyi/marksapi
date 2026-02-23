@@ -21,4 +21,20 @@ namespace ApiClient.Marketstack
         [JsonProperty("pagination")]
         public Pagination Pagination { get; set; } = default!;
     }
+
+    /// <summary>
+    /// Represents the resonse body from the '/eod' endpoint.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record EodResponse : GenericArrayResponse<EodBar>
+    {
+    }
+
+    /// <summary>
+    /// Represents the resonse body from the '/intraday' endpoint.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public record IntradayResponse : GenericArrayResponse<EodBar>
+    {
+    }
 }

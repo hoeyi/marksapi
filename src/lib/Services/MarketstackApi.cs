@@ -6,18 +6,25 @@ using Microsoft.Extensions.Logging;
 using ApiClient.Marketstack.Services;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace ApiClient.Marketstack
 {
     /// <summary>
     /// Service class for handling sending and receiving requests to Marketstack API.
     /// </summary>
-    public class MarketstackApi
+    public partial class MarketstackApi
     {
         private readonly string _baseUrl = "https://api.marketstack.com/v2";
+        private readonly short _maximumDateRangeInDays = 30;
         private readonly HttpClient _httpClient;
         private readonly ILogger? _logger;
         private readonly KeyValuePair<string, string> _requiredParams;
+
+        public MarketstackApi(string apiKey, ILogger? logger = null)
+            : this(new HttpClient(), apiKey, logger)
+        {
+        }
 
         internal MarketstackApi(
             HttpClient httpClient, string apiKey, ILogger? logger = null)
@@ -30,44 +37,6 @@ namespace ApiClient.Marketstack
             _logger = logger;
         }
 
-        public MarketstackApi(string apiKey, ILogger? logger = null)
-            : this(new HttpClient(), apiKey, logger)
-        {
-        }
-    
-        /// <summary>
-        /// Gets Eod data for the given symbols and date range.
-        /// </summary>
-        /// <param name="symbols">Array of stock or bond tickers.</param>
-        /// <param name="dateFrom">Start date of the query range.</param>
-        /// <param name="dateTo">End date of the query range.</param>
-        /// <returns>A <see cref="Task"/> containing an <see cref="EodResponse"/>.</returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        public async Task<EodResponse> GetEodResponseAsync(
-                    string[] symbols, DateTime dateFrom, DateTime dateTo)
-        {
-            var queryBuilder = GetQueryBuilder();
-            var symbolsDelimited = string.Join(',', symbols);
-
-            queryBuilder.AddParameter("symbols", symbolsDelimited);
-            queryBuilder.AddParameter("date_from", dateFrom.ToString("yyyy-MM-dd"));
-            queryBuilder.AddParameter("date_to", dateTo.ToString("yyyy-MM-dd"));
-
-            var response = await GetResponseAsync<EodResponse>(queryBuilder, Endpoint.Eod);
-
-            return response;
-        }
-
-        /// <summary>
-        /// Gets Eod data for the given symbols and date.
-        /// </summary>
-        /// <param name="symbols">Array of stock or bond tickers.</param>
-        /// <param name="date">Date to fetch data for.</param>
-        /// <returns>A <see cref="Task"/> containing an <see cref="EodResponse"/>.</returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        public async Task<EodResponse> GetEodResponseAsync(string[] symbols, DateTime date)
-            => await GetEodResponseAsync(symbols: symbols, dateFrom: date, dateTo: date);
-
         /// <summary>
         /// Posts a GET request from the given <see cref="QueryBuilder"/> and <see cref="Endpoint"/>. 
         /// </summary>
@@ -75,10 +44,10 @@ namespace ApiClient.Marketstack
         /// <param name="queryBuilder"></param>
         /// <param name="endPoint"></param>
         /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        private async Task<T> GetResponseAsync<T>(QueryBuilder queryBuilder, string endPoint)
+        /// <exception cref="InvalidOperationException">The response body was empty.</exception>
+        internal async Task<T> GetResponseAsync<T>(QueryBuilder queryBuilder, string endPoint)
         {
-            var uriBuilder = GetUriBuilder(endpoint: Endpoint.Eod);
+            var uriBuilder = GetUriBuilder(endPoint);
             uriBuilder.Query = queryBuilder.ToString();
 
             var requestUrl = uriBuilder.Uri.AbsoluteUri;
@@ -101,6 +70,29 @@ namespace ApiClient.Marketstack
                 _logger?.LogError(LoggingTemplates.Error.HttpErrorGeneral, e);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Validates the given dates form an acceptable date range parameter.
+        /// </summary>
+        /// <param name="dateFrom">Start date of the range tested.</param>
+        /// <param name="dateTo">End date of the range tested.</param>
+        /// <returns>Return <see cref="True"/> if the range is acceptable, else throw <see cref="ArgumentException"/>.</returns>
+        /// <exception cref="ArgumentException"><paramref name="dateFrom"/> is greater than <paramref name="dateTo"/> or the 
+        /// range measured in days is too long.</exception>
+        internal bool ValidateDateRangeOrThrow(DateTime dateFrom, DateTime dateTo)
+        {
+            if(dateFrom > dateTo)
+            {
+                throw new ArgumentException(
+                    $"Range invalid: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");
+            }
+            if(dateTo.Subtract(dateFrom).Days > _maximumDateRangeInDays)
+            {
+                throw new ArgumentException(
+                    $"Range too long: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");
+            }
+            return true;
         }
 
         /// <summary>
@@ -166,4 +158,96 @@ namespace ApiClient.Marketstack
             public const string Company_facts  = "company_facts ";
         }
     }
+
+    #region Endpoints: { /eod, /intraday }
+    public partial class MarketstackApi
+    {
+        /// <summary>
+        /// Gets Eod data for the given symbols and date range.
+        /// </summary>
+        /// <param name="symbols">Array of stock or bond tickers.</param>
+        /// <param name="dateFrom">Start date of the query range.</param>
+        /// <param name="dateTo">End date of the query range.</param>
+        /// <returns>A <see cref="Task"/> containing an <see cref="EodResponse"/>.</returns>
+        public async Task<EodResponse> GetEodResponseAsync(
+                    string[] symbols, DateTime dateFrom, DateTime dateTo)
+        {
+            
+
+            var queryBuilder = GetQueryBuilder();
+            var symbolsDelimited = string.Join(',', symbols);
+
+            queryBuilder.AddParameter("symbols", symbolsDelimited);
+            queryBuilder.AddParameter("date_from", dateFrom.ToString("yyyy-MM-dd"));
+            queryBuilder.AddParameter("date_to", dateTo.ToString("yyyy-MM-dd"));
+
+            var response = await GetResponseAsync<EodResponse>(queryBuilder, Endpoint.Eod);
+
+            return response;
+        }
+
+        /// <summary>
+        /// Gets Eod data for the given symbols and date.
+        /// </summary>
+        /// <param name="symbols">Array of stock or bond tickers.</param>
+        /// <param name="date">Date to fetch data for.</param>
+        /// <returns>A <see cref="Task"/> containing an <see cref="EodResponse"/>.</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public async Task<EodResponse> GetEodResponseAsync(string[] symbols, DateTime date)
+            => await GetEodResponseAsync(symbols: symbols, dateFrom: date, dateTo: date);
+
+        /// <summary>
+        /// Gets Intraday data for the given symbols and date.
+        /// </summary>
+        /// <param name="symbols">Symbols to query quotes for.</param>
+        /// <param name="dateFrom">Start date of the range to query.</param>
+        /// <param name="dateTo">End date of the range to query.</param>
+        /// <param name="afterHours">Flag to include after-hours data in query.</param>
+        /// <param name="exchangeMic">Filters results for the exchange with the given MIC.</param>
+        /// <param name="interval">Timing interval to query. One of {"1min", "5min", "10min", "15min", "30min", "1hour"}.</param>
+        /// <returns>A <see cref="Task"/> containing an <see cref="IntradayResponse"/>.</returns>
+        public async Task<IntradayResponse> GetIntradayResponseAsync(
+            string[] symbols, DateTime date, bool afterHours = false, string? exchangeMic = null, string interval = "15min") 
+            => await GetIntradayResponseAsync(
+                symbols, date, date, afterHours, exchangeMic, interval);
+
+        /// <summary>
+        /// Gets Intraday data for the given symbols and date range.
+        /// </summary>
+        /// <param name="symbols">Symbols to query quotes for.</param>
+        /// <param name="dateFrom">Start date of the range to query.</param>
+        /// <param name="dateTo">End date of the range to query.</param>
+        /// <param name="afterHours">Flag to include after-hours data in query.</param>
+        /// <param name="exchangeMic">Filters results for the exchange with the given MIC.</param>
+        /// <param name="interval">Timing interval to query. One of {"1min", "5min", "10min", "15min", "30min", "1hour"}.</param>
+        /// <returns>A <see cref="Task"/> containing an <see cref="IntradayResponse"/>.</returns>
+        public async Task<IntradayResponse> GetIntradayResponseAsync(
+            string[] symbols, 
+            DateTime dateFrom, 
+            DateTime dateTo, 
+            bool afterHours = false, 
+            string? exchangeMic = null, 
+            string interval = "15min")
+        {
+            var queryBuilder = GetQueryBuilder();
+            var symbolsDelimited = string.Join(',', symbols);
+
+            queryBuilder.AddParameter("symbols", symbolsDelimited);
+            queryBuilder.AddParameter("date_from", dateFrom.ToString("yyyy-MM-dd"));
+            queryBuilder.AddParameter("date_to", dateTo.ToString("yyyy-MM-dd"));
+            
+            // Optional parameters
+            if(afterHours) 
+                queryBuilder.AddParameter("after_hours", afterHours.ToString());
+            if(!string.IsNullOrEmpty(exchangeMic)) 
+                queryBuilder.AddParameter("exchange_mic", exchangeMic);
+            
+            queryBuilder.AddParameter("interval", interval);
+
+            var response = await GetResponseAsync<IntradayResponse>(queryBuilder, Endpoint.Intraday);
+
+            return response;
+        }
+    }
+    #endregion
 }
