@@ -4,10 +4,10 @@ using Newtonsoft.Json;
 namespace ApiClient.Marketstack
 {
     /// <summary>
-    /// Represents the response data from the <b><em>/eod</em></b> endpoint.
+    /// Represents generic response for price responses.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public record EodBar
+    public record QuoteBar
     {
         /// <summary>
         /// Ticker symbol.
@@ -125,9 +125,16 @@ namespace ApiClient.Marketstack
     }    
 
     /// <summary>
+    /// Represents the response data from the <b><em>/eod</em></b> endpoint.
+    /// </summary>
+    public record EodBar : QuoteBar
+    {
+    }
+
+    /// <summary>
     /// Represents the response data from the <b><em>/intraday</em></b> endpoint.
     /// </summary>
-    public record IntradayBar : EodBar
+    public record IntradayBar : QuoteBar
     {
     }
 }
