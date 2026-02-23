@@ -127,6 +127,7 @@ namespace ApiClient.Marketstack
     /// <summary>
     /// Represents the response data from the <b><em>/eod</em></b> endpoint.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record EodBar : QuoteBar
     {
     }
@@ -134,6 +135,7 @@ namespace ApiClient.Marketstack
     /// <summary>
     /// Represents the response data from the <b><em>/intraday</em></b> endpoint.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public record IntradayBar : QuoteBar
     {
     }

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace MarketStackApi
@@ -5,6 +6,7 @@ namespace MarketStackApi
     /// <summary>
     /// Represents the response data from the <b><em>/bond</em></b> endpoint.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class BondInfo
     {
         /// <summary>

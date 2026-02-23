@@ -13,7 +13,6 @@ namespace ApiClient.Marketstack.xUnitTests.Integration
         {
             _fixture = fixture;
             ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_key"]);
-            ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_base_uri"]);
         }
 
         [Theory]

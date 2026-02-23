@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using ApiClient.Marketstack.Services;
 using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace ApiClient.Marketstack
 {
@@ -36,7 +36,7 @@ namespace ApiClient.Marketstack
         }
     
         /// <summary>
-        /// Gets Eod data for the given symbols and date.
+        /// Gets Eod data for the given symbols and date range.
         /// </summary>
         /// <param name="symbols">Array of stock or bond tickers.</param>
         /// <param name="dateFrom">Start date of the query range.</param>
@@ -52,29 +52,10 @@ namespace ApiClient.Marketstack
             queryBuilder.AddParameter("symbols", symbolsDelimited);
             queryBuilder.AddParameter("date_from", dateFrom.ToString("yyyy-MM-dd"));
             queryBuilder.AddParameter("date_to", dateTo.ToString("yyyy-MM-dd"));
-            var uriBuilder = GetUriBuilder(endpoint: Endpoints.Eod);
-            uriBuilder.Query = queryBuilder.ToString();
 
-            var requestUrl = uriBuilder.Uri.AbsoluteUri;
+            var response = await GetResponseAsync<EodResponse>(queryBuilder, Endpoint.Eod);
 
-            try
-            {
-                HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
-                response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
-
-                // Parse the JSON response. If the response is null thow invalid operation
-                EodResponse eodResponse = JsonConvert
-                    .DeserializeObject<EodResponse>(responseBody) ?? 
-                    throw new InvalidOperationException(message: LoggingTemplates.Error.InvalidOrEmptyResponse);
-
-                return eodResponse;
-            }
-            catch (HttpRequestException e)
-            {
-                _logger?.LogError(LoggingTemplates.Error.HttpErrorGeneral, e);
-                throw;
-            }
+            return response;
         }
 
         /// <summary>
@@ -87,14 +68,58 @@ namespace ApiClient.Marketstack
         public async Task<EodResponse> GetEodResponseAsync(string[] symbols, DateTime date)
             => await GetEodResponseAsync(symbols: symbols, dateFrom: date, dateTo: date);
 
+        /// <summary>
+        /// Posts a GET request from the given <see cref="QueryBuilder"/> and <see cref="Endpoint"/>. 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="queryBuilder"></param>
+        /// <param name="endPoint"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        private async Task<T> GetResponseAsync<T>(QueryBuilder queryBuilder, string endPoint)
+        {
+            var uriBuilder = GetUriBuilder(endpoint: Endpoint.Eod);
+            uriBuilder.Query = queryBuilder.ToString();
+
+            var requestUrl = uriBuilder.Uri.AbsoluteUri;
+
+            try
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                // Parse the JSON response. If the response is null thow invalid operation
+                T genericResponse = JsonConvert
+                    .DeserializeObject<T>(responseBody) ?? 
+                    throw new InvalidOperationException(message: LoggingTemplates.Error.InvalidOrEmptyResponse);
+
+                return genericResponse;
+            }
+            catch (HttpRequestException e)
+            {
+                _logger?.LogError(LoggingTemplates.Error.HttpErrorGeneral, e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets a <see cref="UriBuilder"/> instance from the given relative endpoint.
+        /// </summary>
+        /// <param name="endpoint">Relative path to the endpoint.</param>
+        /// <returns>A <see cref="UriBuilder"/> where the URI is set to the absolute path of the endpoint.</returns>
         private UriBuilder GetUriBuilder(string endpoint) => new(uri: $"{_baseUrl}/{endpoint}");
 
+        /// <summary>
+        /// Gets a <see cref="QueryBuilder"/> instance with required parameters initialized.
+        /// </summary>
+        /// <returns>A <see cref="QueryBuilder"/> configured for required parameters.</returns>
         private QueryBuilder GetQueryBuilder() => new(initParameters: _requiredParams);
 
         /// <summary>
         /// Collection of the relative endpoints for the api as stirng patterns.
         /// </summary>
-        private class Endpoints
+        private class Endpoint
         {
             public const string Eod = "eod";
             public const string EodLatest  = "eod/latest ";
