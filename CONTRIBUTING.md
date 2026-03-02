@@ -1,4 +1,4 @@
-# Contributing to [PROJECT NAME HERE] #
+# Contributing to ApiClient.Marketstack #
 
 * [Commit Message Guidelines](#commit-message-guidelines)
 * [Object Naming Conventions](#object-naming-conventions)
@@ -31,11 +31,11 @@ Must be one of the following:
 * **test**: Adding missing tests or correcting existing tests
 
 ### Scope ###
-*Describe how `scope` is defined in the context of contributing to this project.
+Use the `scope` component of the commit subject to descript the endpoint the change applies to.
 
 Example: 
 ```
-Examples here.
+feat(eod): implement methods for /eod enpoint
 ```
 
 ### Subject ###
@@ -60,6 +60,3 @@ BREAKING CHANGE: Ends support for [NAME] API
 
 Resolves #42 (where #42 is the GitHub issue no.)
 ```
-
-## Object Naming Conventions ##
-*Define object naming conventions specific to this project.*
