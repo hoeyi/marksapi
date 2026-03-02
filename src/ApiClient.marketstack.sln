@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiClient.marketstack", "ApiClient.marketstack.csproj", "{BFAF669F-ADDE-4F04-95A2-3355A0006A9E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiClient.marketstack", "lib/ApiClient.marketstack.csproj", "{BFAF669F-ADDE-4F04-95A2-3355A0006A9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiClient.marketstack.test", "test/ApiClient.marketstack.test.csproj", "{94F7AC19-6A3C-4051-B9C4-64B6A028A209}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +20,13 @@ Global
 		{BFAF669F-ADDE-4F04-95A2-3355A0006A9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFAF669F-ADDE-4F04-95A2-3355A0006A9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFAF669F-ADDE-4F04-95A2-3355A0006A9E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B535BC81-99F6-48BE-A4AA-16492027271F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B535BC81-99F6-48BE-A4AA-16492027271F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B535BC81-99F6-48BE-A4AA-16492027271F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B535BC81-99F6-48BE-A4AA-16492027271F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94F7AC19-6A3C-4051-B9C4-64B6A028A209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94F7AC19-6A3C-4051-B9C4-64B6A028A209}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94F7AC19-6A3C-4051-B9C4-64B6A028A209}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94F7AC19-6A3C-4051-B9C4-64B6A028A209}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
-

@@ -1,18 +1,32 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
-	"name": "C# (.NET)",
+	// "name": "C# (.NET)",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0-noble",
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"ms-dotnettools.csdevkit",
-				"ms-dotnettools.csharp"
-			]
-		}
-	}
+	// "image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0-noble",
+	// "customizations": {
+	// 	"vscode": {
+	// 		"extensions": [
+	// 			"ms-dotnettools.csdevkit",
+	// 			"ms-dotnettools.csharp"
+	// 		]
+	// 	}
+	// }
 
+	"name": "C# (.NET)",
+	"dockerComposeFile": "./docker-compose.yml",
+	"service": "api_client_marketstack",
+	"workspaceFolder": "/workspaces/api-client-marketstack",
+	"customizations": {
+			"vscode": {
+				"extensions": [
+					"ms-dotnettools.csdevkit",
+					"ms-dotnettools.csharp"
+				]
+			}
+		},
+	"remoteUser": "vscode",
+	"shutdownAction": "stopCompose"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
@@ -32,4 +46,4 @@
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
-}
+  }
