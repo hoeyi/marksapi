@@ -1,7 +1,7 @@
 version: '3.8'
 services:
-  api_client_marketstack:
+  markets_nexus_api:
     image: "mcr.microsoft.com/devcontainers/dotnet:10.0-noble"
     volumes:
-      - ../..:/workspaces/api-client-marketstack
+      - ../..:/workspaces/markets-nexus-api
     command: sleep infinity

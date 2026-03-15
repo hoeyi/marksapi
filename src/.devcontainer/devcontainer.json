@@ -15,8 +15,8 @@
 
 	"name": "C# (.NET)",
 	"dockerComposeFile": "./docker-compose.yml",
-	"service": "api_client_marketstack",
-	"workspaceFolder": "/workspaces/api-client-marketstack",
+	"service": "markets_nexus_api",
+	"workspaceFolder": "/workspaces/markets-nexus-api",
 	"customizations": {
 			"vscode": {
 				"extensions": [
