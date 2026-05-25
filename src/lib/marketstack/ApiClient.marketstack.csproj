@@ -17,6 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../common/lib/ApiClient.Common.csproj" />
+    <ProjectReference Include="../common/ApiClient.Common.csproj" />
   </ItemGroup>
 </Project>

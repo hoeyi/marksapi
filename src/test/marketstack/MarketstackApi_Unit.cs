@@ -2,13 +2,13 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using ApiClient.Marketstack.Services;
+using ApiClient.Services;
 using Castle.Core.Logging;
 using Moq;
 using Moq.Protected;
 using Newtonsoft.Json;
 
-namespace ApiClient.Marketstack.xUnitTests.Unit
+namespace ApiClient.Test.Marketstack.Unit
 {
     [Trait(nameof(TestAttributeNames.Category), "Unit")]
     public partial class MarketstackApi_Test
@@ -267,5 +267,5 @@ namespace ApiClient.Marketstack.xUnitTests.Unit
                 service.GetIntradayResponseAsync([symbol], date));
         }
     }
-    #endregion Endpoints: { /intraday }
+    #endregion Endpoints: { /intraday }    
 }

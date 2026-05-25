@@ -4,7 +4,7 @@ global using Xunit;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
-namespace ApiClient.Marketstack.xUnitTests
+namespace ApiClient.Test
 {
     /// <summary>
     /// Defines names of attributes applied to objects via TraitAttribute.

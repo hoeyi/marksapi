@@ -2,13 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <RootNamespace>ApiClient.Marketspace.XunitTests</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
-    <UserSecretsId>cfcf9c3a-d53a-4a6c-ba18-d05dfd71ed04</UserSecretsId>
+    <RootNamespace>ApiClient.Test</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,10 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\lib\ApiClient.marketstack.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
+    <ProjectReference Include="../lib/common/ApiClient.Common.csproj" />
+    <ProjectReference Include="../lib/marketstack/ApiClient.marketstack.csproj" />
   </ItemGroup>
 </Project>

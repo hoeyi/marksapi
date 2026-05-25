@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using ApiClient.Marketstack.Services;
+using ApiClient.Services;
 
-namespace ApiClient.Marketstack.xUnitTests.Unit
+namespace ApiClient.Common.Test.xUnitTests
 {
     [Trait(nameof(TestAttributeNames.Category), "Unit")]
     public class QueryBuilder_Test
