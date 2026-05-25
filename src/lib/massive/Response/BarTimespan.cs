@@ -3,22 +3,41 @@ namespace ApiClient.Massive.Response
     /// <summary>
     /// Represents the size of the time window as required for price bar queries.
     /// </summary>
-    public enum BarTimespan
+    readonly struct BarTimespan
     {
-        second,
+        public const string Second = "second";
 
-        minute,
+        public const string Minute = "minute";
 
-        hour,
+        public const string Hour ="hour";
 
-        day,
+        public const string Day = "day";
 
-        week,
+        public const string Week = "week";
 
-        month,
+        public const string Month = "month";
 
-        quarter,
+        public const string Quarter = "quarter";
 
-        year
+        public const string Year = "year";
+    }
+
+    public enum BarTimespanEnum
+    {
+        Second,
+
+        Minute,
+
+        Hour,
+
+        Day,
+
+        Week,
+
+        Month,
+
+        Quarter,
+
+        Year
     }
 }

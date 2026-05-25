@@ -19,10 +19,10 @@ namespace ApiClient.Massive
         /// <param name="timeSpan">Size of the time window.</param>
         /// <param name="from">Start of the time window.</param>
         /// <param name="to">End of the time window.</param>
-        /// <param name="limit">Maximum number of records to return. Maximum value is 1000.</param>
-        /// <returns></returns>
+        /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 50).</param>
+        /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
         public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
-            string ticker, int multiplier, BarTimespan timeSpan, DateTime from, DateTime to, int limit = 100)
+            string ticker, int multiplier, BarTimespanEnum timeSpan, DateTime from, DateTime to, int limit = 50)
         {
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(limit, 0, nameof(limit));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(limit, 1000, nameof(limit));
@@ -33,9 +33,9 @@ namespace ApiClient.Massive
             string endpoint = string.Format(endpointPattern, 
                                     ticker, 
                                     multiplier, 
-                                    timeSpan, 
+                                    timeSpan.ToString().ToLower(), 
                                     $"{from:yyyy-MM-dd}", 
-                                    $"{from:yyyy-MM-dd}");
+                                    $"{to:yyyy-MM-dd}");
 
             var queryBuilder = GetQueryBuilder();
             var response = await GetResponseAsync<AggregateBarResponse>(queryBuilder, endpoint);
