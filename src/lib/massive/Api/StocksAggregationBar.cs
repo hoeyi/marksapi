@@ -1,11 +1,6 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Microsoft.Extensions.Logging;
-using ApiClient.Services;
-using ApiClient.Resources;
-using System.Collections.Generic;
 using ApiClient.Massive.Response;
 
 namespace ApiClient.Massive
@@ -21,6 +16,7 @@ namespace ApiClient.Massive
         {
             var queryBuilder = GetQueryBuilder();
 
+            
             throw new NotImplementedException();
         }
     }

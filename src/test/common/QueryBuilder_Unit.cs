@@ -139,7 +139,7 @@ namespace ApiClient.Test.Unit
         {
             // Arrange
             string pattern = "/api/{param1}/path/{param2}";
-            string expected = "/api/{0}/path{1}";
+            string expected = "/api/{0}/path/{1}";
 
             // Act
             string observed = QueryBuilder.ConvertEndpointToStringPattern(pattern);

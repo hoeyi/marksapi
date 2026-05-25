@@ -77,21 +77,24 @@ namespace ApiClient.Services
 
         public static string ConvertEndpointToStringPattern(string endpoint)
         {
-            string pattern = "{(.*?)}";
+            string pattern = @"\{[^}]*\}";
             Regex r = new(pattern, RegexOptions.IgnoreCase);
+            MatchCollection mc = r.Matches(endpoint);
 
-            Match m = r.Match(endpoint);
-            int matchCount = 0;
-            foreach(Group g in m.Groups)
+            StringBuilder endpointBuilder = new(endpoint);
+
+            // Traverse in reverse order to keep the lower-index matches
+            // at the same index.
+            for(int i = mc.Count - 1; i >= 0; i--)
             {
-                matchCount += 1;
-                for(int j = 0; j < g.Captures.Count; j++)
-                {
-                    Console.WriteLine($"Index: {g.Captures[j].Index}; Length: {g.Captures[j].Length}");
-                }
+                Match m = mc[i];
+                endpointBuilder.Remove(m.Index, m.Length);
+                endpointBuilder.Insert(m.Index, $"{{{i}}}");
+
+                Debug.WriteLine($"Match:\n\t(index = {m.Index}, length = {m.Length})");
             }
 
-            return string.Empty;
+            return endpointBuilder.ToString();
         }
     }
 }
