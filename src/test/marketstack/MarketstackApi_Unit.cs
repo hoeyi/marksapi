@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace ApiClient.Test.Marketstack.Unit
 {
-    [Trait(nameof(TestAttributeNames.Category), "Unit")]
+    [Trait(nameof(TestAttributeName.Category), "Unit")]
     public partial class MarketstackApi_Test
     {
         const string Test_ApiKey = "test-string";

@@ -6,7 +6,7 @@ using ApiClient.Marketstack;
 
 namespace ApiClient.Test.Marketstack.Integration
 {
-    [Trait(nameof(TestAttributeNames.Category), "Integration")]
+    [Trait(nameof(TestAttributeName.Category), "Integration")]
     public class MarketstackApi_Test: IClassFixture<ConfigurationFixture>
     {
         ConfigurationFixture _fixture;

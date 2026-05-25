@@ -6,8 +6,8 @@ namespace ApiClient.Test
     /// <summary>
     /// Defines names of attributes applied to objects via TraitAttribute.
     /// </summary>
-    record TestAttributeNames
+    record TestAttributeName
     {
-        public string Category { get; } = default!;
+        public const string Category = default!;
     }
 }

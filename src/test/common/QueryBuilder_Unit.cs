@@ -4,7 +4,7 @@ using ApiClient.Services;
 
 namespace ApiClient.Test.Unit
 {
-    [Trait(nameof(TestAttributeNames.Category), "Unit")]
+    [Trait(nameof(TestAttributeName.Category), "Unit")]
     public class QueryBuilder_Test
     {
         [Fact]
