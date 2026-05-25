@@ -6,5 +6,6 @@
 	],
 	"settings": {
 		"chat.disableAIFeatures": true
-	}
+	},
+	
 }

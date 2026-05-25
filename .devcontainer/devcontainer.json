@@ -24,8 +24,7 @@
 					"ms-dotnettools.csharp"
 				]
 			}
-		},
-    "runArgs": ["--name", "dev_markets-nexus-api"],		
+		},	
 	"remoteUser": "vscode",
 	"shutdownAction": "stopCompose"
 	// Features to add to the dev container. More info: https://containers.dev/features.

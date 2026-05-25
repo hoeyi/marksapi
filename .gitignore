@@ -420,8 +420,8 @@ FodyWeavers.xsd
 # Commit message placeholder
 .commit
 
-# Ignore vs code
-.vscode/
-
 # Ignore test logs
 src/test/*.log
+
+# Cached files from C# Dev Kit
+dotnet/

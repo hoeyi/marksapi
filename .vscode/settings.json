@@ -1,0 +1,7 @@
+{
+    "editor.formatOnType": false,
+    "editor.stickyScroll.enabled": false,
+    "files.exclude": {
+        "**/dotnet/**": true,
+    }
+}
