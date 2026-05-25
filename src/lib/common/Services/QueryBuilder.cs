@@ -53,7 +53,7 @@ namespace ApiClient.Services
             ArgumentException.ThrowIfNullOrEmpty(key);
             ArgumentNullException.ThrowIfNull(value);
 
-            _params.Add(key.ToLower(), value);
+            _params.Add(key, value);
         }
 
         /// <summary>
