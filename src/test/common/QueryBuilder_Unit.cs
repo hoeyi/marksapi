@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ApiClient.Services;
 
-namespace ApiClient.Common.Test.xUnitTests
+namespace ApiClient.Test.Unit
 {
     [Trait(nameof(TestAttributeNames.Category), "Unit")]
     public class QueryBuilder_Test

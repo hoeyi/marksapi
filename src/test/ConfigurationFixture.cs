@@ -32,6 +32,6 @@ public class ConfigurationFixture : IDisposable
 
         var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
 
-        return loggerFactory.CreateLogger(categoryName: $"Test.Logger.{nameof(MarketstackApi)}");
+        return loggerFactory.CreateLogger(categoryName: $"{nameof(ApiClient)}.Test");
     }
 }

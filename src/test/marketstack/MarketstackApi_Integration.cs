@@ -2,8 +2,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using ApiClient.Marketstack;
 
-namespace ApiClient.Marketstack.xUnitTests.Integration
+namespace ApiClient.Test.Marketstack.Integration
 {
     [Trait(nameof(TestAttributeNames.Category), "Integration")]
     public class MarketstackApi_Test: IClassFixture<ConfigurationFixture>
