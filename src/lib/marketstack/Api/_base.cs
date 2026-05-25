@@ -16,7 +16,6 @@ namespace ApiClient.Marketstack
     public partial class MarketstackApi
     {
         private readonly string _baseUrl = "https://api.marketstack.com/v2";
-        private readonly short _maximumDateRangeInDays = 30;
         private readonly HttpClient _httpClient;
         private readonly ILogger? _logger;
         private readonly KeyValuePair<string, string> _requiredParams;
@@ -72,28 +71,7 @@ namespace ApiClient.Marketstack
             }
         }
 
-        /// <summary>
-        /// Validates the given dates form an acceptable date range parameter.
-        /// </summary>
-        /// <param name="dateFrom">Start date of the range tested.</param>
-        /// <param name="dateTo">End date of the range tested.</param>
-        /// <returns>Return <see cref="True"/> if the range is acceptable, else throw <see cref="ArgumentException"/>.</returns>
-        /// <exception cref="ArgumentException"><paramref name="dateFrom"/> is greater than <paramref name="dateTo"/> or the 
-        /// range measured in days is too long.</exception>
-        internal bool ValidateDateRangeOrThrow(DateTime dateFrom, DateTime dateTo)
-        {
-            if(dateFrom > dateTo)
-            {
-                throw new ArgumentException(
-                    $"Range invalid: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");
-            }
-            if(dateTo.Subtract(dateFrom).Days > _maximumDateRangeInDays)
-            {
-                throw new ArgumentException(
-                    $"Range too long: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");
-            }
-            return true;
-        }
+        
 
         /// <summary>
         /// Gets a <see cref="UriBuilder"/> instance from the given relative endpoint.

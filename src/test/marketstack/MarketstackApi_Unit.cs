@@ -58,67 +58,6 @@ namespace ApiClient.Test.Marketstack.Unit
             // Assert
             Assert.Throws<ArgumentNullException>(() => new MarketstackApi(null!));
         }
-
-        [Fact]
-        public void ValidateDateRangeOrThrow_DateRangeInvalid_ThrowsArgumentException()
-        {
-            // Arrange
-            var apiClient = new MarketstackApi(apiKey: Test_ApiKey);
-            // Force dateTo to be less than dateFrom
-            var dateFrom = DateTime.Now;
-            var dateTo = dateFrom.AddDays(-1);
-            
-            // Act
-            // Assert
-            Assert.Throws<ArgumentException>(() => apiClient.ValidateDateRangeOrThrow(dateFrom, dateTo));
-        }
-
-        [Theory]
-        [InlineData("2026-01-01", "2025-12-31")] // date range can have day-length < 0
-        [InlineData("2026-01-01", "2026-02-01")] // date range can have day-length > 30
-        public void ValidateDateRangeOrThrow_Static_DateRangeTooLong_ThrowsArgumentException(string dateFromStr, string dateToStr)
-        {
-            // Arrange
-            var apiClient = new MarketstackApi(apiKey: Test_ApiKey);
-            // Force dateTp to be more than 30 days after than dateFrom
-            var dateFrom = DateTime.Parse(dateFromStr);
-            var dateTo = DateTime.Parse(dateToStr);
-            
-            // Act
-            // Assert
-            Assert.Throws<ArgumentException>(() => apiClient.ValidateDateRangeOrThrow(dateFrom, dateTo));
-        }
-
-        [Fact]
-        public void ValidateDateRangeOrThrow_Dynamic_DateRangeTooLong_ThrowsArgumentException_()
-        {
-            // Arrange
-            var apiClient = new MarketstackApi(apiKey: Test_ApiKey);
-            // Force dateTp to be more than 30 days after than dateFrom
-            var dateFrom = DateTime.Now;
-            var dateTo = dateFrom.AddDays(31);
-            
-            // Act
-            // Assert
-            Assert.Throws<ArgumentException>(() => apiClient.ValidateDateRangeOrThrow(dateFrom, dateTo));
-        }
-
-        [Theory]
-        [InlineData("2026-01-01", "2026-01-01")] // date range can have day-length == 0
-        [InlineData("2026-01-01", "2026-01-31")] // date range can have day-length <= 30
-        public void ValidateDateRangeOrThrow_GoodRange_ReturnsTrue(string dateFromStr, string dateToStr)
-        {
-            // Arrange
-            var apiClient = new MarketstackApi(apiKey: Test_ApiKey);
-            var dateFrom = DateTime.Parse(dateFromStr);
-            var dateTo = DateTime.Parse(dateToStr);
-
-            // Act
-            bool result = apiClient.ValidateDateRangeOrThrow(dateFrom, dateTo);
-            
-            // Assert
-            Assert.True(result);
-        }
     }
     #endregion
 
