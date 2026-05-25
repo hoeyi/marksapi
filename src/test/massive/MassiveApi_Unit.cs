@@ -34,7 +34,7 @@ namespace ApiClient.Test.Massive.Unit
             var apiClient = new MassiveApi(apiKey: Test_ApiKey);
 
             // Assert
-            Assert.IsType<MarketstackApi>(apiClient);
+            Assert.IsType<MassiveApi>(apiClient);
         }
 
         [Theory]
