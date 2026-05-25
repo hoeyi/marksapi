@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using ApiClient.Services;
+using ApiClient.Resources;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
 
 namespace ApiClient.Marketstack
 {

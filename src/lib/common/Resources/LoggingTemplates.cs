@@ -1,6 +1,6 @@
 namespace ApiClient.Resources
 {
-    class LoggingTemplates
+    public sealed class LoggingTemplates
     {
         public class Error
         {
