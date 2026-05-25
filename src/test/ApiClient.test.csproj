@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <RootNamespace>ApiClient.Test</RootNamespace>
+    <UserSecretsId>48416732-0072-49cc-b14c-92d376beb075</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

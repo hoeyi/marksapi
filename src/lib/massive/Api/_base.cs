@@ -32,7 +32,7 @@ namespace ApiClient.Massive
             ArgumentException.ThrowIfNullOrEmpty(apiKey);
             ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
             
-            _requiredParams = new("access_key", apiKey);
+            _requiredParams = new("apiKey", apiKey);
             _httpClient = httpClient;
             _logger = logger;
         }
