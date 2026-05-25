@@ -13,7 +13,7 @@
 	// 	}
 	// }
 
-	"name": "C# (.NET)",
+	"name": "C#",
 	"dockerComposeFile": "./docker-compose.yml",
 	"service": "markets_nexus_api",
 	"workspaceFolder": "/workspaces/markets-nexus-api",
@@ -25,6 +25,7 @@
 				]
 			}
 		},
+    "runArgs": ["--name", "dev_markets-nexus-api"],		
 	"remoteUser": "vscode",
 	"shutdownAction": "stopCompose"
 	// Features to add to the dev container. More info: https://containers.dev/features.

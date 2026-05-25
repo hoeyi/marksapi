@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Linq;
 using System.Collections.ObjectModel;
 
-namespace ApiClient.Marketstack.Services
+namespace ApiClient.Services
 {
     /// <summary>
     /// Helper class for constructing parameters to pass as a URI query.
