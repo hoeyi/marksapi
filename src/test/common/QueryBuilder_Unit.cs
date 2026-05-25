@@ -12,7 +12,7 @@ namespace ApiClient.Test.Unit
         {
             // Arrange
             var queryBuilder = new QueryBuilder();
-            var paramKey = "param";
+            var paramKey = "param"; 
             var paramValue = "value";
 
             // Act

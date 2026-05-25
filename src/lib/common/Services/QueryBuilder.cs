@@ -75,6 +75,12 @@ namespace ApiClient.Services
             return queryString.ToString();
         }
 
+        /// <summary>
+        /// Converts a parameterized endpoint to a pattern suitable for position string interpolation.
+        /// </summary>
+        /// <param name="endpoint">An variable endpoint.</param>
+        /// <returns>A new string with parameters with positional placeholders.</returns>
+        /// <remarks>Examples:<list type="bullet"><item>/api/{resource}/detail/{date} => /api/{0}/detail/{1}</item></list></remarks>
         public static string ConvertEndpointToStringPattern(string endpoint)
         {
             string pattern = @"\{[^}]*\}";
