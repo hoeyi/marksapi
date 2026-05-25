@@ -1,7 +1,0 @@
-version: '3.8'
-services:
-  markets_nexus_api:
-    image: "mcr.microsoft.com/devcontainers/dotnet:10.0-noble"
-    volumes:
-      - ../:/workspaces/markets-nexus-api
-    command: sleep infinity
