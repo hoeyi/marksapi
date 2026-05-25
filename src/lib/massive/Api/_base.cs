@@ -14,8 +14,8 @@ namespace ApiClient.Massive
     /// </summary>
     public partial class MassiveApi
     {
-        
-        private readonly string _baseUrl = "https://https://api.massive.com/";
+        private const string _baseUrl = "https://api.massive.com";
+        private readonly Uri _baseUri = new(_baseUrl);
         private readonly short _maximumDateRangeInDays = 30;
         private readonly HttpClient _httpClient;
         private readonly ILogger? _logger;
@@ -47,9 +47,11 @@ namespace ApiClient.Massive
         /// <exception cref="InvalidOperationException">The response body was empty.</exception>
         internal async Task<T> GetResponseAsync<T>(QueryBuilder queryBuilder, string endPoint)
         {
-            var uriBuilder = GetUriBuilder(endPoint);
-            uriBuilder.Query = queryBuilder.ToString();
-
+            var absoluteUri = GetAbsoluteUri(endPoint);
+            var uriBuilder = new UriBuilder(absoluteUri)
+            {
+                Query = queryBuilder.ToString()
+            };
             var requestUrl = uriBuilder.Uri.AbsoluteUri;
 
             try
@@ -96,11 +98,11 @@ namespace ApiClient.Massive
         }
 
         /// <summary>
-        /// Gets a <see cref="UriBuilder"/> instance from the given relative endpoint.
+        /// Gets the absolute <see cref="Uri"/> instance for the given relative endpoint.
         /// </summary>
         /// <param name="endpoint">Relative path to the endpoint.</param>
-        /// <returns>A <see cref="UriBuilder"/> where the URI is set to the absolute path of the endpoint.</returns>
-        private UriBuilder GetUriBuilder(string endpoint) => new(_baseUrl, endpoint);
+        /// <returns>A <see cref="Uri"/> where the URI is set to the absolute path of the endpoint.</returns>
+        private Uri GetAbsoluteUri(string endpoint) => new(_baseUri, relativeUri: endpoint);
 
         /// <summary>
         /// Gets a <see cref="QueryBuilder"/> instance with required parameters initialized.
