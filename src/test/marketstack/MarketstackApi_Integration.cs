@@ -13,7 +13,7 @@ namespace ApiClient.Test.Marketstack.Integration
         public MarketstackApi_Test(ConfigurationFixture fixture)
         {
             _fixture = fixture;
-            ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_key"]);
+            ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_key:marketstack"]);
         }
 
         [Theory]
@@ -21,7 +21,7 @@ namespace ApiClient.Test.Marketstack.Integration
         public async Task GetEodDataAsync_ReturnSuccessResponse(string[] symbols, string dateStr)
         {
             // Arrange
-            var apiClient = new MarketstackApi(_fixture.Configuration["api_key"]!);
+            var apiClient = new MarketstackApi(_fixture.Configuration["api_key:marketstack"]!);
             var date = DateTime.Parse(dateStr);
 
             // Act
@@ -48,7 +48,7 @@ namespace ApiClient.Test.Marketstack.Integration
 
             // Arrange
 #pragma warning disable CS0162 // Unreachable code detected
-            var apiClient = new MarketstackApi(_fixture.Configuration["api_key"]!);
+            var apiClient = new MarketstackApi(_fixture.Configuration["api_key:marketstack"]!);
             var date = DateTime.Parse(dateStr);
 
             // Act

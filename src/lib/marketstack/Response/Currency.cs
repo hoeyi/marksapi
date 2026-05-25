@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -12,25 +12,25 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Three-letter currency code.
         /// </summary>
-        [JsonProperty("code")]
+        [JsonPropertyName("code")]
         public string Code { get; set; } = string.Empty;
 
         /// <summary>
         /// Currency name.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Currency symbol.
         /// </summary>
-        [JsonProperty("symbol")]
+        [JsonPropertyName("symbol")]
         public string Symbol { get; set; } = string.Empty;
 
         /// <summary>
         /// Native currency symbol.
         /// </summary>
-        [JsonProperty("symbol_native")]
+        [JsonPropertyName("symbol_native")]
         public string SymbolNative { get; set; } = string.Empty;
     }
 }

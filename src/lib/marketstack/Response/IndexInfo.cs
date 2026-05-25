@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MarketStackApi
 {
@@ -12,61 +12,61 @@ namespace MarketStackApi
         /// <summary>
         /// Benchmark name of the market index.
         /// </summary>
-        [JsonProperty("benchmark")]
+        [JsonPropertyName("benchmark")]
         public string Benchmark { get; set; } = string.Empty;
 
         /// <summary>
         /// Region of the index.
         /// </summary>
-        [JsonProperty("region")]
+        [JsonPropertyName("region")]
         public string Region { get; set; } = string.Empty;
 
         /// <summary>
         /// Country of the index.
         /// </summary>
-        [JsonProperty("country")]
+        [JsonPropertyName("country")]
         public string Country { get; set; } = string.Empty;
 
         /// <summary>
         /// Current index price.
         /// </summary>
-        [JsonProperty("price")]
+        [JsonPropertyName("price")]
         public string Price { get; set; } = string.Empty;
 
         /// <summary>
         /// Absolute day change.
         /// </summary>
-        [JsonProperty("price_change_day")]
+        [JsonPropertyName("price_change_day")]
         public string PriceChangeDay { get; set; } = string.Empty;
 
         /// <summary>
         /// Day change in percent.
         /// </summary>
-        [JsonProperty("percentage_day")]
+        [JsonPropertyName("percentage_day")]
         public string PercentageDay { get; set; } = string.Empty;
 
         /// <summary>
         /// Week change in percent.
         /// </summary>
-        [JsonProperty("percentage_week")]
+        [JsonPropertyName("percentage_week")]
         public string PercentageWeek { get; set; } = string.Empty;
 
         /// <summary>
         /// Month change in percent.
         /// </summary>
-        [JsonProperty("percentage_month")]
+        [JsonPropertyName("percentage_month")]
         public string PercentageMonth { get; set; } = string.Empty;
 
         /// <summary>
         /// Year change in percent.
         /// </summary>
-        [JsonProperty("percentage_year")]
+        [JsonPropertyName("percentage_year")]
         public string PercentageYear { get; set; } = string.Empty;
 
         /// <summary>
         /// Date of the quote.
         /// </summary>
-        [JsonProperty("date")]
+        [JsonPropertyName("date")]
         public string Date { get; set; } = string.Empty;
     }
 }

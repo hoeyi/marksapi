@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -12,115 +12,115 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Ticker symbol.
         /// </summary>
-        [JsonProperty("symbol")]
+        [JsonPropertyName("symbol")]
         public string Symbol { get; set; } = string.Empty;
 
         /// <summary>
         /// Company name.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// MIC of the exchange.
         /// </summary>
-        [JsonProperty("exchange")]
+        [JsonPropertyName("exchange")]
         public string Exchange { get; set; } = string.Empty;
 
         /// <summary>
         /// Human-friendly exchange code (for example NASDAQ).
         /// </summary>
-        [JsonProperty("exchange_code")]
+        [JsonPropertyName("exchange_code")]
         public string ExchangeCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Asset class.
         /// </summary>
-        [JsonProperty("asset_type")]
+        [JsonPropertyName("asset_type")]
         public string AssetType { get; set; } = string.Empty;
 
         /// <summary>
         /// Price currency (ISO code in lower case).
         /// </summary>
-        [JsonProperty("price_currency")]
+        [JsonPropertyName("price_currency")]
         public string PriceCurrency { get; set; } = string.Empty;
 
         /// <summary>
         /// Timestamp of the bar in ISO8601 with timezone.
         /// </summary>      
-        [JsonProperty("date")]
+        [JsonPropertyName("date")]
         public string Date { get; set; } = string.Empty;
 
         /// <summary>
         /// Closing price of the session.
         /// </summary>  
-        [JsonProperty("close")]
+        [JsonPropertyName("close")]
         public double Close { get; set; }
 
         /// <summary>
         /// Opening price for the trading session.
         /// </summary>
-        [JsonProperty("open")]
+        [JsonPropertyName("open")]
         public double Open { get; set; }
 
         /// <summary>
         /// Highest price of the session.
         /// </summary>
-        [JsonProperty("high")]
+        [JsonPropertyName("high")]
         public double High { get; set; }
 
         /// <summary>
         /// Lowest price of the session.
         /// </summary>          
-        [JsonProperty("low")]
+        [JsonPropertyName("low")]
         public double Low { get; set; }
 
         /// <summary>
         /// Traded volume during the session.
         /// </summary>  
-        [JsonProperty("volume")]
+        [JsonPropertyName("volume")]
         public long Volume { get; set; }
 
         /// <summary>
         /// Close price adjusted for corporate actions.
         /// </summary>  
-        [JsonProperty("adj_close")]
+        [JsonPropertyName("adj_close")]
         public double AdjClose { get; set; }
 
         /// <summary>
         /// Open price adjusted for corporate actions.
         /// </summary>  
-        [JsonProperty("adj_open")]
+        [JsonPropertyName("adj_open")]
         public double AdjOpen { get; set; }
 
         /// <summary>
         /// High price adjusted for corporate actions.
         /// </summary>  
-        [JsonProperty("adj_high")]
+        [JsonPropertyName("adj_high")]
         public double AdjHigh { get; set; }
 
         /// <summary>
         /// Low price adjusted for corporate actions.
         /// </summary>  
-        [JsonProperty("adj_low")]
+        [JsonPropertyName("adj_low")]
         public double AdjLow { get; set; }
 
         /// <summary>
         /// Volume adjusted for corporate actions.
         /// </summary>  
-        [JsonProperty("adj_volume")]
+        [JsonPropertyName("adj_volume")]
         public long AdjVolume { get; set; }
 
         /// <summary>
         /// Cumulative stock split factor applied for the date.
         /// </summary>  
-        [JsonProperty("split_factor")]
+        [JsonPropertyName("split_factor")]
         public double SplitFactor { get; set; }
 
         /// <summary>
         /// Dividend amount per share for the date.
         /// </summary>  
-        [JsonProperty("dividend")]
+        [JsonPropertyName("dividend")]
         public double Dividend { get; set; }
     }    
 

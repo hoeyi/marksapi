@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -12,7 +12,7 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Country supported for bonds.
         /// </summary>
-        [JsonProperty("country")]
+        [JsonPropertyName("country")]
         public string Country { get; set; } = string.Empty;
     }
 }

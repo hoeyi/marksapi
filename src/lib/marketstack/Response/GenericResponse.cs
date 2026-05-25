@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -12,13 +12,13 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Gets or sets response <typeparamref name="T"/> data.
         /// </summary>
-        [JsonProperty("data")]
+        [JsonPropertyName("data")]
         public T[] Data { get; set; } = default!;
 
         /// <summary>
         /// Gets or sets the response pagination data.
         /// </summary>
-        [JsonProperty("pagination")]
+        [JsonPropertyName("pagination")]
         public Pagination Pagination { get; set; } = default!;
     }
 

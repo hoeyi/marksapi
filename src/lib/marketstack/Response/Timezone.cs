@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -12,19 +12,19 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// IANA timezone name.
         /// </summary>
-        [JsonProperty("timezone")]
+        [JsonPropertyName("timezone")]
         public string Zone { get; set; } = string.Empty;
 
         /// <summary>
         /// Standard time abbreviation.
         /// </summary>
-        [JsonProperty("abbr_dst")]
+        [JsonPropertyName("abbr_dst")]
         public string Abbreviation { get; set; } = string.Empty;
 
         /// <summary>
         /// Daylight saving time abbreviation.
         /// </summary>
-        [JsonProperty("abbr_dst")]
+        [JsonPropertyName("abbr_dst")]
         public double AbbreviationDST { get; set ; }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -13,19 +13,19 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Ticker symbol the split applies to.
         /// </summary>
-        [JsonProperty("symbol")]
+        [JsonPropertyName("symbol")]
         public string Symbol { get; set; } = string.Empty;
 
         /// <summary>
         /// Date of the split.
         /// </summary>
-        [JsonProperty("date")]
+        [JsonPropertyName("date")]
         public DateTime Date { get; set; }
 
         /// <summary>
         /// Split ratio applied on the date.
         /// </summary>
-        [JsonProperty("split_factor")]
+        [JsonPropertyName("split_factor")]
         public double SplitFactor { get; set ; }
     }
 }

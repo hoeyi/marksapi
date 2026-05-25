@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MarketStackApi
 {
@@ -12,55 +12,55 @@ namespace MarketStackApi
         /// <summary>
         /// Region where the bond is supported.
         /// </summary>
-        [JsonProperty("region")]
+        [JsonPropertyName("region")]
         public string Region { get; set; } = string.Empty;
 
         /// <summary>
         /// Country where the bond is supported.
         /// </summary>
-        [JsonProperty("country")]
+        [JsonPropertyName("country")]
         public string Country { get; set; } = string.Empty;
 
         /// <summary>
         /// Bond tenor/type (for example 10Y).
         /// </summary>
-        [JsonProperty("type")]
+        [JsonPropertyName("type")]
         public string Type { get; set; } = string.Empty;
 
         /// <summary>
         /// Current bond yield.
         /// </summary>
-        [JsonProperty("yield")]
+        [JsonPropertyName("yield")]
         public string Yield { get; set; } = string.Empty;
 
         /// <summary>
         /// Price change day-over-day.
         /// </summary>
-        [JsonProperty("price_change_day")]
+        [JsonPropertyName("price_change_day")]
         public string PriceChangeDay { get; set; } = string.Empty;
 
         /// <summary>
         /// Weekly change percentage.
         /// </summary>
-        [JsonProperty("percentage_week")]
+        [JsonPropertyName("percentage_week")]
         public string PercentageWeek { get; set; } = string.Empty;
 
         /// <summary>
         /// Monthly change percentage.
         /// </summary>
-        [JsonProperty("percentage_month")]
+        [JsonPropertyName("percentage_month")]
         public string PercentageMonth { get; set; } = string.Empty;
 
         /// <summary>
         /// Yearly change percentage.
         /// </summary>
-        [JsonProperty("percentage_year")]
+        [JsonPropertyName("percentage_year")]
         public string PercentageYear { get; set; } = string.Empty;
 
         /// <summary>
         /// Quote date.
         /// </summary>
-        [JsonProperty("date")]
+        [JsonPropertyName("date")]
         public string Date { get; set; } = string.Empty;
     }
 }

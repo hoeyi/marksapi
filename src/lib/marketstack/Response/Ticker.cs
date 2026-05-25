@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -12,37 +12,37 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Company or instrument name.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Ticker symbol.
         /// </summary>
-        [JsonProperty("symbol")]
+        [JsonPropertyName("symbol")]
         public string Symbol { get; set; } = string.Empty;
 
         /// <summary>
         /// Indicates if intraday data is available.
         /// </summary>
-        [JsonProperty("has_intraday")]
+        [JsonPropertyName("has_intraday")]
         public bool HasIntraday { get; set; }
 
         /// <summary>
         /// Ex-dividend date.
         /// </summary>
-        [JsonProperty("has_eod")]
+        [JsonPropertyName("has_eod")]
         public bool HasEod { get; set; }
 
         /// <summary>
         /// Country of the ticker.
         /// </summary>
-        [JsonProperty("country")]
+        [JsonPropertyName("country")]
         public string? Country { get; set ; }
 
         /// <summary>
         /// List of exchanges the ticker is listed on.
         /// </summary>
-        [JsonProperty("stock_exchanges")]
+        [JsonPropertyName("stock_exchanges")]
         public TickerExchange[] Exchanges { get; set; } = [];
     }
 
@@ -55,43 +55,43 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Exchange name.
         /// </summary>
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
         /// Exchange acronym.
         /// </summary>
-        [JsonProperty("acronym")]
+        [JsonPropertyName("acronym")]
         public string Acronym { get; set; } = string.Empty;
 
         /// <summary>
         /// MIC identification of the exchange.
         /// </summary>
-        [JsonProperty("mic")]
+        [JsonPropertyName("mic")]
         public string MIC { get; set; } = string.Empty;
 
         /// <summary>
         /// Exchange country.
         /// </summary>
-        [JsonProperty("country")]
+        [JsonPropertyName("country")]
         public string? Country { get; set; }
 
         /// <summary>
         /// Three-letter country code.
         /// </summary>
-        [JsonProperty("country_code")]
+        [JsonPropertyName("country_code")]
         public string CountryCode { get; set; } = string.Empty;
 
         /// <summary>
         /// Exchange city.
         /// </summary>
-        [JsonProperty("city")]
+        [JsonPropertyName("city")]
         public string City { get; set; } = string.Empty;
 
         /// <summary>
         /// Exchange website URL.
         /// </summary>
-        [JsonProperty("website")]
+        [JsonPropertyName("website")]
         public string Website { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,24 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+
+namespace ApiClient.Massive.Response;
+
+/// <summary>
+/// Represents the base response attributes, namely unique identifier and request status.
+/// </summary>
+[ExcludeFromCodeCoverage]
+public class ResponseBase
+{
+        /// <summary>
+        /// A request id assigned by the server.
+        /// </summary>
+        [JsonPropertyName("request_id")]
+        public required string RequestId { get; set; }
+
+        /// <summary>
+        /// The status of this request's response.
+        /// </summary>
+        [JsonPropertyName("status")]
+        public required string Status { get; set; }
+}

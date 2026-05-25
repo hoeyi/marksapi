@@ -1,21 +1,21 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
     [ExcludeFromCodeCoverage]
     public record Pagination
     {
-        [JsonProperty("limit")]
+        [JsonPropertyName("limit")]
         public int Limit { get; set; }
 
-        [JsonProperty("offset")]
+        [JsonPropertyName("offset")]
         public int Offset { get; set; }
 
-        [JsonProperty("count")]
+        [JsonPropertyName("count")]
         public int Count { get; set; }
 
-        [JsonProperty("total")]
+        [JsonPropertyName("total")]
         public int Total { get; set; }
     }
 }

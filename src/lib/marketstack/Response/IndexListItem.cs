@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -12,7 +12,7 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Benchmark code of the market index.
         /// </summary>
-        [JsonProperty("benchmark")]
+        [JsonPropertyName("benchmark")]
         public string Benchmark { get; set; } = string.Empty;
     }
 }

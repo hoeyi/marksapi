@@ -1,5 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -12,19 +12,19 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Event date.
         /// </summary>
-        [JsonProperty("date")]
+        [JsonPropertyName("date")]
         public virtual string Date { get; set; } = string.Empty;
 
         /// <summary>
         /// Timezone type.
         /// </summary>
-        [JsonProperty("timezone_type")]
+        [JsonPropertyName("timezone_type")]
         public string TimezoneType { get; set; } = string.Empty;
 
         /// <summary>
         /// Timezone offset.
         /// </summary>
-        [JsonProperty("timezone")]
+        [JsonPropertyName("timezone")]
         public string Timezone { get; set ; } = string.Empty;
     }
 }

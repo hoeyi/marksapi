@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace ApiClient.Marketstack
 {
@@ -13,19 +13,19 @@ namespace ApiClient.Marketstack
         /// <summary>
         /// Ticker symbol the dividend applies to.
         /// </summary>
-        [JsonProperty("symbol")]
+        [JsonPropertyName("symbol")]
         public string Symbol { get; set; } = string.Empty;
 
         /// <summary>
         /// Ex-dividend date.
         /// </summary>
-        [JsonProperty("date")]
+        [JsonPropertyName("date")]
         public DateTime Date { get; set; }
 
         /// <summary>
         /// Dividend amount per share.
         /// </summary>
-        [JsonProperty("dividend")]
+        [JsonPropertyName("dividend")]
         public double Dividend { get; set ; }
     }
 }
