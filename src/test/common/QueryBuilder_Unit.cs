@@ -19,7 +19,7 @@ namespace ApiClient.Test.Unit
             queryBuilder.AddParameter(paramKey, paramValue);
             
             // Assert
-            Assert.True(queryBuilder.Parameters.Count == 1);
+            Assert.Single(queryBuilder.Parameters);
             Assert.True(queryBuilder.Parameters[paramKey] == paramValue);
         }
         
@@ -35,7 +35,7 @@ namespace ApiClient.Test.Unit
             queryBuilder.AddParameter(paramKey, paramValue);
             
             // Assert
-            Assert.True(queryBuilder.Parameters.Count == 1);
+            Assert.Single(queryBuilder.Parameters);
             Assert.True(queryBuilder.Parameters[paramKey] == paramValue);
         }
 
@@ -131,7 +131,21 @@ namespace ApiClient.Test.Unit
             var queryString = queryBuilder.ToString();            
             
             // Assert
-            Assert.True(queryString == "?");
+            Assert.Equal("?", queryString);
+        }
+
+        [Fact]
+        public void ConvertEndpoint_ToStringPattern()
+        {
+            // Arrange
+            string pattern = "/api/{param1}/path/{param2}";
+            string expected = "/api/{0}/path{1}";
+
+            // Act
+            string observed = QueryBuilder.ConvertEndpointToStringPattern(pattern);
+            
+            // Assert
+            Assert.Equal(expected, observed);
         }
     }
 }

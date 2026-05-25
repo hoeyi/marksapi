@@ -3,6 +3,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace ApiClient.Services
 {
@@ -71,6 +73,25 @@ namespace ApiClient.Services
             queryString.Append(string.Join("&", _params.Select(kv => $"{kv.Key}={kv.Value}")));
 
             return queryString.ToString();
+        }
+
+        public static string ConvertEndpointToStringPattern(string endpoint)
+        {
+            string pattern = "{(.*?)}";
+            Regex r = new(pattern, RegexOptions.IgnoreCase);
+
+            Match m = r.Match(endpoint);
+            int matchCount = 0;
+            foreach(Group g in m.Groups)
+            {
+                matchCount += 1;
+                for(int j = 0; j < g.Captures.Count; j++)
+                {
+                    Console.WriteLine($"Index: {g.Captures[j].Index}; Length: {g.Captures[j].Length}");
+                }
+            }
+
+            return string.Empty;
         }
     }
 }
