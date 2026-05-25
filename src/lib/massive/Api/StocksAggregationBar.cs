@@ -15,8 +15,9 @@ namespace ApiClient.Massive
     /// </summary>
     public partial class MassiveApi
     {
+        private string _endPointFormat = Endpoint.StocksCustomBars;
         public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
-            string ticker, int multiplier, TimeSpan timeSpan, DateTime from, DateTime to)
+            string ticker, int multiplier, BarTimespan timeSpan, DateTime from, DateTime to)
         {
             var queryBuilder = GetQueryBuilder();
 
