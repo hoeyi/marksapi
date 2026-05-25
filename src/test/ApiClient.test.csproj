@@ -34,6 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="../lib/common/ApiClient.Common.csproj" />
     <ProjectReference Include="../lib/marketstack/ApiClient.marketstack.csproj" />
+    <ProjectReference Include="../lib/massive/ApiClient.massive.csproj" />
   </ItemGroup>
 
   <ItemGroup>
