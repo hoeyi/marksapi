@@ -39,33 +39,5 @@ namespace ApiClient.Test.Marketstack.Integration
 
             Debug.WriteLine(result.Data.First());
         }
-
-        [Theory]
-        [InlineData(new[]{"AAPL", "MSFT"}, "2026-01-05")]
-        public async Task GetIntradayDataAsync_ReturnSuccessResponse(string[] symbols, string dateStr)
-        {
-            throw new NotImplementedException("Intraday endpoint is a paid tier.");
-
-            // Arrange
-#pragma warning disable CS0162 // Unreachable code detected
-            var apiClient = new MarketstackApi(_fixture.Configuration["api_key:marketstack"]!);
-            var date = DateTime.Parse(dateStr);
-
-            // Act
-            var result = await apiClient.GetIntradayResponseAsync(symbols, date);
-
-            // Assert
-            Assert.IsType<IntradayResponse>(result);
-            Assert.IsType<IntradayBar[]>(result.Data);
-            Assert.IsType<Pagination>(result.Pagination);
-            Assert.True(result.Data.Length > 0);
-
-            // Print result            
-            _fixture.Logger.LogInformation("{@pagination}", result.Pagination);
-            _fixture.Logger.LogInformation("{@data}", result.Data);
-
-            Debug.WriteLine(result.Data.First());
-#pragma warning restore CS0162 // Unreachable code detected
-        }
     }
 }
