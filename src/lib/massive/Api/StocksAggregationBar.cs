@@ -38,6 +38,8 @@ namespace ApiClient.Massive
                                     $"{to:yyyy-MM-dd}");
 
             var queryBuilder = GetQueryBuilder();
+            queryBuilder.AddParameter("limit", $"{limit}");
+            
             var response = await GetResponseAsync<AggregateBarResponse>(queryBuilder, endpoint);
             
             return response;
