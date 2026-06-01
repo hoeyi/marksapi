@@ -12,14 +12,12 @@ namespace ApiClient.Massive
     /// <summary>
     /// Service class for handling sending and receiving requests to Marketstack API.
     /// </summary>
-    public partial class MassiveApi
+    public partial class MassiveApi : Services.ApiClient
     {
         private const string _baseUrl = "https://api.massive.com";
         private readonly Uri _baseUri = new(_baseUrl);
         private readonly short _maximumDateRangeInDays = 30;
-        private readonly HttpClient _httpClient;
         private readonly ILogger? _logger;
-        private readonly KeyValuePair<string, string> _requiredParams;
 
         public MassiveApi(string apiKey, ILogger? logger = null)
             : this(new HttpClient(), apiKey, logger)
@@ -27,13 +25,19 @@ namespace ApiClient.Massive
         }
 
         internal MassiveApi(
-            HttpClient httpClient, string apiKey, ILogger? logger = null)
+            HttpClient httpClient, 
+            string apiKey, 
+            ILogger? logger = null)
+            : base(
+                baseUrl: _baseUrl, 
+                httpClient: httpClient
+            )
         {
+            ArgumentNullException.ThrowIfNull(httpClient);
             ArgumentException.ThrowIfNullOrEmpty(apiKey);
             ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
-            
-            _requiredParams = new("apiKey", apiKey);
-            _httpClient = httpClient;
+
+            RequiredParams.Add("apiKey", apiKey);
             _logger = logger;
         }
 
@@ -56,7 +60,7 @@ namespace ApiClient.Massive
 
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
+                HttpResponseMessage response = await HttpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
@@ -108,7 +112,7 @@ namespace ApiClient.Massive
         /// Gets a <see cref="QueryBuilder"/> instance with required parameters initialized.
         /// </summary>
         /// <returns>A <see cref="QueryBuilder"/> configured for required parameters.</returns>
-        private QueryBuilder GetQueryBuilder() => new(initParameters: _requiredParams);
+        private QueryBuilder GetQueryBuilder() => new(initParameters: RequiredParams);
 
         /// <summary>
         /// Collection of the relative endpoints for the api as stirng patterns.

@@ -28,7 +28,7 @@ namespace ApiClient.Services
         /// Creates a new instance of <see cref="QueryBuilder"/>.
         /// </summary>
         /// <param name="initParameters">The initial parameter key-value pairs to include.</param>
-        public QueryBuilder(params KeyValuePair<string, string>[] initParameters)
+        public QueryBuilder(Dictionary<string, string> initParameters)
         {
             foreach(var kv in initParameters ?? [])
                 AddParameter(key: kv.Key, value: kv.Value);

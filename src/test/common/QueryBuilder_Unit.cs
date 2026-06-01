@@ -73,8 +73,8 @@ namespace ApiClient.Test.Unit
         public void RemoveParameter_ParameterExists_IsSuccess()
         {
             // Arrange
-            var initParams = new Dictionary<string, string>(){{ "param", "value" }}
-                                .ToArray();
+            var initParams = new Dictionary<string, string>(){{ "param", "value" }};
+
             var queryBuilder = new QueryBuilder(initParams);
             if(queryBuilder.Parameters.Count != 1) 
                 throw new InvalidOperationException("Improper test arrangement.");
@@ -91,8 +91,8 @@ namespace ApiClient.Test.Unit
         public void RemoveParameter_ParameterDoesNotExist_DoesNothing()
         {
             // Arrange
-            var initParams = new Dictionary<string, string>(){{ "param", "value" }}
-                                .ToArray();
+            var initParams = new Dictionary<string, string>(){{ "param", "value" }};
+            
             var queryBuilder = new QueryBuilder(initParams);
             if(queryBuilder.Parameters.Count != 1) 
                 throw new InvalidOperationException("Improper test arrangement.");
