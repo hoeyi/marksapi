@@ -1,14 +1,7 @@
-using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using ApiClient.Marketstack;
 using ApiClient.Massive;
 using ApiClient.Services;
 using Castle.Core.Logging;
 using Moq;
-using Moq.Protected;
-using Newtonsoft.Json;
 
 namespace ApiClient.Test.Massive.Unit
 {

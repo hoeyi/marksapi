@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using ApiClient.Services;
 
 namespace ApiClient.Test.Unit

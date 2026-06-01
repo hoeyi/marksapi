@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using ApiClient.Services;
 using ApiClient.Resources;
-using System.Collections.Generic;
 
 namespace ApiClient.Massive
 {

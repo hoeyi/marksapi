@@ -1,11 +1,9 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using ApiClient.Services;
 using ApiClient.Resources;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace ApiClient.Marketstack
