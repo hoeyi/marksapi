@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using ApiClient.Massive.Response.Generic;
 
-namespace ApiClient.Massive.Response
+namespace ApiClient.Massive.Response.Stocks
 {
     /// <summary>
     /// Represents the complete response data from a stock aggregate endpoint.
@@ -14,7 +14,7 @@ namespace ApiClient.Massive.Response
         /// The exchange symbol that this item is traded under.
         /// </summary>
         [JsonPropertyName("ticker")]
-        public string Ticker { get; set; } = string.Empty;
+        public required string Ticker { get; set; }
 
         /// <summary>
         /// Whether or not this response was adjusted for splits.

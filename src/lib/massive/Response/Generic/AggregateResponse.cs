@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace ApiClient.Massive.Response.Generic
 {
     /// <summary>
-    /// Represents the complete response data from a stock aggregate endpoint.
+    /// Represents the complete response data from a generic aggregate endpoint.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class AggregateResponse<T> : ResponseBase

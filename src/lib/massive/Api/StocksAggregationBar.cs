@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using ApiClient.Massive.Response;
+using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 
 namespace ApiClient.Massive
@@ -20,7 +21,11 @@ namespace ApiClient.Massive
         /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 50).</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
         public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
-            string ticker, int multiplier, BarTimespanEnum timeSpan, DateTime from, DateTime to, int limit = 50)
+            string ticker, 
+            int multiplier, 
+            BarTimespanEnum timeSpan, 
+            DateTime from, 
+            DateTime to, int limit = 50)
         {
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(limit, 0, nameof(limit));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(limit, 1000, nameof(limit));
