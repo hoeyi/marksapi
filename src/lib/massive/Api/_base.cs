@@ -124,6 +124,14 @@ namespace ApiClient.Massive
 
             public const string OptionsPreviousDayBar = "/v2/aggs/ticker/{optionsTicker}/prev";
 
+            public const string StocksAllTickers = "/v3/reference/tickers";
+
+            public const string StocksTickerOverview = "/v3/reference/tickers/{ticker}";
+
+            public const string StocksTickerTypes = "/v3/reference/tickers/types";
+
+            public const string StocksRelatedTickers = "/v1/related-companies/{ticker}";
+
             public const string StocksCustomBars = "/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}";
 
             public const string StocksDailySummary = "/v2/aggs/grouped/locale/us/market/stocks/{date}";
