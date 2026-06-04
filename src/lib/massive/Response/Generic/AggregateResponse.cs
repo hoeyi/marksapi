@@ -18,12 +18,6 @@ namespace ApiClient.Massive.Response.Generic
         public string? NextUrl { get; set; }
 
         /// <summary>
-        /// The total number of results for this request.
-        /// </summary>
-        [JsonPropertyName("resultsCount")]
-        public int ResultsCount { get; set; }
-
-        /// <summary>
         /// An array of results containing the requested data.
         /// </summary>
         [JsonPropertyName("results")]

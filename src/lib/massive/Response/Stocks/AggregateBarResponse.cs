@@ -27,5 +27,11 @@ namespace ApiClient.Massive.Response.Stocks
         /// </summary>
         [JsonPropertyName("queryCount")]
         public int QueryCount { get; set; }
+
+        /// <summary>
+        /// The total number of results for this request.
+        /// </summary>
+        [JsonPropertyName("resultsCount")]
+        public int ResultsCount { get; set; }
     }
 }

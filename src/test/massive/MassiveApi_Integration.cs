@@ -1,5 +1,6 @@
 using ApiClient.Massive;
 using ApiClient.Massive.Response;
+using ApiClient.Massive.Response.Stocks;
 using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Test.Massive.Integration
@@ -34,6 +35,26 @@ namespace ApiClient.Test.Massive.Integration
             Assert.Multiple(
                 () => Assert.IsType<AggregateBarResponse>(responsResult), 
                 () => Assert.Equal(3, responsResult.ResultsCount));
+
+            // Print result            
+            _fixture.Logger.LogDebug("{@responsResult}", responsResult);
+        }
+
+        [Theory]
+        [InlineData("AAPL")]
+        public async Task GetStocksTickerAsync_SingleParameter_Ticker_ReturnSuccessResponse(
+            string ticker)
+        {
+            // Arrange
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
+
+            // Act
+            var responsResult = await apiClient.GetStocksTickerAsync(ticker);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<TickerAggregateResponse>(responsResult), 
+                () => Assert.Equal(1, responsResult.Count));
 
             // Print result            
             _fixture.Logger.LogDebug("{@responsResult}", responsResult);

@@ -18,14 +18,14 @@ namespace ApiClient.Massive
         /// <param name="timeSpan">Size of the time window.</param>
         /// <param name="from">Start of the time window.</param>
         /// <param name="to">End of the time window.</param>
-        /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 50).</param>
+        /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
         public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
             string ticker, 
             int multiplier, 
             BarTimespanEnum timeSpan, 
             DateTime from, 
-            DateTime to, int limit = 50)
+            DateTime to, int limit = 100)
         {
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(limit, 0, nameof(limit));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(limit, 1000, nameof(limit));
