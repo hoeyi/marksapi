@@ -6,7 +6,6 @@ using ApiClient.Services;
 
 namespace ApiClient.Massive
 {
-    /// <inheritdoc/>
     public partial class MassiveApi
     {
 

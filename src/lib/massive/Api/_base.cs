@@ -9,7 +9,7 @@ using ApiClient.Resources;
 namespace ApiClient.Massive
 {
     /// <summary>
-    /// Service class for handling sending and receiving requests to Marketstack API.
+    /// Service class for handling sending and receiving requests to Massive API.
     /// </summary>
     public partial class MassiveApi : Services.ApiClient
     {
@@ -120,9 +120,11 @@ namespace ApiClient.Massive
         {
             public const string OptionsCustomBars = "/v2/aggs/ticker/{optionsTicker}/range/{multiplier}/{timespan}/{from}/{to}";
 
-            public const string OptionsTickerSummary = "/v1/open-close/{optionsTicker}/{date}";
+            // TODO: Impement endpoint
+            // public const string OptionsTickerSummary = "/v1/open-close/{optionsTicker}/{date}";
 
-            public const string OptionsPreviousDayBar = "/v2/aggs/ticker/{optionsTicker}/prev";
+            // TODO: Impement endpoint
+            // public const string OptionsPreviousDayBar = "/v2/aggs/ticker/{optionsTicker}/prev";
 
             public const string StocksAllTickers = "/v3/reference/tickers";
 
@@ -130,15 +132,20 @@ namespace ApiClient.Massive
 
             public const string StocksTickerTypes = "/v3/reference/tickers/types";
 
-            public const string StocksRelatedTickers = "/v1/related-companies/{ticker}";
-
+            // TODO: Impement endpoint
+            // public const string StocksRelatedTickers = "/v1/related-companies/{ticker}";
             public const string StocksCustomBars = "/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}";
 
-            public const string StocksDailySummary = "/v2/aggs/grouped/locale/us/market/stocks/{date}";
+            // TODO: Impement endpoint
+            // public const string StocksDailySummary = "/v2/aggs/grouped/locale/us/market/stocks/{date}";
 
-            public const string StocksTickerSummary = "/v1/open-close/{stocksTicker}/{date}";
+            // TODO: Impement endpoint
+            // public const string StocksTickerSummary = "/v1/open-close/{stocksTicker}/{date}";
 
-            public const string StocksPreviousDayBar = "/v2/aggs/ticker/{stocksTicker}/prev";
+            // TODO: Impement endpoint
+            // public const string StocksPreviousDayBar = "/v2/aggs/ticker/{stocksTicker}/prev";
+
+            public const string StocksFundamentalsShortVolume = "/stocks/v1/short-volume";
         }
     }
 }
