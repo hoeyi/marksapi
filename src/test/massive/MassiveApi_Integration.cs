@@ -17,7 +17,7 @@ namespace ApiClient.Test.Massive.Integration
 
         [Theory]
         [InlineData("AAPL", 1, "Day", "2025-11-25", "2025-11-28", 5)]
-        public async Task GetAggregateBarResponseAsync_ReturnSuccessResponse(
+        public async Task GetStocksAggregateBarResponseAsync_ReturnSuccessResponse(
             string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit)
         {
             // Arrange
@@ -29,15 +29,48 @@ namespace ApiClient.Test.Massive.Integration
                     $"Failed to parse test method arguments. Name: {nameof(timeSpan)}");
 
             // Act
-            var responsResult = await apiClient.GetAggregateBarResponseAsync(ticker, multiplier, result, fromDate, toDate, limit);
+            var responseResult = await apiClient.GetStocksAggregateBarResponseAsync(
+                ticker, multiplier, result, fromDate, toDate, limit);
 
             // Assert
             Assert.Multiple(
-                () => Assert.IsType<AggregateBarResponse>(responsResult), 
-                () => Assert.Equal(3, responsResult.ResultsCount));
+                () => Assert.IsType<AggregateBarResponse>(responseResult), 
+                () => Assert.Equal(3, responseResult.ResultsCount));
 
             // Print result            
-            _fixture.Logger.LogDebug("{@responsResult}", responsResult);
+            _fixture.Logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetStocksAggregateBarResponseAsync_ReturnSuccessResponse), 
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("SPY251219C00650000", 1, "Day", "2025-11-25", "2025-11-28", 5)]
+        public async Task GetOptionsAggregateBarResponseAsync_ReturnSuccessResponse(
+            string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit)
+        {
+            // Arrange
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
+            var fromDate = DateTime.Parse(fromStr);
+            var toDate = DateTime.Parse(toStr);
+            if(!Enum.TryParse(timeSpan, out BarTimespanEnum result))
+                throw new ArgumentException(
+                    $"Failed to parse test method arguments. Name: {nameof(timeSpan)}");
+
+            // Act
+            var responseResult = await apiClient.GetOptionsAggregateBarResponseAsync(
+                ticker, multiplier, result, fromDate, toDate, limit);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<AggregateBarResponse>(responseResult), 
+                () => Assert.Equal(3, responseResult.ResultsCount));
+
+            // Print result            
+            _fixture.Logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetOptionsAggregateBarResponseAsync_ReturnSuccessResponse), 
+                responseResult);
         }
 
         [Theory]
@@ -49,15 +82,18 @@ namespace ApiClient.Test.Massive.Integration
             var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
 
             // Act
-            var responsResult = await apiClient.GetStocksAllTickersAsync(ticker);
+            var responseResult = await apiClient.GetStocksAllTickersAsync(ticker);
 
             // Assert
             Assert.Multiple(
-                () => Assert.IsType<AggregateTickerResponse>(responsResult), 
-                () => Assert.Equal(1, responsResult.Count));
+                () => Assert.IsType<AggregateTickerResponse>(responseResult), 
+                () => Assert.Equal(1, responseResult.Count));
 
             // Print result            
-            _fixture.Logger.LogDebug("{@responsResult}", responsResult);
+            _fixture.Logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetStocksAllTickerAsync_SingleParameter_Ticker_ReturnSuccessResponse), 
+                responseResult);
         }
 
         [Theory]
@@ -74,10 +110,16 @@ namespace ApiClient.Test.Massive.Integration
             // Assert
             Assert.Multiple(
                 () => Assert.IsType<TickerOverviewResponse>(responseResult),
-                () => Assert.NotNull(responseResult.TickerOverview),
-                () => Assert.NotNull(responseResult.TickerOverview!.Address),
-                () => Assert.NotNull(responseResult.TickerOverview!.Branding)
+                () => Assert.NotNull(responseResult.Results),
+                () => Assert.NotNull(responseResult.Results!.Address),
+                () => Assert.NotNull(responseResult.Results!.Branding)
             );
+
+            // Print result            
+            _fixture.Logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetTickerOverviewResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse), 
+                responseResult);
         }
 
         [Theory]
@@ -98,6 +140,12 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.IsType<ShortVolumeResponse>(responseResult),
                 () => Assert.NotEmpty(responseResult.Results)
             );
+
+            // Print result            
+            _fixture.Logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetShortVolumeResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse), 
+                responseResult);
         }
     }
 }

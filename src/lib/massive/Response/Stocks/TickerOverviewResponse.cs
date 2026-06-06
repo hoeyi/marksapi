@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using ApiClient.Massive.Response.Generic;
 
 namespace ApiClient.Massive.Response.Stocks;
@@ -11,6 +12,7 @@ public class TickerOverviewResponse : ResponseBase
     /// <summary>
     /// Gets or sets the overview object for this response.
     /// </summary>
-    public TickerOverview? TickerOverview { get; set; }
+    [JsonPropertyName("results")]
+    public TickerOverview? Results { get; set; }
 }
 

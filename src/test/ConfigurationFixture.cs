@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Formatting.Compact;
 
 namespace ApiClient.Test;
 
@@ -27,7 +28,7 @@ public class ConfigurationFixture : IDisposable
 
         Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
-                .WriteTo.File(".log", rollingInterval: RollingInterval.Day)
+                .WriteTo.File(new CompactJsonFormatter(), "log-.json", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
 
         var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);

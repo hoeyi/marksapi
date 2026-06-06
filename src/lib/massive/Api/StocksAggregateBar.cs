@@ -20,7 +20,7 @@ namespace ApiClient.Massive
         /// <param name="to">End of the time window.</param>
         /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
-        public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
+        public async Task<AggregateBarResponse> GetStocksAggregateBarResponseAsync(
             string ticker, 
             int multiplier, 
             BarTimespanEnum timeSpan, 

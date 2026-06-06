@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
 namespace ApiClient.Services
 {
+    [ExcludeFromCodeCoverage]
     /// <summary>
     /// Abstraction of common features for API clients.
     /// </summary>

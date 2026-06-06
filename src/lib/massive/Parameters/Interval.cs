@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ApiClient.Massive;
 
+[ExcludeFromCodeCoverage]
 /// <summary>
 /// Represents a mathematical interval for <typeparamref name="T"/> in single dimension.
 /// </summary>
