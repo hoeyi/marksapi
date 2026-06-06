@@ -6,16 +6,7 @@ namespace ApiClient.Massive;
 
 public partial class MassiveApi
 {
-    /// <summary>
-    /// Retrieve daily aggregated short sale volume data reported to FINRA from off-exchange trading 
-    /// venues and alternative trading systems (ATS) for a specified stock ticker.
-    /// </summary>
-    /// <param name="ticker">The primary ticker symbol for the stock.</param>
-    /// <param name="fromDate">The start date of trade activity.</param>
-    /// <param name="toDate">The end date of trade activity.</param>
-    /// <param name="shortVolumeRatio">Interval for filtering results.</param>
-    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 50000, Default = 10).</param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public async Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
         string ticker,
         DateTime fromDate,

@@ -7,17 +7,7 @@ namespace ApiClient.Massive;
 
 public partial class MassiveApi
 {
-    /// <summary>
-    /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
-    /// specified stock ticker over a custom date range and time interval in Eastern Time (ET).
-    /// </summary>
-    /// <param name="ticker">Case-sensitive ticker symbol.</param>
-    /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
-    /// <param name="timeSpan">Size of the time window.</param>
-    /// <param name="from">Start of the time window.</param>
-    /// <param name="to">End of the time window.</param>
-    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
-    /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
+    /// <inheritdoc/>
     public async Task<AggregateBarResponse> GetOptionsAggregateBarResponseAsync(
         string ticker, 
         int multiplier, 

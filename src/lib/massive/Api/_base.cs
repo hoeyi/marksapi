@@ -10,7 +10,7 @@ namespace ApiClient.Massive
     /// <summary>
     /// Service class for handling sending and receiving requests to Massive API.
     /// </summary>
-    public partial class MassiveApi : Services.ApiClient
+    public partial class MassiveApi : Services.ApiClient, IMassiveApi
     {
         private const string _baseUrl = "https://api.massive.com";
         private readonly Uri _baseUri = new(_baseUrl);
@@ -23,11 +23,11 @@ namespace ApiClient.Massive
         }
 
         internal MassiveApi(
-            HttpClient httpClient, 
-            string apiKey, 
+            HttpClient httpClient,
+            string apiKey,
             ILogger? logger = null)
             : base(
-                baseUrl: _baseUrl, 
+                baseUrl: _baseUrl,
                 httpClient: httpClient
             )
         {
@@ -62,15 +62,15 @@ namespace ApiClient.Massive
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
-                #if DEBUG
+#if DEBUG
 #pragma warning disable CA1873 // Avoid potentially expensive logging
                 _logger?.LogDebug("{responseBody}", responseBody);
 #pragma warning restore CA1873 // Avoid potentially expensive logging
-                #endif
+#endif
 
                 // Parse the JSON response. If the response is null thow invalid operation
                 T genericResponse = JsonConvert
-                    .DeserializeObject<T>(responseBody) ?? 
+                    .DeserializeObject<T>(responseBody) ??
                     throw new InvalidOperationException(message: LoggingTemplates.Error.InvalidOrEmptyResponse);
 
                 return genericResponse;
@@ -92,12 +92,12 @@ namespace ApiClient.Massive
         /// range measured in days is too long.</exception>
         internal bool ValidateDateRangeOrThrow(DateTime dateFrom, DateTime dateTo)
         {
-            if(dateFrom > dateTo)
+            if (dateFrom > dateTo)
             {
                 throw new ArgumentException(
                     $"Range invalid: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");
             }
-            if(dateTo.Subtract(dateFrom).Days > _maximumDateRangeInDays)
+            if (dateTo.Subtract(dateFrom).Days > _maximumDateRangeInDays)
             {
                 throw new ArgumentException(
                     $"Range too long: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");

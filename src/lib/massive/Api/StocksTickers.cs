@@ -8,23 +8,7 @@ namespace ApiClient.Massive
     public partial class MassiveApi
     {
 
-        /// <summary>
-        /// Submits queries to the endpoint <em>/v3/reference/tickers</em>.
-        /// </summary>
-        /// <param name="ticker">Filter by a ticker symbol. Defaults to empty string which queries all tickers.</param>
-        /// <param name="type">Filter by the type of the tickers. Defaults to empty string which queries all types.</param>
-        /// <param name="market">Filter by market type. By default all markets are included.</param>
-        /// <param name="exchange">Filter by the asset's primary exchange Market Identifier Code (MIC) according to ISO 10383. Defaults to empty string which queries all exchanges.</param>
-        /// <param name="cusip">Filter by the CUSIP code of the asset you want to search for.</param>
-        /// <param name="cik">Filter by the Central Index Key of the asset.</param>
-        /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
-        /// <param name="search">Filter for terms within the ticker and/or company name.</param>
-        /// <param name="active">Filter for active tickers only.</param>
-        /// <param name="asc">Sort the results by ascending order.</param>
-        /// <param name="sort">The field to sort by.</param>
-        /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
-        /// <returns>A <see cref="Task"/> containing a <see cref="AggregateTickerResponse"/>.</returns>
-        /// <exception cref="ArgumentException"><paramref name="limit"/> was not in the interval (0,1000].</exception>
+        /// <inheritdoc/>
         public async Task<AggregateTickerResponse> GetStocksAllTickersAsync(
             string? ticker = null, 
             TickerType? type = null,
@@ -84,12 +68,7 @@ namespace ApiClient.Massive
             return response;
         }
 
-        /// <summary>
-        /// Retrieve comprehensive details for a single ticker supported by Massive that is active as-of a given date
-        /// </summary>
-        /// <param name="ticker"></param>
-        /// <param name="date"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public async Task<TickerOverviewResponse> GetStocksTickerOverviewResponseAsync(
             string ticker,
             DateTime? date = null
