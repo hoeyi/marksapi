@@ -17,7 +17,7 @@ namespace ApiClient.Test.Massive.Integration
 
         [Theory]
         [InlineData("AAPL", 1, "Day", "2025-11-25", "2025-11-28", 5)]
-        public async Task GetEodDataAsync_ReturnSuccessResponse(
+        public async Task GetAggregateBarResponseAsync_ReturnSuccessResponse(
             string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit)
         {
             // Arrange
@@ -42,7 +42,7 @@ namespace ApiClient.Test.Massive.Integration
 
         [Theory]
         [InlineData("AAPL")]
-        public async Task GetStocksTickerAsync_SingleParameter_Ticker_ReturnSuccessResponse(
+        public async Task GetStocksAllTickerAsync_SingleParameter_Ticker_ReturnSuccessResponse(
             string ticker)
         {
             // Arrange
@@ -58,6 +58,27 @@ namespace ApiClient.Test.Massive.Integration
 
             // Print result            
             _fixture.Logger.LogDebug("{@responsResult}", responsResult);
+        }
+
+        [Theory]
+        [InlineData("AAPL")]
+        public async Task GetTickerOverviewResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse(
+            string ticker
+        )
+        {
+            // Arrange
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
+            
+            // Act
+            var responseResult = await apiClient.GetStocksTickerOverviewResponseAsync(ticker);
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<TickerOverviewResponse>(responseResult),
+                () => Assert.NotNull(responseResult.TickerOverview),
+                () => Assert.NotNull(responseResult.TickerOverview!.Address),
+                () => Assert.NotNull(responseResult.TickerOverview!.Branding)
+            );
         }
     }
 }

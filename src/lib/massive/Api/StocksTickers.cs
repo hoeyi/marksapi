@@ -92,7 +92,7 @@ namespace ApiClient.Massive
         /// <param name="ticker"></param>
         /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
+        public async Task<TickerOverviewResponse> GetStocksTickerOverviewResponseAsync(
             string ticker,
             DateTime? date = null
         )
