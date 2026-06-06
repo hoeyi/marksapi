@@ -4,7 +4,7 @@ using ApiClient.Massive.Response.Generic;
 
 namespace ApiClient.Massive.Response.Stocks;
 
-public class TickerAggregateResponse : AggregateResponse<Ticker>
+public class AggregateTickerResponse : CollectionResponse<Ticker>
 {
     /// <summary>
     /// The total number of results for this request.

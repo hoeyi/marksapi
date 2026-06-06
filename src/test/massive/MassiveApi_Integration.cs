@@ -49,11 +49,11 @@ namespace ApiClient.Test.Massive.Integration
             var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
 
             // Act
-            var responsResult = await apiClient.GetStocksTickerAsync(ticker);
+            var responsResult = await apiClient.GetStocksAllTickersAsync(ticker);
 
             // Assert
             Assert.Multiple(
-                () => Assert.IsType<TickerAggregateResponse>(responsResult), 
+                () => Assert.IsType<AggregateTickerResponse>(responsResult), 
                 () => Assert.Equal(1, responsResult.Count));
 
             // Print result            

@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
-namespace ApiClient.Massive.Response;
+namespace ApiClient.Massive.Response.Generic;
 
 /// <summary>
 /// Represents the base response attributes, namely unique identifier and request status.

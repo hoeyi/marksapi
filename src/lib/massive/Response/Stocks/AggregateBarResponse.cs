@@ -8,7 +8,7 @@ namespace ApiClient.Massive.Response.Stocks
     /// Represents the complete response data from a stock aggregate endpoint.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class AggregateBarResponse : AggregateResponse<AggregateBar>
+    public class AggregateBarResponse : CollectionResponse<AggregateBar>
     {
         /// <summary>
         /// The exchange symbol that this item is traded under.

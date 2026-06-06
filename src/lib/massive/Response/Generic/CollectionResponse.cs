@@ -8,7 +8,7 @@ namespace ApiClient.Massive.Response.Generic
     /// Represents the complete response data from a generic aggregate endpoint.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class AggregateResponse<T> : ResponseBase
+    public class CollectionResponse<T> : ResponseBase
         where T : class
     {
         /// <summary>
