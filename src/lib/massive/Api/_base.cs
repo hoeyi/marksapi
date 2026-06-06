@@ -63,6 +63,12 @@ namespace ApiClient.Massive
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
+                #if DEBUG
+#pragma warning disable CA1873 // Avoid potentially expensive logging
+                _logger?.LogDebug("{responseBody}", responseBody);
+#pragma warning restore CA1873 // Avoid potentially expensive logging
+                #endif
+
                 // Parse the JSON response. If the response is null thow invalid operation
                 T genericResponse = JsonConvert
                     .DeserializeObject<T>(responseBody) ?? 

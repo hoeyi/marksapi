@@ -10,5 +10,6 @@ public class AggregateTickerResponse : CollectionResponse<Ticker>
     /// The total number of results for this request.
     /// </summary>
     [JsonPropertyName("count")]
+    [JsonProperty(PropertyName = "count")]
     public int Count { get; set; }
 }

@@ -12,12 +12,14 @@ public class BrandingDetail
     /// URL to the company logo.
     /// </summary>
     [JsonPropertyName("logo_url")]
+    [JsonProperty(PropertyName = "logo_url")]
     public string? LogoUrl { get; set; }
 
     /// <summary>
     /// URL to the company icon.
     /// </summary>
     [JsonPropertyName("icon_url")]
+    [JsonProperty(PropertyName = "icon_url")]
     public string? IconUrl { get; set; }
 }
 

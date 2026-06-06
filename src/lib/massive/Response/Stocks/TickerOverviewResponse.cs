@@ -13,6 +13,7 @@ public class TickerOverviewResponse : ResponseBase
     /// Gets or sets the overview object for this response.
     /// </summary>
     [JsonPropertyName("results")]
+    [JsonProperty(PropertyName = "results")]
     public TickerOverview? Results { get; set; }
 }
 
