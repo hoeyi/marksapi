@@ -13,6 +13,25 @@ public interface IMassiveApi
     /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
     /// specified stock ticker over a custom date range and time interval in Eastern Time (ET).
     /// </summary>
+    /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
+    /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
+    /// <param name="timeSpan">Size of the time window.</param>
+    /// <param name="from">Start of the time window.</param>
+    /// <param name="to">End of the time window.</param>
+    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
+    /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
+    Task<AggregateBarResponse> GetOptionsAggregateBarResponseAsync(
+        string[] ticker,
+        int multiplier,
+        BarTimespanEnum timeSpan,
+        DateTime from,
+        DateTime to,
+        int limit = 100);
+
+    /// <summary>
+    /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
+    /// specified stock ticker over a custom date range and time interval in Eastern Time (ET).
+    /// </summary>
     /// <param name="ticker">Case-sensitive ticker symbol.</param>
     /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
     /// <param name="timeSpan">Size of the time window.</param>
@@ -32,6 +51,23 @@ public interface IMassiveApi
     /// Retrieve daily aggregated short sale volume data reported to FINRA from off-exchange trading 
     /// venues and alternative trading systems (ATS) for a specified stock ticker.
     /// </summary>
+    /// <param name="ticker">The primary ticker symbol for the stock(s).</param>
+    /// <param name="fromDate">The start date of trade activity.</param>
+    /// <param name="toDate">The end date of trade activity.</param>
+    /// <param name="shortVolumeRatio">Interval for filtering results.</param>
+    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 50000, Default = 10).</param>
+    /// <returns>A <see cref="Task"/> containing an <see cref="ShortVolumeResponse"/>.</returns>
+    Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
+        string[] ticker,
+        DateTime fromDate,
+        DateTime toDate,
+        Interval<float>? shortVolumeRatio = null,
+        int? limit = 10);
+
+    /// <summary>
+    /// Retrieve daily aggregated short sale volume data reported to FINRA from off-exchange trading 
+    /// venues and alternative trading systems (ATS) for a specified stock ticker.
+    /// </summary>
     /// <param name="ticker">The primary ticker symbol for the stock.</param>
     /// <param name="fromDate">The start date of trade activity.</param>
     /// <param name="toDate">The end date of trade activity.</param>
@@ -44,6 +80,25 @@ public interface IMassiveApi
         DateTime toDate,
         Interval<float>? shortVolumeRatio = null,
         int? limit = 10);
+
+    /// <summary>
+    /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
+    /// specified stock ticker over a custom date range and time interval in Eastern Time (ET).
+    /// </summary>
+    /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
+    /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
+    /// <param name="timeSpan">Size of the time window.</param>
+    /// <param name="from">Start of the time window.</param>
+    /// <param name="to">End of the time window.</param>
+    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
+    /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
+    Task<AggregateBarResponse> GetStocksAggregateBarResponseAsync(
+        string[] ticker,
+        int multiplier,
+        BarTimespanEnum timeSpan,
+        DateTime from,
+        DateTime to,
+        int limit = 100);
 
     /// <summary>
     /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
@@ -94,6 +149,16 @@ public interface IMassiveApi
         bool asc = true,
         string? sort = null,
         int limit = 100);
+
+    /// <summary>
+    /// Retrieve comprehensive details for a single ticker supported by Massive that is active as-of a given date.
+    /// </summary>
+    /// <param name="ticker">Filter by a ticker symbol(s).</param>
+    /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
+    /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
+    Task<TickerOverviewResponse> GetStocksTickerOverviewResponseAsync(
+        string[] ticker,
+        DateTime? date = null);
 
     /// <summary>
     /// Retrieve comprehensive details for a single ticker supported by Massive that is active as-of a given date.

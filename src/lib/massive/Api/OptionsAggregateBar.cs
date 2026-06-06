@@ -36,4 +36,16 @@ public partial class MassiveApi
         
         return response;
     }
+
+    /// <inheritdoc/>
+    public Task<AggregateBarResponse> GetOptionsAggregateBarResponseAsync(
+        string[] ticker,
+        int multiplier,
+        BarTimespanEnum timeSpan,
+        DateTime from,
+        DateTime to,
+        int limit = 100)
+    {
+        throw new NotImplementedException();
+    }    
 }

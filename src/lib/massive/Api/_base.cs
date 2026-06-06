@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ApiClient.Services;
 using ApiClient.Resources;
+using ApiClient.Massive.Response.Stocks;
 
 namespace ApiClient.Massive
 {

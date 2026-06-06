@@ -39,4 +39,15 @@ public partial class MassiveApi
         
         return response;
     }   
+
+    /// <inheritdoc/>
+    public Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
+        string[] ticker,
+        DateTime fromDate,
+        DateTime toDate,
+        Interval<float>? shortVolumeRatio = null,
+        int? limit = 10)
+    {
+        throw new NotImplementedException();
+    }    
 }

@@ -89,5 +89,12 @@ namespace ApiClient.Massive
 
             return response;
         }
+
+        /// <inheritdoc/>
+        public Task<TickerOverviewResponse> GetStocksTickerOverviewResponseAsync(
+            string[] ticker, DateTime? date = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
