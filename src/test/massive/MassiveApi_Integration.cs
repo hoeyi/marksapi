@@ -34,7 +34,8 @@ namespace ApiClient.Test.Massive.Integration
             // Assert
             Assert.Multiple(
                 () => Assert.IsType<AggregateBarResponse>(responseResult), 
-                () => Assert.Equal(3, responseResult.ResultsCount));
+                () => Assert.Equal(3, responseResult.ResultsCount),
+                () => Assert.All(responseResult.Results, x => Assert.True(x.Close > 0))); // verifies complex serialization
 
             // Print result            
             _fixture.Logger.LogInformation(
@@ -63,7 +64,8 @@ namespace ApiClient.Test.Massive.Integration
             // Assert
             Assert.Multiple(
                 () => Assert.IsType<AggregateBarResponse>(responseResult), 
-                () => Assert.Equal(3, responseResult.ResultsCount));
+                () => Assert.Equal(3, responseResult.ResultsCount),
+                () => Assert.All(responseResult.Results, x => Assert.True(x.Close > 0))); // verifies complex serialization
 
             // Print result            
             _fixture.Logger.LogInformation(
@@ -86,7 +88,8 @@ namespace ApiClient.Test.Massive.Integration
             // Assert
             Assert.Multiple(
                 () => Assert.IsType<AggregateTickerResponse>(responseResult), 
-                () => Assert.Equal(1, responseResult.Count));
+                () => Assert.Equal(1, responseResult.Count),
+                () => Assert.All(responseResult.Results, x => Assert.False(string.IsNullOrEmpty(x?.Name)))); // verifies complex serialization
 
             // Print result            
             _fixture.Logger.LogInformation(
@@ -137,8 +140,8 @@ namespace ApiClient.Test.Massive.Integration
             // Assert
             Assert.Multiple(
                 () => Assert.IsType<ShortVolumeResponse>(responseResult),
-                () => Assert.NotEmpty(responseResult.Results)
-            );
+                () => Assert.NotEmpty(responseResult.Results),
+                () => Assert.All(responseResult.Results, x => Assert.True(x.Date > default(DateTime)))); // verifies complex serialization
 
             // Print result            
             _fixture.Logger.LogInformation(
