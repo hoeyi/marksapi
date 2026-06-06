@@ -63,8 +63,7 @@ namespace ApiClient.Test.Massive.Integration
         [Theory]
         [InlineData("AAPL")]
         public async Task GetTickerOverviewResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse(
-            string ticker
-        )
+            string ticker)
         {
             // Arrange
             var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
@@ -78,6 +77,26 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.NotNull(responseResult.TickerOverview),
                 () => Assert.NotNull(responseResult.TickerOverview!.Address),
                 () => Assert.NotNull(responseResult.TickerOverview!.Branding)
+            );
+        }
+
+        [Theory]
+        [InlineData("AAPL", "2026-05-13", "2026-05-15")]
+        public async Task GetShortVolumeResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse(
+            string ticker, string fromStr, string toStr)
+        {
+            // Arrange
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
+            var fromDate = DateTime.Parse(fromStr);
+            var toDate = DateTime.Parse(toStr);
+            
+            // Act
+            var responseResult = await apiClient.GetShortVolumeResponseAsync(ticker, fromDate, toDate);
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<ShortVolumeResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results)
             );
         }
     }
