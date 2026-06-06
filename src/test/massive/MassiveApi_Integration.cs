@@ -1,5 +1,4 @@
 using ApiClient.Massive;
-using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
 using Microsoft.Extensions.Logging;
 

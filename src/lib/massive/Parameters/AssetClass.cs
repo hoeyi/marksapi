@@ -1,5 +1,3 @@
-using System;
-
 namespace ApiClient.Massive;
 
 /// <summary>

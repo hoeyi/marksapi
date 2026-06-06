@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Serialization;
-using ApiClient.Massive.Response.Generic;
 
 namespace ApiClient.Massive.Response.Stocks;
 

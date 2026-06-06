@@ -1,9 +1,5 @@
-using System;
-
 namespace ApiClient.Massive.Response.Stocks;
 
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using ApiClient.Massive.Response.Generic;
 
 /// <summary>

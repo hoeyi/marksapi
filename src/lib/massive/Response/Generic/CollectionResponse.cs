@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json;
 
 namespace ApiClient.Massive.Response.Generic
 {
