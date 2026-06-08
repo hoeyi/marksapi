@@ -65,7 +65,8 @@ namespace ApiClient.Massive
 
 #if DEBUG
 #pragma warning disable CA1873 // Avoid potentially expensive logging
-                _logger?.LogDebug("{responseBody}", responseBody);
+                _logger?.LogDebug("{@headers}", response.Headers);
+                _logger?.LogDebug("{@responseBody}", responseBody);
 #pragma warning restore CA1873 // Avoid potentially expensive logging
 #endif
 
