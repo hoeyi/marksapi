@@ -5,7 +5,7 @@ using ApiClient.Massive.Response.Generic;
 namespace ApiClient.Massive.Response.Stocks
 {
     /// <summary>
-    /// Represents the complete response data from a stock aggregate endpoint.
+    /// Represents the complete response data from a stock/option/index aggregate endpoint.
     /// </summary>
     [ExcludeFromCodeCoverage]
     public class AggregateBarResponse : CollectionResponse<AggregateBar>

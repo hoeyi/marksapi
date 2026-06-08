@@ -9,7 +9,7 @@ namespace ApiClient.Massive
     {
 
         /// <inheritdoc/>
-        public async Task<AggregateTickerResponse> GetStocksAllTickersAsync(
+        public async Task<AggregateTickerResponse> GetAllTickersAsync(
             string? ticker = null, 
             TickerType? type = null,
             string? market = null,
@@ -69,7 +69,7 @@ namespace ApiClient.Massive
         }
 
         /// <inheritdoc/>
-        public async Task<TickerOverviewResponse> GetStocksTickerOverviewResponseAsync(
+        public async Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
             string ticker,
             DateTime? date = null
         )
@@ -91,7 +91,7 @@ namespace ApiClient.Massive
         }
 
         /// <inheritdoc/>
-        public Task<TickerOverviewResponse> GetStocksTickerOverviewResponseAsync(
+        public Task<TickerOverviewResponse> GetAllTickerOverviewResponseAsync(
             string[] ticker, DateTime? date = null)
         {
             throw new NotImplementedException();

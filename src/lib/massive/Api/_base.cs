@@ -141,7 +141,11 @@ namespace ApiClient.Massive
 
             // TODO: Impement endpoint
             // public const string StocksRelatedTickers = "/v1/related-companies/{ticker}";
-            public const string StocksCustomBars = "/v2/aggs/ticker/{stocksTicker}/range/{multiplier}/{timespan}/{from}/{to}";
+
+            /// <summary>
+            /// Handles stocks, options, indices.
+            /// </summary>
+            public const string TickerCustomBars = "/v2/aggs/ticker/{ticker}/range/{multiplier}/{timespan}/{from}/{to}";
 
             // TODO: Impement endpoint
             // public const string StocksDailySummary = "/v2/aggs/grouped/locale/us/market/stocks/{date}";

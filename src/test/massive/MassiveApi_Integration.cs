@@ -75,6 +75,36 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
+        [InlineData("COMP", 1, "Day", "2025-11-25", "2025-11-28", 5)]
+        public async Task GetIndexAggregateBarResponseAsync_ReturnSuccessResponse(
+            string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit)
+        {
+            // Arrange
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
+            var fromDate = DateTime.Parse(fromStr);
+            var toDate = DateTime.Parse(toStr);
+            if(!Enum.TryParse(timeSpan, out BarTimespanEnum result))
+                throw new ArgumentException(
+                    $"Failed to parse test method arguments. Name: {nameof(timeSpan)}");
+
+            // Act
+            var responseResult = await apiClient.GetIndexAggregateBarResponseAsync(
+                ticker, multiplier, result, fromDate, toDate, limit);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<AggregateBarResponse>(responseResult), 
+                () => Assert.Equal(3, responseResult.QueryCount),
+                () => Assert.All(responseResult.Results, x => Assert.True(x.Close > 0))); // verifies complex serialization
+
+            // Print result            
+            _fixture.Logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetIndexAggregateBarResponseAsync_ReturnSuccessResponse), 
+                responseResult);
+        }
+
+        [Theory]
         [InlineData("AAPL")]
         public async Task GetStocksAllTickerAsync_SingleParameter_Ticker_ReturnSuccessResponse(
             string ticker)
@@ -83,7 +113,7 @@ namespace ApiClient.Test.Massive.Integration
             var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
 
             // Act
-            var responseResult = await apiClient.GetStocksAllTickersAsync(ticker);
+            var responseResult = await apiClient.GetAllTickersAsync(ticker);
 
             // Assert
             Assert.Multiple(
@@ -107,7 +137,7 @@ namespace ApiClient.Test.Massive.Integration
             var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
             
             // Act
-            var responseResult = await apiClient.GetStocksTickerOverviewResponseAsync(ticker);
+            var responseResult = await apiClient.GetTickerOverviewResponseAsync(ticker);
             
             // Assert
             Assert.Multiple(

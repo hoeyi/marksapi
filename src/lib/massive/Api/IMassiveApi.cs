@@ -11,7 +11,7 @@ public interface IMassiveApi
 {
     /// <summary>
     /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
-    /// specified stock ticker over a custom date range and time interval in Eastern Time (ET).
+    /// specified option ticker over a custom date range and time interval in Eastern Time (ET).
     /// </summary>
     /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
     /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
@@ -41,6 +41,44 @@ public interface IMassiveApi
     /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
     Task<AggregateBarResponse> GetOptionsAggregateBarResponseAsync(
         string ticker,
+        int multiplier,
+        BarTimespanEnum timeSpan,
+        DateTime from,
+        DateTime to,
+        int limit = 100);
+
+    /// <summary>
+    /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
+    /// specified index ticker over a custom date range and time interval in Eastern Time (ET).
+    /// </summary>
+    /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
+    /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
+    /// <param name="timeSpan">Size of the time window.</param>
+    /// <param name="from">Start of the time window.</param>
+    /// <param name="to">End of the time window.</param>
+    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
+    /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
+    Task<AggregateBarResponse> GetIndexAggregateBarResponseAsync(
+        string ticker,
+        int multiplier,
+        BarTimespanEnum timeSpan,
+        DateTime from,
+        DateTime to,
+        int limit = 100);
+    
+    /// <summary>
+    /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
+    /// specified index tickers over a custom date range and time interval in Eastern Time (ET).
+    /// </summary>
+    /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
+    /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
+    /// <param name="timeSpan">Size of the time window.</param>
+    /// <param name="from">Start of the time window.</param>
+    /// <param name="to">End of the time window.</param>
+    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
+    /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
+    Task<AggregateBarResponse> GetIndexAggregateBarResponseAsync(
+        string[] ticker,
         int multiplier,
         BarTimespanEnum timeSpan,
         DateTime from,
@@ -136,7 +174,7 @@ public interface IMassiveApi
     /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
     /// <returns>A <see cref="Task"/> containing a <see cref="AggregateTickerResponse"/>.</returns>
     /// <exception cref="ArgumentException"><paramref name="limit"/> was not in the interval (0,1000].</exception>
-    Task<AggregateTickerResponse> GetStocksAllTickersAsync(
+    Task<AggregateTickerResponse> GetAllTickersAsync(
         string? ticker = null,
         TickerType? type = null,
         string? market = null,
@@ -156,7 +194,7 @@ public interface IMassiveApi
     /// <param name="ticker">Filter by a ticker symbol(s).</param>
     /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
     /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
-    Task<TickerOverviewResponse> GetStocksTickerOverviewResponseAsync(
+    Task<TickerOverviewResponse> GetAllTickerOverviewResponseAsync(
         string[] ticker,
         DateTime? date = null);
 
@@ -166,7 +204,7 @@ public interface IMassiveApi
     /// <param name="ticker">Filter by a ticker symbol.</param>
     /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
     /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
-    Task<TickerOverviewResponse> GetStocksTickerOverviewResponseAsync(
+    Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
         string ticker,
         DateTime? date = null);
 }
