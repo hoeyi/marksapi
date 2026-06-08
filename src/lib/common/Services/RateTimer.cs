@@ -35,12 +35,12 @@ public class RateTimer
     /// <summary>
     /// Gets the API call limit over <see cref="ApiCallInterval"/> for this timer.
     /// </summary>
-    public int ApiCallLimit { get; private set; }
+    public int ApiCallLimit { get; private init; }
 
     /// <summary>
     /// Gets the API call interval in seconds for this timer.
     /// </summary>
-    public short ApiCallInterval { get; private set; } 
+    public short ApiCallInterval { get; private init; } 
 
     /// <summary>
     /// Gets the rate-limiting status of this limiter.
