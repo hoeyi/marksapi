@@ -130,6 +130,8 @@ namespace ApiClient.Test.Massive.Integration
 
         [Theory]
         [InlineData("AAPL")]
+        [InlineData("I:COMP")]
+        [InlineData("O:SPY251219C00650000")]
         public async Task GetTickerOverviewResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse(
             string ticker)
         {

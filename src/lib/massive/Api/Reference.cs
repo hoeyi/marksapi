@@ -63,7 +63,7 @@ namespace ApiClient.Massive
             if(!string.IsNullOrEmpty(sort))
                 queryBuilder.AddParameter("sort", sort);
             
-            var response = await GetResponseAsync<AggregateTickerResponse>(queryBuilder, Endpoint.StocksAllTickers);
+            var response = await GetResponseAsync<AggregateTickerResponse>(queryBuilder, Endpoint.ReferenceAllTickers);
             
             return response;
         }
@@ -72,23 +72,7 @@ namespace ApiClient.Massive
         public async Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
             string ticker,
             DateTime? date = null
-        )
-        {
-            ArgumentException.ThrowIfNullOrEmpty(ticker);
-
-            string endpointPattern = QueryBuilder
-                .ConvertEndpointToStringPattern(Endpoint.StocksTickerOverview);
-
-            string endpoint = string.Format(endpointPattern, ticker);
-
-            var queryBuilder = GetQueryBuilder();
-            if(date is not null)
-                queryBuilder.AddParameter("date", $"{date:yyyy-MM-dd}");
-
-            var response = await GetResponseAsync<TickerOverviewResponse>(queryBuilder, endpoint);
-
-            return response;
-        }
+        ) => await GetGenericTickerOverviewResponseAsync(ticker, date);
 
         /// <inheritdoc/>
         public Task<TickerOverviewResponse> GetAllTickerOverviewResponseAsync(
