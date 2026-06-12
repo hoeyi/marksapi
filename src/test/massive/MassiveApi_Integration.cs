@@ -136,7 +136,7 @@ namespace ApiClient.Test.Massive.Integration
             string ticker)
         {
             // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
             
             // Act
             var responseResult = await apiClient.GetTickerOverviewResponseAsync(ticker);

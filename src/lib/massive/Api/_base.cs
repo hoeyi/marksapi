@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using ApiClient.Services;
 using ApiClient.Resources;
 using ApiClient.Massive.Response.Stocks;
+using Microsoft.Extensions.Configuration;
 
 namespace ApiClient.Massive
 {
@@ -17,15 +18,17 @@ namespace ApiClient.Massive
         private readonly Uri _baseUri = new(_baseUrl);
         private readonly short _maximumDateRangeInDays = 30;
         private readonly ILogger? _logger;
+        private readonly RateTimer? _rateTimer;
 
-        public MassiveApi(string apiKey, ILogger? logger = null)
-            : this(new HttpClient(), apiKey, logger)
+        public MassiveApi(string apiKey, IConfiguration? configuration = null, ILogger? logger = null)
+            : this(new HttpClient(), apiKey, configuration, logger)
         {
         }
 
         internal MassiveApi(
             HttpClient httpClient,
             string apiKey,
+            IConfiguration? configuration = null,
             ILogger? logger = null)
             : base(
                 baseUrl: _baseUrl,
@@ -37,6 +40,13 @@ namespace ApiClient.Massive
             ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
 
             RequiredParams.Add("apiKey", apiKey);
+            RateOptions options = new();
+            configuration?
+                .GetSection("massive")
+                .GetSection(nameof(RateOptions))
+                .Bind(options);
+
+            _rateTimer = new RateTimer(options.Limit, options.Interval);
             _logger = logger;
         }
 

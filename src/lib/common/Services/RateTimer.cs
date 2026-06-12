@@ -16,7 +16,7 @@ public class RateTimer
     /// </summary>
     /// <param name="apiCallLimit">The API call limit per interval. Allowable range (0, 1000].</param>
     /// <param name="apiCallInterval">The API interval in seconds. Allowable range (0, 3600)</param>
-    public RateTimer(int apiCallLimit, short apiCallInterval)
+    public RateTimer(int apiCallLimit, int apiCallInterval)
     {
         // Validate arguments.
         ArgumentOutOfRangeException.ThrowIfLessThan(apiCallLimit, 0);
@@ -40,7 +40,7 @@ public class RateTimer
     /// <summary>
     /// Gets the API call interval in seconds for this timer.
     /// </summary>
-    public short ApiCallInterval { get; private init; } 
+    public int ApiCallInterval { get; private init; } 
 
     /// <summary>
     /// Gets the rate-limiting status of this limiter.
