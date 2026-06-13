@@ -129,17 +129,55 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("AAPL")]
-        [InlineData("I:COMP")]
-        [InlineData("O:SPY251219C00650000")]
-        public async Task GetTickerOverviewResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse(
-            string ticker)
+        [InlineData("Stocks", "AAPL")]
+        [InlineData("Indices", "COMP")]
+        [InlineData("Options", "SPY251219C00650000")]
+        [InlineData("Crypto", "BTC")]
+        [InlineData("FX", "USD-EUR")]
+        public async Task GetTickerOverviewResponseAsync_ReturnSuccessResponse(
+            string market, string ticker)
         {
             // Arrange
             var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
-            
+
+            Market marketEnum;
+            if(!Enum.TryParse(market, out Market result))
+                throw new InvalidOperationException($"Test parameter '{market}' could not be parsed.");
+            else
+                marketEnum = result;
+
             // Act
-            var responseResult = await apiClient.GetTickerOverviewResponseAsync(ticker);
+            var responseResult = await apiClient.GetTickerOverviewResponseAsync(marketEnum, ticker);
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<TickerOverviewResponse>(responseResult),
+                () => Assert.NotNull(responseResult.Results)
+            );
+
+            // Print result            
+            _fixture.Logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetTickerOverviewResponseAsync_ReturnSuccessResponse), 
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("Stocks", "AAPL")]
+        public async Task GetTickerOverviewResponseAsync_ComplexResponse_ReturnSuccessResponse(
+            string market, string ticker)
+        {
+            // Arrange
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
+            Market marketEnum;
+
+            if(!Enum.TryParse(market, out Market result))
+                throw new InvalidOperationException($"Test parameter '{market}' could not be parsed.");
+            else
+                marketEnum = result;
+
+            // Act
+            var responseResult = await apiClient.GetTickerOverviewResponseAsync(marketEnum, ticker);
             
             // Assert
             Assert.Multiple(
@@ -152,7 +190,7 @@ namespace ApiClient.Test.Massive.Integration
             // Print result            
             _fixture.Logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
-                nameof(GetTickerOverviewResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse), 
+                nameof(GetTickerOverviewResponseAsync_ComplexResponse_ReturnSuccessResponse), 
                 responseResult);
         }
 
