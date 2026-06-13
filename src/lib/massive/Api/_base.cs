@@ -6,6 +6,7 @@ using ApiClient.Services;
 using ApiClient.Resources;
 using ApiClient.Massive.Response.Stocks;
 using Microsoft.Extensions.Configuration;
+using ApiClient.Massive.Response;
 
 namespace ApiClient.Massive
 {

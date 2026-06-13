@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
 
 namespace ApiClient.Massive;

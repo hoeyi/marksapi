@@ -1,4 +1,5 @@
 using ApiClient.Massive;
+using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
 using Microsoft.Extensions.Logging;
 
@@ -42,7 +43,7 @@ namespace ApiClient.Test.Massive.Integration
             // Assert
             Assert.Multiple(
                 () => Assert.IsType<AggregateBarResponse>(responseResult), 
-                () => Assert.Equal(expectedCount, responseResult.ResultsCount),
+                () => Assert.Equal(expectedCount, responseResult.CommonCount),
                 () => Assert.All(responseResult.Results, x => Assert.True(x.Close > 0))); // verifies complex serialization
 
             // Print result            
