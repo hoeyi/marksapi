@@ -15,92 +15,40 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("AAPL", 1, "Day", "2025-11-25", "2025-11-28", 5)]
-        public async Task GetStocksAggregateBarResponseAsync_ReturnSuccessResponse(
-            string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit)
+        [InlineData("Stocks", "AAPL", 1, "Day", "2025-11-25", "2025-11-28", 5, 3)]
+        [InlineData("Options", "SPY260821C00640000", 1, "Day", "2026-06-08", "2026-06-11", 5, 4)]
+        [InlineData("Crypto", "BTCUSD", 1, "Day", "2026-06-08", "2026-06-08", 5, 1)]
+        [InlineData("Indices", "COMP", 1, "Day", "2026-06-08", "2026-06-08", 5, 1)]
+        [InlineData("FX", "EURUSD", 1, "Day", "2026-06-08", "2026-06-08", 5, 1)]
+        public async Task GetAggregateBarResponseAsync_ReturnSuccessResponse(
+            string market, string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit, int expectedCount)
         {
             // Arrange
             var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
             var fromDate = DateTime.Parse(fromStr);
             var toDate = DateTime.Parse(toStr);
-            if(!Enum.TryParse(timeSpan, out BarTimespanEnum result))
+            
+            if(!Enum.TryParse(market, out Market marketResult))
+                throw new ArgumentException($"Test parameter '{market}' could not be parsed.");
+
+            if(!Enum.TryParse(timeSpan, out BarTimespanEnum barTimeResult))
                 throw new ArgumentException(
-                    $"Failed to parse test method arguments. Name: {nameof(timeSpan)}");
+                    $"Test parameter '{market}' could not be parsed.");
 
             // Act
-            var responseResult = await apiClient.GetStocksAggregateBarResponseAsync(
-                ticker, multiplier, result, fromDate, toDate, limit);
+            var responseResult = await apiClient.GetAggregateBarResponseAsync(
+                marketResult, ticker, multiplier, barTimeResult, fromDate, toDate, limit);
 
             // Assert
             Assert.Multiple(
                 () => Assert.IsType<AggregateBarResponse>(responseResult), 
-                () => Assert.Equal(3, responseResult.ResultsCount),
+                () => Assert.Equal(expectedCount, responseResult.ResultsCount),
                 () => Assert.All(responseResult.Results, x => Assert.True(x.Close > 0))); // verifies complex serialization
 
             // Print result            
             _fixture.Logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
-                nameof(GetStocksAggregateBarResponseAsync_ReturnSuccessResponse), 
-                responseResult);
-        }
-
-        [Theory]
-        [InlineData("SPY251219C00650000", 1, "Day", "2025-11-25", "2025-11-28", 5)]
-        public async Task GetOptionsAggregateBarResponseAsync_ReturnSuccessResponse(
-            string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit)
-        {
-            // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
-            var fromDate = DateTime.Parse(fromStr);
-            var toDate = DateTime.Parse(toStr);
-            if(!Enum.TryParse(timeSpan, out BarTimespanEnum result))
-                throw new ArgumentException(
-                    $"Failed to parse test method arguments. Name: {nameof(timeSpan)}");
-
-            // Act
-            var responseResult = await apiClient.GetOptionsAggregateBarResponseAsync(
-                ticker, multiplier, result, fromDate, toDate, limit);
-
-            // Assert
-            Assert.Multiple(
-                () => Assert.IsType<AggregateBarResponse>(responseResult), 
-                () => Assert.Equal(3, responseResult.ResultsCount),
-                () => Assert.All(responseResult.Results, x => Assert.True(x.Close > 0))); // verifies complex serialization
-
-            // Print result            
-            _fixture.Logger.LogInformation(
-                "'{method}' returned:\n{@responseResult}", 
-                nameof(GetOptionsAggregateBarResponseAsync_ReturnSuccessResponse), 
-                responseResult);
-        }
-
-        [Theory]
-        [InlineData("COMP", 1, "Day", "2025-11-25", "2025-11-28", 5)]
-        public async Task GetIndexAggregateBarResponseAsync_ReturnSuccessResponse(
-            string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit)
-        {
-            // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
-            var fromDate = DateTime.Parse(fromStr);
-            var toDate = DateTime.Parse(toStr);
-            if(!Enum.TryParse(timeSpan, out BarTimespanEnum result))
-                throw new ArgumentException(
-                    $"Failed to parse test method arguments. Name: {nameof(timeSpan)}");
-
-            // Act
-            var responseResult = await apiClient.GetIndexAggregateBarResponseAsync(
-                ticker, multiplier, result, fromDate, toDate, limit);
-
-            // Assert
-            Assert.Multiple(
-                () => Assert.IsType<AggregateBarResponse>(responseResult), 
-                () => Assert.Equal(3, responseResult.QueryCount),
-                () => Assert.All(responseResult.Results, x => Assert.True(x.Close > 0))); // verifies complex serialization
-
-            // Print result            
-            _fixture.Logger.LogInformation(
-                "'{method}' returned:\n{@responseResult}", 
-                nameof(GetIndexAggregateBarResponseAsync_ReturnSuccessResponse), 
+                nameof(GetAggregateBarResponseAsync_ReturnSuccessResponse), 
                 responseResult);
         }
 
@@ -140,14 +88,11 @@ namespace ApiClient.Test.Massive.Integration
             // Arrange
             var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
 
-            Market marketEnum;
-            if(!Enum.TryParse(market, out Market result))
+            if(!Enum.TryParse(market, out Market marketResult))
                 throw new InvalidOperationException($"Test parameter '{market}' could not be parsed.");
-            else
-                marketEnum = result;
 
             // Act
-            var responseResult = await apiClient.GetTickerOverviewResponseAsync(marketEnum, ticker);
+            var responseResult = await apiClient.GetTickerOverviewResponseAsync(marketResult, ticker);
             
             // Assert
             Assert.Multiple(
