@@ -11,17 +11,19 @@ public interface IMassiveApi
 {
     /// <summary>
     /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
-    /// specified option ticker over a custom date range and time interval in Eastern Time (ET).
+    /// specified market/ticker over a custom date range and time interval in Eastern Time (ET).
     /// </summary>
-    /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
+    /// <param name="market">Market to search.</param>
+    /// <param name="ticker">Case-sensitive ticker symbol.</param>
     /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
     /// <param name="timeSpan">Size of the time window.</param>
     /// <param name="from">Start of the time window.</param>
     /// <param name="to">End of the time window.</param>
     /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
     /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
-    Task<AggregateBarResponse> GetOptionsAggregateBarResponseAsync(
-        string[] ticker,
+    Task<AggregateBarResponse> GetAggregateBarResponseAsync(
+        Market market,
+        string ticker,
         int multiplier,
         BarTimespanEnum timeSpan,
         DateTime from,
@@ -32,25 +34,7 @@ public interface IMassiveApi
     /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
     /// specified stock ticker over a custom date range and time interval in Eastern Time (ET).
     /// </summary>
-    /// <param name="ticker">Case-sensitive ticker symbol.</param>
-    /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
-    /// <param name="timeSpan">Size of the time window.</param>
-    /// <param name="from">Start of the time window.</param>
-    /// <param name="to">End of the time window.</param>
-    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
-    /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
-    Task<AggregateBarResponse> GetOptionsAggregateBarResponseAsync(
-        string ticker,
-        int multiplier,
-        BarTimespanEnum timeSpan,
-        DateTime from,
-        DateTime to,
-        int limit = 100);
-
-    /// <summary>
-    /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
-    /// specified index ticker over a custom date range and time interval in Eastern Time (ET).
-    /// </summary>
+    /// <param name="market">Market to search.</param>
     /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
     /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
     /// <param name="timeSpan">Size of the time window.</param>
@@ -58,33 +42,15 @@ public interface IMassiveApi
     /// <param name="to">End of the time window.</param>
     /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
     /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
-    Task<AggregateBarResponse> GetIndexAggregateBarResponseAsync(
-        string ticker,
-        int multiplier,
-        BarTimespanEnum timeSpan,
-        DateTime from,
-        DateTime to,
-        int limit = 100);
-
-    /// <summary>
-    /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
-    /// specified index tickers over a custom date range and time interval in Eastern Time (ET).
-    /// </summary>
-    /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
-    /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
-    /// <param name="timeSpan">Size of the time window.</param>
-    /// <param name="from">Start of the time window.</param>
-    /// <param name="to">End of the time window.</param>
-    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
-    /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
-    Task<AggregateBarResponse> GetIndexAggregateBarResponseAsync(
+    Task<AggregateBarResponse> GetAggregateBarResponseAsync(
+        Market market,
         string[] ticker,
         int multiplier,
         BarTimespanEnum timeSpan,
         DateTime from,
         DateTime to,
         int limit = 100);
-
+            
     /// <summary>
     /// Retrieve daily aggregated short sale volume data reported to FINRA from off-exchange trading 
     /// venues and alternative trading systems (ATS) for a specified stock ticker.
@@ -118,44 +84,6 @@ public interface IMassiveApi
         DateTime toDate,
         Interval<float>? shortVolumeRatio = null,
         int? limit = 10);
-
-    /// <summary>
-    /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
-    /// specified stock ticker over a custom date range and time interval in Eastern Time (ET).
-    /// </summary>
-    /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
-    /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
-    /// <param name="timeSpan">Size of the time window.</param>
-    /// <param name="from">Start of the time window.</param>
-    /// <param name="to">End of the time window.</param>
-    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
-    /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
-    Task<AggregateBarResponse> GetStocksAggregateBarResponseAsync(
-        string[] ticker,
-        int multiplier,
-        BarTimespanEnum timeSpan,
-        DateTime from,
-        DateTime to,
-        int limit = 100);
-
-    /// <summary>
-    /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
-    /// specified stock ticker over a custom date range and time interval in Eastern Time (ET).
-    /// </summary>
-    /// <param name="ticker">Case-sensitive ticker symbol.</param>
-    /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
-    /// <param name="timeSpan">Size of the time window.</param>
-    /// <param name="from">Start of the time window.</param>
-    /// <param name="to">End of the time window.</param>
-    /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
-    /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
-    Task<AggregateBarResponse> GetStocksAggregateBarResponseAsync(
-        string ticker,
-        int multiplier,
-        BarTimespanEnum timeSpan,
-        DateTime from,
-        DateTime to,
-        int limit = 100);
 
     /// <summary>
     /// Submits queries to the endpoint <em>/v3/reference/tickers</em>.

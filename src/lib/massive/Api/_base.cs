@@ -184,6 +184,7 @@ namespace ApiClient.Massive
         /// <summary>
         /// General-purpose method for retrieving <see cref="AggregateBarResponse"/> for stocks, options, and indexes.
         /// </summary>
+        /// <param name="market">Market to search.</param>
         /// <param name="ticker">The ticker of the asset. Use patterns 
         /// <list><item>O:{ticker}, for options</item>
         /// <item>I:{ticker}, for indices</item>
@@ -195,6 +196,7 @@ namespace ApiClient.Massive
         /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
         private async Task<AggregateBarResponse> GetGenericAggregateBarResponseAsync(
+            Market market,
             string ticker,
             int multiplier,
             BarTimespanEnum timeSpan,
@@ -208,8 +210,19 @@ namespace ApiClient.Massive
             string endpointPattern = QueryBuilder
                                         .ConvertEndpointToStringPattern(Endpoint.TickerCustomBars);
 
+            // Adjust the ticker with market-specific modifier
+            string tickerAdj = market switch
+            {
+                Market.Crypto => $"X:{ticker}",
+                Market.FX => $"C:{ticker}",
+                Market.Indices => $"I:{ticker}",
+                Market.Options => $"O:{ticker}",
+                Market.Stocks => ticker,
+                _ => throw new InvalidOperationException($"Parameter '{nameof(market)}' must be non-default.")
+            };
+
             string endpoint = string.Format(endpointPattern,
-                                    ticker,
+                                    tickerAdj,
                                     multiplier,
                                     timeSpan.ToString().ToLower(),
                                     $"{from:yyyy-MM-dd}",
@@ -233,7 +246,7 @@ namespace ApiClient.Massive
         /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
         /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
         private async Task<TickerOverviewResponse> GetGenericTickerOverviewResponseAsync(
-            Market assetClass,
+            Market market,
             string ticker,
             DateTime? date = null
         )
@@ -241,7 +254,7 @@ namespace ApiClient.Massive
             ArgumentException.ThrowIfNullOrEmpty(ticker);
 
             // Map market to endpoint since Options have a different path.
-            string endpointPattern = assetClass switch
+            string endpointPattern = market switch
             {
                 Market.Crypto => 
                     QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview),
@@ -253,18 +266,18 @@ namespace ApiClient.Massive
                     QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceContractOverview),
                 Market.Stocks => 
                     QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview),
-                _ => throw new InvalidOperationException($"Parameter '{nameof(assetClass)} must be non-default.")
+                _ => throw new InvalidOperationException($"Parameter '{nameof(market)}' must be non-default.")
             };
 
             // Adjust the ticker with market-specific modifier
-            string tickerAdj = assetClass switch
+            string tickerAdj = market switch
             {
                 Market.Crypto => $"X:{ticker}",
                 Market.FX => $"C:{ticker}",
                 Market.Indices => $"I:{ticker}",
                 Market.Options => $"O:{ticker}",
                 Market.Stocks => ticker,
-                _ => throw new InvalidOperationException($"Parameter '{nameof(assetClass)} must be non-default.")
+                _ => throw new InvalidOperationException($"Parameter '{nameof(market)}' must be non-default.")
             };
 
             string endpoint = string.Format(endpointPattern, tickerAdj);
