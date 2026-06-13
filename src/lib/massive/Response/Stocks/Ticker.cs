@@ -9,7 +9,7 @@ namespace ApiClient.Massive.Response.Stocks;
 [ExcludeFromCodeCoverage]
 public class Ticker
 {
-/// <summary>
+    /// <summary>
     /// Whether or not the asset is actively traded. False means the asset has been delisted.
     /// </summary>
     [JsonPropertyName("active")]

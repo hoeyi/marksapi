@@ -14,6 +14,45 @@ namespace ApiClient.Massive
     /// </summary>
     public partial class MassiveApi : Services.ApiClient, IMassiveApi
     {
+        /// <summary>
+        /// Collection of the relative endpoints for the api as stirng patterns.
+        /// </summary>
+        private readonly struct Endpoint
+        {
+            /// <summary>
+            /// Handles stocks, options, indices.
+            /// </summary>
+            public const string TickerCustomBars = "/v2/aggs/ticker/{ticker}/range/{multiplier}/{timespan}/{from}/{to}";
+
+            // TODO: Impement endpoint
+            // public const string OptionsTickerSummary = "/v1/open-close/{optionsTicker}/{date}";
+
+            // TODO: Impement endpoint
+            // public const string OptionsPreviousDayBar = "/v2/aggs/ticker/{optionsTicker}/prev";
+
+            public const string ReferenceAllTickers = "/v3/reference/tickers";
+
+            public const string ReferenceTickerOverview = "/v3/reference/tickers/{ticker}";
+
+            public const string ReferenceContractOverview = "/v3/reference/options/contracts/{options_ticker}";
+
+            public const string ReferenceTickerTypes = "/v3/reference/tickers/types";
+
+            // TODO: Impement endpoint
+            // public const string StocksRelatedTickers = "/v1/related-companies/{ticker}";
+
+            // TODO: Impement endpoint
+            // public const string StocksDailySummary = "/v2/aggs/grouped/locale/us/market/stocks/{date}";
+
+            public const string StocksFundamentalsShortVolume = "/stocks/v1/short-volume";
+
+            // TODO: Impement endpoint
+            // public const string StocksTickerSummary = "/v1/open-close/{stocksTicker}/{date}";
+
+            // TODO: Impement endpoint
+            // public const string StocksPreviousDayBar = "/v2/aggs/ticker/{stocksTicker}/prev";
+        }
+
         private const string _baseUrl = "https://api.massive.com";
         private readonly Uri _baseUri = new(_baseUrl);
         private readonly short _maximumDateRangeInDays = 30;
@@ -40,11 +79,19 @@ namespace ApiClient.Massive
             ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
 
             RequiredParams.Add("apiKey", apiKey);
+
             RateOptions options = new();
-            configuration?
-                .GetSection("massive")
-                .GetSection(nameof(RateOptions))
-                .Bind(options);
+            var section = configuration?
+                .GetSection("massive")?
+                .GetSection(nameof(RateOptions));
+
+            if (section is null)
+            {
+                options.Limit = 5;
+                options.Interval = 60;
+            }
+            else
+                section.Bind(options);
 
             _rateTimer = new RateTimer(options.Limit, options.Interval);
             _logger = logger;
@@ -129,43 +176,6 @@ namespace ApiClient.Massive
         /// </summary>
         /// <returns>A <see cref="QueryBuilder"/> configured for required parameters.</returns>
         private QueryBuilder GetQueryBuilder() => new(initParameters: RequiredParams);
-
-        /// <summary>
-        /// Collection of the relative endpoints for the api as stirng patterns.
-        /// </summary>
-        private readonly struct Endpoint
-        {
-            /// <summary>
-            /// Handles stocks, options, indices.
-            /// </summary>
-            public const string TickerCustomBars = "/v2/aggs/ticker/{ticker}/range/{multiplier}/{timespan}/{from}/{to}";
-
-            // TODO: Impement endpoint
-            // public const string OptionsTickerSummary = "/v1/open-close/{optionsTicker}/{date}";
-
-            // TODO: Impement endpoint
-            // public const string OptionsPreviousDayBar = "/v2/aggs/ticker/{optionsTicker}/prev";
-
-            public const string ReferenceAllTickers = "/v3/reference/tickers";
-
-            public const string ReferenceTickerOverview = "/v3/reference/tickers/{ticker}";
-
-            public const string ReferenceTickerTypes = "/v3/reference/tickers/types";
-
-            // TODO: Impement endpoint
-            // public const string StocksRelatedTickers = "/v1/related-companies/{ticker}";
-
-            // TODO: Impement endpoint
-            // public const string StocksDailySummary = "/v2/aggs/grouped/locale/us/market/stocks/{date}";
-
-            public const string StocksFundamentalsShortVolume = "/stocks/v1/short-volume";
-
-            // TODO: Impement endpoint
-            // public const string StocksTickerSummary = "/v1/open-close/{stocksTicker}/{date}";
-
-            // TODO: Impement endpoint
-            // public const string StocksPreviousDayBar = "/v2/aggs/ticker/{stocksTicker}/prev";
-        }
     }
 
     #region Private, generalized methods.
@@ -185,31 +195,31 @@ namespace ApiClient.Massive
         /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
         private async Task<AggregateBarResponse> GetGenericAggregateBarResponseAsync(
-            string ticker, 
-            int multiplier, 
-            BarTimespanEnum timeSpan, 
-            DateTime from, 
-            DateTime to, 
+            string ticker,
+            int multiplier,
+            BarTimespanEnum timeSpan,
+            DateTime from,
+            DateTime to,
             int limit = 100)
         {
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(limit, 0, nameof(limit));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(limit, 1000, nameof(limit));
-            
+
             string endpointPattern = QueryBuilder
                                         .ConvertEndpointToStringPattern(Endpoint.TickerCustomBars);
 
-            string endpoint = string.Format(endpointPattern, 
-                                    ticker, 
-                                    multiplier, 
-                                    timeSpan.ToString().ToLower(), 
-                                    $"{from:yyyy-MM-dd}", 
+            string endpoint = string.Format(endpointPattern,
+                                    ticker,
+                                    multiplier,
+                                    timeSpan.ToString().ToLower(),
+                                    $"{from:yyyy-MM-dd}",
                                     $"{to:yyyy-MM-dd}");
 
             var queryBuilder = GetQueryBuilder();
             queryBuilder.AddParameter("limit", $"{limit}");
-            
+
             var response = await GetResponseAsync<AggregateBarResponse>(queryBuilder, endpoint);
-            
+
             return response;
         }
 
@@ -223,19 +233,44 @@ namespace ApiClient.Massive
         /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
         /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
         private async Task<TickerOverviewResponse> GetGenericTickerOverviewResponseAsync(
+            Market assetClass,
             string ticker,
             DateTime? date = null
         )
         {
             ArgumentException.ThrowIfNullOrEmpty(ticker);
 
-            string endpointPattern = QueryBuilder
-                .ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview);
+            // Map market to endpoint since Options have a different path.
+            string endpointPattern = assetClass switch
+            {
+                Market.Crypto => 
+                    QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview),
+                Market.FX => 
+                    QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview),
+                Market.Indices => 
+                    QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview),
+                Market.Options => 
+                    QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceContractOverview),
+                Market.Stocks => 
+                    QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview),
+                _ => throw new InvalidOperationException($"Parameter '{nameof(assetClass)} must be non-default.")
+            };
 
-            string endpoint = string.Format(endpointPattern, ticker);
+            // Adjust the ticker with market-specific modifier
+            string tickerAdj = assetClass switch
+            {
+                Market.Crypto => $"X:{ticker}",
+                Market.FX => $"C:{ticker}",
+                Market.Indices => $"I:{ticker}",
+                Market.Options => $"O:{ticker}",
+                Market.Stocks => ticker,
+                _ => throw new InvalidOperationException($"Parameter '{nameof(assetClass)} must be non-default.")
+            };
+
+            string endpoint = string.Format(endpointPattern, tickerAdj);
 
             var queryBuilder = GetQueryBuilder();
-            if(date is not null)
+            if (date is not null)
                 queryBuilder.AddParameter("date", $"{date:yyyy-MM-dd}");
 
             var response = await GetResponseAsync<TickerOverviewResponse>(queryBuilder, endpoint);

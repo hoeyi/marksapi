@@ -10,7 +10,7 @@ namespace ApiClient.Massive
 
         /// <inheritdoc/>
         public async Task<AggregateTickerResponse> GetAllTickersAsync(
-            string? ticker = null, 
+            string? ticker = null,
             TickerType? type = null,
             string? market = null,
             string? exchange = null,
@@ -25,8 +25,8 @@ namespace ApiClient.Massive
         {
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(limit, 0, nameof(limit));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(limit, 1000, nameof(limit));
-            
-            if(string.IsNullOrEmpty(ticker) && string.IsNullOrEmpty(cusip))
+
+            if (string.IsNullOrEmpty(ticker) && string.IsNullOrEmpty(cusip))
                 throw new ArgumentException(
                     message: $"One of arguments '{nameof(ticker)}', '{nameof(cusip)}', must be non-empty.");
 
@@ -39,45 +39,47 @@ namespace ApiClient.Massive
             queryBuilder.AddParameter("limit", $"{limit}");
 
             // Conditional parameters.            
-            if(!string.IsNullOrEmpty(ticker))
+            if (!string.IsNullOrEmpty(ticker))
                 queryBuilder.AddParameter("ticker", ticker);
 
-            if(type is not null)
+            if (type is not null)
                 queryBuilder.AddParameter("type", type.Code);
 
-            if(!string.IsNullOrEmpty(market))
+            if (!string.IsNullOrEmpty(market))
                 queryBuilder.AddParameter("market", market);
 
-            if(!string.IsNullOrEmpty(exchange))
+            if (!string.IsNullOrEmpty(exchange))
                 queryBuilder.AddParameter("exchange", exchange);
 
-            if(!string.IsNullOrEmpty(cusip))
+            if (!string.IsNullOrEmpty(cusip))
                 queryBuilder.AddParameter("cusip", cusip);
 
-            if(!string.IsNullOrEmpty(cik))
+            if (!string.IsNullOrEmpty(cik))
                 queryBuilder.AddParameter("cik", cik);
 
-            if(date is not null)
+            if (date is not null)
                 queryBuilder.AddParameter("date", $"{date:yyyy-MM-dd}");
 
-            if(!string.IsNullOrEmpty(sort))
+            if (!string.IsNullOrEmpty(sort))
                 queryBuilder.AddParameter("sort", sort);
-            
+
             var response = await GetResponseAsync<AggregateTickerResponse>(queryBuilder, Endpoint.ReferenceAllTickers);
-            
+
             return response;
         }
 
         /// <inheritdoc/>
         public async Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
+            Market market,
             string ticker,
             DateTime? date = null
-        ) => await GetGenericTickerOverviewResponseAsync(ticker, date);
+        ) => await GetGenericTickerOverviewResponseAsync(market, ticker, date);
 
         /// <inheritdoc/>
         public Task<TickerOverviewResponse> GetAllTickerOverviewResponseAsync(
-            string[] ticker, DateTime? date = null)
+            Market market, string[] ticker, DateTime? date = null)
         {
+            _rateTimer?.IncrementCounter();
             throw new NotImplementedException();
         }
     }

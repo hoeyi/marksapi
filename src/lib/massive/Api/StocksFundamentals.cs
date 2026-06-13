@@ -31,14 +31,14 @@ public partial class MassiveApi
                 shortVolumeRatio.Value.OpenRight ? "short_volume_ratio.lt" : "short_volume_ratio.lte",
                 $"{shortVolumeRatio.Value.End}");
         }
-        
+
         queryBuilder.AddParameter("limit", $"{limit}");
-        
+
         var response = await GetResponseAsync<ShortVolumeResponse>(
                                 queryBuilder, Endpoint.StocksFundamentalsShortVolume);
-        
+
         return response;
-    }   
+    }
 
     /// <inheritdoc/>
     public Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
@@ -49,5 +49,5 @@ public partial class MassiveApi
         int? limit = 10)
     {
         throw new NotImplementedException();
-    }    
+    }
 }
