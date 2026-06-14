@@ -25,7 +25,7 @@ namespace ApiClient.Test.Massive.Integration
             string market, string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit, int expectedCount)
         {
             // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
             var fromDate = DateTime.Parse(fromStr);
             var toDate = DateTime.Parse(toStr);
             
@@ -59,7 +59,7 @@ namespace ApiClient.Test.Massive.Integration
             string ticker)
         {
             // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
 
             // Act
             var responseResult = await apiClient.GetAllTickersAsync(ticker);
@@ -146,7 +146,7 @@ namespace ApiClient.Test.Massive.Integration
             string ticker, string fromStr, string toStr)
         {
             // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!);
+            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
             var fromDate = DateTime.Parse(fromStr);
             var toDate = DateTime.Parse(toStr);
             

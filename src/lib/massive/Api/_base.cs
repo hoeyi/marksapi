@@ -7,6 +7,7 @@ using ApiClient.Resources;
 using ApiClient.Massive.Response.Stocks;
 using Microsoft.Extensions.Configuration;
 using ApiClient.Massive.Response;
+using System.Threading;
 
 namespace ApiClient.Massive
 {
@@ -106,8 +107,11 @@ namespace ApiClient.Massive
         /// <param name="endPoint"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">The response body was empty.</exception>
-        internal async Task<T> GetResponseAsync<T>(QueryBuilder queryBuilder, string endPoint)
+        internal async Task<T> GetResponseAsync<T>(QueryBuilder queryBuilder, string endPoint, CancellationTokenSource? cts = null)
         {
+            if(_rateTimer?.RateLimited ?? false)
+                await _rateTimer.AwaitIntervalResetAsync(cts?.Token);
+
             var absoluteUri = GetAbsoluteUri(endPoint);
             var uriBuilder = new UriBuilder(absoluteUri)
             {
@@ -133,6 +137,9 @@ namespace ApiClient.Massive
                     .DeserializeObject<T>(responseBody) ??
                     throw new InvalidOperationException(message: LoggingTemplates.Error.InvalidOrEmptyResponse);
 
+                // increment counter
+                _rateTimer?.IncrementCounter();
+                
                 return genericResponse;
             }
             catch (HttpRequestException e)
