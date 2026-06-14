@@ -77,7 +77,7 @@ namespace ApiClient.Massive
         ) => await GetGenericTickerOverviewResponseAsync(market, ticker, date);
 
         /// <inheritdoc/>
-        public Task<TickerOverviewResponse> GetAllTickerOverviewResponseAsync(
+        public Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
             Market market, string[] ticker, DateTime? date = null)
         {
             _rateTimer?.IncrementCounter();

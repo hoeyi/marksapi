@@ -69,7 +69,7 @@ namespace ApiClient.Test.Massive.Unit
             // Act
             // Assert
             await Assert.ThrowsAsync<NotImplementedException>(
-                () => apiClient.GetAllTickerOverviewResponseAsync(marketEnum, tickers));           
+                () => apiClient.GetTickerOverviewResponseAsync(marketEnum, tickers));           
         }
 
         [Fact]

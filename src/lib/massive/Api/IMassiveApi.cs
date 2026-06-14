@@ -124,7 +124,7 @@ public interface IMassiveApi
     /// <param name="ticker">Filter by a ticker symbol(s).</param>
     /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
     /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
-    Task<TickerOverviewResponse> GetAllTickerOverviewResponseAsync(
+    Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
         Market market,
         string[] ticker,
         DateTime? date = null);
