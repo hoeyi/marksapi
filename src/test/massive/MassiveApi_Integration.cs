@@ -9,10 +9,12 @@ namespace ApiClient.Test.Massive.Integration
     public class MassiveApi_Test : IClassFixture<ConfigurationFixture>
     {
         ConfigurationFixture _fixture;
+        MassiveApi _apiClient;
         public MassiveApi_Test(ConfigurationFixture fixture)
         {
             _fixture = fixture;
             ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_key:massive"]);
+            _apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
         }
 
         [Theory]
@@ -25,7 +27,6 @@ namespace ApiClient.Test.Massive.Integration
             string market, string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit, int expectedCount)
         {
             // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
             var fromDate = DateTime.Parse(fromStr);
             var toDate = DateTime.Parse(toStr);
             
@@ -37,7 +38,7 @@ namespace ApiClient.Test.Massive.Integration
                     $"Test parameter '{market}' could not be parsed.");
 
             // Act
-            var responseResult = await apiClient.GetAggregateBarResponseAsync(
+            var responseResult = await _apiClient.GetAggregateBarResponseAsync(
                 marketResult, ticker, multiplier, barTimeResult, fromDate, toDate, limit);
 
             // Assert
@@ -59,10 +60,9 @@ namespace ApiClient.Test.Massive.Integration
             string ticker)
         {
             // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
 
             // Act
-            var responseResult = await apiClient.GetAllTickersAsync(ticker);
+            var responseResult = await _apiClient.GetAllTickersAsync(ticker);
 
             // Assert
             Assert.Multiple(
@@ -87,13 +87,11 @@ namespace ApiClient.Test.Massive.Integration
             string market, string ticker)
         {
             // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
-
             if(!Enum.TryParse(market, out Market marketResult))
                 throw new InvalidOperationException($"Test parameter '{market}' could not be parsed.");
 
             // Act
-            var responseResult = await apiClient.GetTickerOverviewResponseAsync(marketResult, ticker);
+            var responseResult = await _apiClient.GetTickerOverviewResponseAsync(marketResult, ticker);
             
             // Assert
             Assert.Multiple(
@@ -114,7 +112,6 @@ namespace ApiClient.Test.Massive.Integration
             string market, string ticker)
         {
             // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
             Market marketEnum;
 
             if(!Enum.TryParse(market, out Market result))
@@ -123,7 +120,7 @@ namespace ApiClient.Test.Massive.Integration
                 marketEnum = result;
 
             // Act
-            var responseResult = await apiClient.GetTickerOverviewResponseAsync(marketEnum, ticker);
+            var responseResult = await _apiClient.GetTickerOverviewResponseAsync(marketEnum, ticker);
             
             // Assert
             Assert.Multiple(
@@ -146,12 +143,11 @@ namespace ApiClient.Test.Massive.Integration
             string ticker, string fromStr, string toStr)
         {
             // Arrange
-            var apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
             var fromDate = DateTime.Parse(fromStr);
             var toDate = DateTime.Parse(toStr);
             
             // Act
-            var responseResult = await apiClient.GetShortVolumeResponseAsync(ticker, fromDate, toDate);
+            var responseResult = await _apiClient.GetShortVolumeResponseAsync(ticker, fromDate, toDate);
             
             // Assert
             Assert.Multiple(
