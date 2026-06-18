@@ -52,26 +52,6 @@ namespace ApiClient.Test.Massive.Unit
             Assert.Throws<ArgumentNullException>(() => new MassiveApi(null!));
         }
 
-        [Theory]
-        [InlineData("Stocks", "AAPL,MSFT")]
-        public async Task GetAllTickerOverviewResponseAsync_ThrowNotImplementedException(
-            string market, string tickersDelim)
-        {
-            // Arrange
-            var apiClient = new MassiveApi(Test_ApiKey);
-            string[] tickers = tickersDelim.Split(",");
-            Market marketEnum;
-            if(!Enum.TryParse(market, out Market result))
-                throw new InvalidOperationException($"Test parameter '{market}' could not be parsed.");
-            else
-                marketEnum = result;
-
-            // Act
-            // Assert
-            await Assert.ThrowsAsync<NotImplementedException>(
-                () => apiClient.GetTickerOverviewResponseAsync(marketEnum, tickers));           
-        }
-
         [Fact]
         public async Task GetStocksAggregateBarResponseAsync_ThrowNotImplementedException()
         {

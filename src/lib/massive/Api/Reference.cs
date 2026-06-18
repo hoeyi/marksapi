@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
@@ -77,11 +78,29 @@ namespace ApiClient.Massive
         ) => await GetGenericTickerOverviewResponseAsync(market, ticker, date);
 
         /// <inheritdoc/>
-        public Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
-            Market market, string[] ticker, DateTime? date = null)
+        public async Task<List<TickerOverviewResponse>> GetTickerOverviewResponseAsync(
+            Market market, string[] tickers, DateTime? date = null)
         {
-            _rateTimer?.IncrementCounter();
-            throw new NotImplementedException();
+            List<TickerOverviewResponse> responses = [];
+
+            if(_rateTimer is null)
+                throw new InvalidOperationException(
+                    $"{nameof(GetTickerOverviewResponseAsync)} requires instance of '{nameof(RateTimer)}.");
+            foreach(var ticker in tickers)
+            {
+                if (_rateTimer.RateLimited)
+                {
+                    await _rateTimer.AwaitIntervalResetAsync(ct: null);
+                }
+                else
+                {
+                    var response = await GetTickerOverviewResponseAsync(market, ticker, date);
+                    _rateTimer.IncrementCounter();
+                    responses.Add(response);
+                }
+            }
+
+            return responses;
         }
     }
 }

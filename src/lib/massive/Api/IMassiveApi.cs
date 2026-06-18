@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
@@ -36,7 +37,7 @@ public interface IMassiveApi
     /// specified stock ticker over a custom date range and time interval in Eastern Time (ET).
     /// </summary>
     /// <param name="market">Market to search.</param>
-    /// <param name="ticker">Case-sensitive ticker symbol(s).</param>
+    /// <param name="tickers">Case-sensitive ticker symbol(s).</param>
     /// <param name="multiplier">Timespan multiplier, e.g., 1 {timeSpan}.</param>
     /// <param name="timeSpan">Size of the time window.</param>
     /// <param name="from">Start of the time window.</param>
@@ -45,7 +46,7 @@ public interface IMassiveApi
     /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
     Task<AggregateBarResponse> GetAggregateBarResponseAsync(
         Market market,
-        string[] ticker,
+        string[] tickers,
         int multiplier,
         BarTimespanEnum timeSpan,
         DateTime from,
@@ -56,14 +57,14 @@ public interface IMassiveApi
     /// Retrieve daily aggregated short sale volume data reported to FINRA from off-exchange trading 
     /// venues and alternative trading systems (ATS) for a specified stock ticker.
     /// </summary>
-    /// <param name="ticker">The primary ticker symbol for the stock(s).</param>
+    /// <param name="tickers">The primary ticker symbol for the stock(s).</param>
     /// <param name="fromDate">The start date of trade activity.</param>
     /// <param name="toDate">The end date of trade activity.</param>
     /// <param name="shortVolumeRatio">Interval for filtering results.</param>
     /// <param name="limit">Maximum number of records to return (Min = 1, Max = 50000, Default = 10).</param>
     /// <returns>A <see cref="Task"/> containing an <see cref="ShortVolumeResponse"/>.</returns>
     Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
-        string[] ticker,
+        string[] tickers,
         DateTime fromDate,
         DateTime toDate,
         Interval<float>? shortVolumeRatio = null,
@@ -124,9 +125,9 @@ public interface IMassiveApi
     /// <param name="ticker">Filter by a ticker symbol(s).</param>
     /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
     /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
-    Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
+    Task<List<TickerOverviewResponse>> GetTickerOverviewResponseAsync(
         Market market,
-        string[] ticker,
+        string[] tickers,
         DateTime? date = null);
 
     /// <summary>

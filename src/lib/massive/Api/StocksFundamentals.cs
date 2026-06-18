@@ -45,23 +45,23 @@ public partial class MassiveApi
 
     /// <inheritdoc/>
     public async Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
-        string[] ticker,
+        string[] tickers,
         DateTime fromDate,
         DateTime toDate,
         Interval<float>? shortVolumeRatio = null,
         int? limit = 10)
     {
-        if(ticker.Length == 0)
-            throw new ArgumentException($"Parameter '{ticker} must be non-empty.");
+        if(tickers.Length == 0)
+            throw new ArgumentException($"Parameter '{tickers} must be non-empty.");
         
         // Entries will be dropped, but log a warning if possible.
-        if(ticker.Any(x => string.IsNullOrEmpty(x)))
-            _logger?.LogWarning("Ignoring empty entries in '{parameter}'.", nameof(ticker));
+        if(tickers.Any(x => string.IsNullOrEmpty(x)))
+            _logger?.LogWarning("Ignoring empty entries in '{parameter}'.", nameof(tickers));
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(fromDate, toDate);
 
         var queryBuilder = GetQueryBuilder();
-        var tickersDelimited = string.Join(",", ticker.Where(x => !string.IsNullOrEmpty(x)));
+        var tickersDelimited = string.Join(",", tickers.Where(x => !string.IsNullOrEmpty(x)));
         queryBuilder.AddParameter("ticker.any_of", string.Join(",", tickersDelimited));
         queryBuilder.AddParameter("date.gte", $"{fromDate:yyyy-MM-dd}");
         queryBuilder.AddParameter("date.lte", $"{toDate:yyyy-MM-dd}");
