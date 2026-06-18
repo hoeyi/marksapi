@@ -161,5 +161,31 @@ namespace ApiClient.Test.Massive.Integration
                 nameof(GetShortVolumeResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);
         }
+
+        [Theory]
+        [InlineData("AAPL,MSFT", "2026-05-13", "2026-05-15")]
+        public async Task GetShortVolumeResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse(
+            string ticker, string fromStr, string toStr)
+        {
+            // Arrange
+            var fromDate = DateTime.Parse(fromStr);
+            var toDate = DateTime.Parse(toStr);
+            var tickers = ticker.Split(",");
+
+            // Act
+            var responseResult = await _apiClient.GetShortVolumeResponseAsync(tickers, fromDate, toDate);
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<ShortVolumeResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results),
+                () => Assert.All(responseResult.Results, x => Assert.True(x.Date > default(DateTime)))); // verifies complex serialization
+
+            // Print result            
+            _fixture.Logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetShortVolumeResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse), 
+                responseResult);
+        }
     }
 }
