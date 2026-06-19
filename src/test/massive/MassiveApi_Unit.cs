@@ -51,23 +51,5 @@ namespace ApiClient.Test.Massive.Unit
             // Assert
             Assert.Throws<ArgumentNullException>(() => new MassiveApi(null!));
         }
-
-        [Fact]
-        public async Task GetStocksAggregateBarResponseAsync_ThrowNotImplementedException()
-        {
-            // Arrange
-            var apiClient = new MassiveApi(Test_ApiKey);
-            var market = Market.Stocks;
-            string[] tickers = ["AAPL"];
-            var multiplier = 1;
-            var timeSpan = BarTimespanEnum.Day;
-            var from = new DateTime(2025, 11, 25);
-            var to = new DateTime(2025, 11, 28);
-
-            // Act
-            // Assert
-            await Assert.ThrowsAsync<NotImplementedException>(
-                () => apiClient.GetAggregateBarResponseAsync(market, tickers, multiplier, timeSpan, from, to));           
-        }
     }
 }
