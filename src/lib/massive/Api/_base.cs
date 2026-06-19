@@ -125,7 +125,7 @@ namespace ApiClient.Massive
                 string responseBody = await response.Content.ReadAsStringAsync();
 
                 LogHeaderDebug(_logger, response.Headers);
-                LogBodyDebug(_logger, responseBody);
+                    LogBodyDebug(_logger, responseBody);
 
                 // Parse the JSON response. If the response is null thow invalid operation
                 T genericResponse = JsonConvert
@@ -184,28 +184,29 @@ namespace ApiClient.Massive
     #region Logger methods
     public partial class MassiveApi
     {
-        [LoggerMessage(
-            EventId = 1,
-            Level = LogLevel.Debug,
-            Message = "Response received with {@headers}.")]
-        static partial void LogHeaderDebug(
-            ILogger? logger, HttpResponseHeaders headers);
+        static void LogHeaderDebug(
+            ILogger? logger, HttpResponseHeaders headers)
+        {
+            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+                logger?.LogError(eventId: 1, "Response received: {@headers}.", headers);
+        }
 
-        [LoggerMessage(
-            EventId = 2,
-            Level = LogLevel.Debug,
-            Message = "Response received with {body}.")]
-        static partial void LogBodyDebug(ILogger? logger, string body);
+        static void LogBodyDebug(ILogger? logger, string body)
+        {
+            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+                logger?.LogError(eventId: 2, "Response received with {body}.", body);
+        }
 
-
-        [LoggerMessage(
-            EventId = 3,
-            Level = LogLevel.Information,
-            Message = "{apiName} rate limit reached. Reset in {timeOutSeconds}s.")]
-        static partial void LogRateLimitInformation(
+        static void LogRateLimitInformation(
             ILogger? logger, 
             string apiName,
-            int timeOutSeconds);
+            int timeOutSeconds)
+        {
+            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+                logger?.LogError(
+                    eventId: 3, "{apiName} rate limit reached. Reset in {timeOutSeconds}s.", 
+                    apiName, timeOutSeconds);
+        }
 
         static void LogHttpError(ILogger? logger, HttpRequestException exception)
         {
