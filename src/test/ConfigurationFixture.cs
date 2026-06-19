@@ -34,7 +34,7 @@ public class ConfigurationFixture : IDisposable
             logConfig
                 .WriteTo.Console()
                 .WriteTo.File("log-.log", rollingInterval: RollingInterval.Day)
-                .WriteTo.File(new CompactJsonFormatter(), "log-.json", rollingInterval: RollingInterval.Day);
+                .WriteTo.File(new CompactJsonFormatter(), "*.json", rollingInterval: RollingInterval.Day);
 
         Log.Logger = logConfig.CreateLogger();
 
