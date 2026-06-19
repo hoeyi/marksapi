@@ -1,20 +1,22 @@
 using ApiClient.Massive;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
+using ApiClient.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Test.Massive.Integration
 {
     [Trait(nameof(TestAttributeName.Category), "Integration")]
-    public class MassiveApi_Test : IClassFixture<ConfigurationFixture>
+    public class MassiveApi_Test : IClassFixture<IntegrationFixture>
     {
-        ConfigurationFixture _fixture;
-        MassiveApi _apiClient;
-        public MassiveApi_Test(ConfigurationFixture fixture)
+        IntegrationFixture _fixture;
+        MassiveApi ApiClient => 
+            _fixture.MassiveApi ?? 
+            throw new InvalidOperationException($"Instance of {nameof(MassiveApi)} required.");
+        public MassiveApi_Test(IntegrationFixture fixture)
         {
             _fixture = fixture;
-            ArgumentException.ThrowIfNullOrWhiteSpace(_fixture.Configuration["api_key:massive"]);
-            _apiClient = new MassiveApi(_fixture.Configuration["api_key:massive"]!, _fixture.Configuration);
         }
 
         [Theory]
@@ -23,6 +25,7 @@ namespace ApiClient.Test.Massive.Integration
         [InlineData("Crypto", "BTCUSD", 1, "Day", "2026-06-08", "2026-06-08", 5, 1)]
         [InlineData("Indices", "COMP", 1, "Day", "2026-06-08", "2026-06-08", 5, 1)]
         [InlineData("FX", "EURUSD", 1, "Day", "2026-06-08", "2026-06-08", 5, 1)]
+        [InlineData("FX", "CADUSD", 1, "Day", "2026-06-08", "2026-06-08", 5, 1)]
         public async Task GetAggregateBarResponseAsync_ReturnSuccessResponse(
             string market, string ticker, int multiplier, string timeSpan, string fromStr, string toStr, int limit, int expectedCount)
         {
@@ -38,7 +41,7 @@ namespace ApiClient.Test.Massive.Integration
                     $"Test parameter '{market}' could not be parsed.");
 
             // Act
-            var responseResult = await _apiClient.GetAggregateBarResponseAsync(
+            var responseResult = await ApiClient.GetAggregateBarResponseAsync(
                 marketResult, ticker, multiplier, barTimeResult, fromDate, toDate, limit);
 
             // Assert
@@ -62,7 +65,7 @@ namespace ApiClient.Test.Massive.Integration
             // Arrange
 
             // Act
-            var responseResult = await _apiClient.GetAllTickersAsync(ticker);
+            var responseResult = await ApiClient.GetAllTickersAsync(ticker);
 
             // Assert
             Assert.Multiple(
@@ -91,7 +94,7 @@ namespace ApiClient.Test.Massive.Integration
                 throw new InvalidOperationException($"Test parameter '{market}' could not be parsed.");
 
             // Act
-            var responseResult = await _apiClient.GetTickerOverviewResponseAsync(marketResult, ticker);
+            var responseResult = await ApiClient.GetTickerOverviewResponseAsync(marketResult, ticker);
             
             // Assert
             Assert.Multiple(
@@ -120,7 +123,7 @@ namespace ApiClient.Test.Massive.Integration
                 marketEnum = result;
 
             // Act
-            var responseResult = await _apiClient.GetTickerOverviewResponseAsync(marketEnum, ticker);
+            var responseResult = await ApiClient.GetTickerOverviewResponseAsync(marketEnum, ticker);
             
             // Assert
             Assert.Multiple(
@@ -147,7 +150,7 @@ namespace ApiClient.Test.Massive.Integration
             var toDate = DateTime.Parse(toStr);
             
             // Act
-            var responseResult = await _apiClient.GetShortVolumeResponseAsync(ticker, fromDate, toDate);
+            var responseResult = await ApiClient.GetShortVolumeResponseAsync(ticker, fromDate, toDate);
             
             // Assert
             Assert.Multiple(
@@ -173,7 +176,7 @@ namespace ApiClient.Test.Massive.Integration
             var tickers = ticker.Split(",");
 
             // Act
-            var responseResult = await _apiClient.GetShortVolumeResponseAsync(tickers, fromDate, toDate);
+            var responseResult = await ApiClient.GetShortVolumeResponseAsync(tickers, fromDate, toDate);
             
             // Assert
             Assert.Multiple(

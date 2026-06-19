@@ -10,7 +10,7 @@ namespace ApiClient.Services;
 /// <summary>
 /// Provides functionality for counting API calls for client rate-limiting.
 /// </summary>
-public class RateTimer
+public struct RateTimer
 {
     private short _counter;
     private DateTime? _lastReset;

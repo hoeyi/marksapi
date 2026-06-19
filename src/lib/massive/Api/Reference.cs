@@ -88,14 +88,14 @@ namespace ApiClient.Massive
                     $"{nameof(GetTickerOverviewResponseAsync)} requires instance of '{nameof(RateTimer)}.");
             foreach(var ticker in tickers)
             {
-                if (_rateTimer.RateLimited)
+                if (_rateTimer.Value.RateLimited)
                 {
-                    await _rateTimer.AwaitIntervalResetAsync(ct: null);
+                    await _rateTimer.Value.AwaitIntervalResetAsync(ct: null);
                 }
                 else
                 {
                     var response = await GetTickerOverviewResponseAsync(market, ticker, date);
-                    _rateTimer.IncrementCounter();
+                    _rateTimer.Value.IncrementCounter();
                     responses.Add(response);
                 }
             }

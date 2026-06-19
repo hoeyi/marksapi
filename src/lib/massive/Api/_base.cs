@@ -3,11 +3,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using ApiClient.Services;
-using ApiClient.Resources;
 using ApiClient.Massive.Response.Stocks;
-using Microsoft.Extensions.Configuration;
 using ApiClient.Massive.Response;
 using System.Threading;
+using System.Net.Http.Headers;
 
 namespace ApiClient.Massive
 {
@@ -61,15 +60,15 @@ namespace ApiClient.Massive
         private readonly ILogger? _logger;
         private readonly RateTimer? _rateTimer;
 
-        public MassiveApi(string apiKey, IConfiguration? configuration = null, ILogger? logger = null)
-            : this(new HttpClient(), apiKey, configuration, logger)
+        public MassiveApi(string apiKey, RateOptions? rateOptions = null, ILogger? logger = null)
+            : this(new HttpClient(), apiKey, rateOptions, logger)
         {
         }
 
         internal MassiveApi(
             HttpClient httpClient,
             string apiKey,
-            IConfiguration? configuration = null,
+            RateOptions? rateOptions = null,
             ILogger? logger = null)
             : base(
                 baseUrl: _baseUrl,
@@ -82,18 +81,11 @@ namespace ApiClient.Massive
 
             RequiredParams.Add("apiKey", apiKey);
 
-            RateOptions options = new();
-            var section = configuration?
-                .GetSection("massive")?
-                .GetSection(nameof(RateOptions));
-
-            if (section is null)
+            RateOptions options = rateOptions ?? new()
             {
-                options.Limit = 5;
-                options.Interval = 60;
-            }
-            else
-                section.Bind(options);
+                Limit = 5,
+                Interval = 60
+            };
 
             _rateTimer = new RateTimer(options.Limit, options.Interval);
             _logger = logger;
@@ -110,7 +102,14 @@ namespace ApiClient.Massive
         internal async Task<T> GetResponseAsync<T>(QueryBuilder queryBuilder, string endPoint, CancellationTokenSource? cts = null)
         {
             if(_rateTimer?.RateLimited ?? false)
-                await _rateTimer.AwaitIntervalResetAsync(cts?.Token);
+            {
+                LogRateLimitInformation(_logger, nameof(MassiveApi), _rateTimer?.TimeToReset?.Seconds ?? default);
+
+                // timeOut should not be null here.
+                var timeOut = _rateTimer?.AwaitIntervalResetAsync(cts?.Token) ?? 
+                                throw new InvalidOperationException();
+                await timeOut;
+            }
 
             var absoluteUri = GetAbsoluteUri(endPoint);
             var uriBuilder = new UriBuilder(absoluteUri)
@@ -125,17 +124,13 @@ namespace ApiClient.Massive
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
-#if DEBUG
-#pragma warning disable CA1873 // Avoid potentially expensive logging
-                _logger?.LogDebug("{@headers}", response.Headers);
-                _logger?.LogDebug("{@responseBody}", responseBody);
-#pragma warning restore CA1873 // Avoid potentially expensive logging
-#endif
+                LogHeaderDebug(_logger, response.Headers);
+                LogBodyDebug(_logger, responseBody);
 
                 // Parse the JSON response. If the response is null thow invalid operation
                 T genericResponse = JsonConvert
                     .DeserializeObject<T>(responseBody) ??
-                    throw new InvalidOperationException(message: LoggingTemplates.Error.InvalidOrEmptyResponse);
+                    throw new InvalidOperationException(message: $"{nameof(responseBody)} was null.");
 
                 // increment counter
                 _rateTimer?.IncrementCounter();
@@ -144,7 +139,7 @@ namespace ApiClient.Massive
             }
             catch (HttpRequestException e)
             {
-                _logger?.LogError(LoggingTemplates.Error.HttpErrorGeneral, e);
+                LogHttpError(_logger, e);
                 throw;
             }
         }
@@ -185,6 +180,40 @@ namespace ApiClient.Massive
         /// <returns>A <see cref="QueryBuilder"/> configured for required parameters.</returns>
         private QueryBuilder GetQueryBuilder() => new(initParameters: RequiredParams);
     }
+
+    #region Logger methods
+    public partial class MassiveApi
+    {
+        [LoggerMessage(
+            EventId = 1,
+            Level = LogLevel.Debug,
+            Message = "Response received with {@headers}.")]
+        static partial void LogHeaderDebug(
+            ILogger? logger, HttpResponseHeaders headers);
+
+        [LoggerMessage(
+            EventId = 2,
+            Level = LogLevel.Debug,
+            Message = "Response received with {body}.")]
+        static partial void LogBodyDebug(ILogger? logger, string body);
+
+
+        [LoggerMessage(
+            EventId = 3,
+            Level = LogLevel.Information,
+            Message = "{apiName} rate limit reached. Reset in {timeOutSeconds}s.")]
+        static partial void LogRateLimitInformation(
+            ILogger? logger, 
+            string apiName,
+            int timeOutSeconds);
+
+        static void LogHttpError(ILogger? logger, HttpRequestException exception)
+        {
+            if(logger?.IsEnabled(LogLevel.Error) ?? false)
+                logger?.LogError(eventId: 4, "Http request failed. {@exception}", exception);
+        }
+    }
+    #endregion
 
     #region Private, generalized methods.
     public partial class MassiveApi
