@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
+using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Massive
 {
@@ -88,16 +89,14 @@ namespace ApiClient.Massive
                     $"{nameof(GetTickerOverviewResponseAsync)} requires instance of '{nameof(RateTimer)}.");
             foreach(var ticker in tickers)
             {
-                if (_rateTimer.Value.RateLimited)
-                {
-                    await _rateTimer.Value.AwaitIntervalResetAsync(ct: null);
-                }
+                await _rateTimer.AwaitIntervalResetAsync(ct: null);
+                var response = await GetTickerOverviewResponseAsync(market, ticker, date);
+                _rateTimer.IncrementCounter();
+                
+                if(response is null)
+                    _logger?.LogWarning("Received empty resonse.");
                 else
-                {
-                    var response = await GetTickerOverviewResponseAsync(market, ticker, date);
-                    _rateTimer.Value.IncrementCounter();
                     responses.Add(response);
-                }
             }
 
             return responses;

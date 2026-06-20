@@ -76,10 +76,21 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         // Arrange
         var rateTimer = new RateTimer(1, 5);
         
+        _fixture.Logger.LogInformation(
+            "Post-Arrange: {method} {@rateTime}", 
+            nameof(AwaitIntervalResetAsync_RateLimited_Returns),
+            rateTimer);
+
         // Act
         rateTimer.IncrementCounter();
         bool rateLimited = rateTimer.RateLimited;
         var timeOut = rateTimer.AwaitIntervalResetAsync(ct: null);
+
+        _fixture.Logger.LogInformation(
+            "Post-Act: {method} {@rateTime}", 
+            nameof(AwaitIntervalResetAsync_RateLimited_Returns),
+            rateTimer);
+
         await timeOut;
 
         // Assert
@@ -97,6 +108,13 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         cts.CancelAfter(1000);
         var rateTimer = new RateTimer(1, 5);
         rateTimer.IncrementCounter();
+
+        _fixture.Logger.LogDebug(
+            "{method} {@rateTime}", 
+            nameof(AwaitIntervalResetAsync_CancelRequested_ThrowsCancellationException),
+            rateTimer);
+
+        // TODO: Needs to simulate a long-enough day to trigger after 1 second.
         Task task = rateTimer.AwaitIntervalResetAsync(cts.Token);
         
         // Act

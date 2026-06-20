@@ -1,20 +1,16 @@
 using System;
-using System.Reflection.Metadata.Ecma335;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
-using System.Timers; 
 
 namespace ApiClient.Services;
 
 /// <summary>
 /// Provides functionality for counting API calls for client rate-limiting.
 /// </summary>
-public struct RateTimer
+public class RateTimer
 {
     private short _counter;
     private DateTime? _nextReset;
-    private readonly System.Timers.Timer _timer;
 
     /// <summary>
     /// Constructs a new instance of <see cref="RateTimer"/>.
@@ -32,10 +28,6 @@ public struct RateTimer
 
         ApiCallLimit = apiCallLimit;
         ApiCallInterval = apiCallInterval;
-
-        _timer = new System.Timers.Timer(interval: apiCallInterval * 1000);
-        _timer.Elapsed += OnTimerElapsed;
-        _timer.Enabled = true;
     }
 
     /// <summary>
@@ -51,17 +43,17 @@ public struct RateTimer
     /// <summary>
     /// Gets the rate-limiting status of this limiter.
     /// </summary>
-    public readonly bool RateLimited => Counter >= ApiCallLimit && NextReset > DateTime.UtcNow;
+    public bool RateLimited => Counter >= ApiCallLimit && NextReset > DateTime.UtcNow;
  
     /// <summary>
     /// Gets the <see cref="DateTime"/> representing the next estimated reset.
     /// </summary>
-    public readonly DateTime? NextReset => _nextReset;
+    public DateTime? NextReset => _nextReset;
 
     /// <summary>
     /// Gets or sets the count of API calls in this interval.
     /// </summary>
-    public readonly short Counter => _counter;
+    public short Counter => _counter;
 
     /// <summary>
     /// Increments the <see cref="Counter"> property.
@@ -79,12 +71,8 @@ public struct RateTimer
     /// </summary>
     /// <param name="ct">A <see cref="CancellationToken"/> instance.</param>
     /// <returns>An empty <see cref="Task"/>.</returns>
-#pragma warning disable IDE0251 // Make member 'readonly'
     public async Task AwaitIntervalResetAsync(CancellationToken? ct = null)
-#pragma warning restore IDE0251 // Make member 'readonly'
     {
-        ct?.ThrowIfCancellationRequested();
-
         while(RateLimited)
         {
             ct?.ThrowIfCancellationRequested();
@@ -96,13 +84,6 @@ public struct RateTimer
 
         return;
     }
-    
-    /// <summary>
-    /// Resets <see cref="Counter"/> to zero.
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="e"></param>
-    private void OnTimerElapsed(object? source, ElapsedEventArgs e) => ResetCounter();
 
     /// <summary>
     /// Resets the <see cref="_counter"/> and <see cref="_nextReset"/> fields.

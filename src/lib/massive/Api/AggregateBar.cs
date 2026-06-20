@@ -42,20 +42,15 @@ public partial class MassiveApi
 
         foreach(var ticker in tickers)
         {
-            if (_rateTimer.HasValue && _rateTimer.Value.RateLimited)
-            {
-                await _rateTimer.Value.AwaitIntervalResetAsync(ct: null);
-            }
-            else
-            {
-                var response = await GetAggregateBarResponseAsync(market, ticker, multiplier, timeSpan, from, to, limit);
-                _rateTimer.Value.IncrementCounter();
+            await _rateTimer.AwaitIntervalResetAsync(ct: null);
+            var response = await GetAggregateBarResponseAsync(market, ticker, multiplier, timeSpan, from, to, limit);
+            _rateTimer.IncrementCounter();
 
-                if(response is null)
-                    _logger?.LogWarning("Received empty resonse.");
-                else
-                    responses.Add(response);
-            }
+            if(response is null)
+                _logger?.LogWarning("Received empty resonse.");
+            else
+                responses.Add(response);
+            
         }
         
         var compositeResponse = new AggregateBarResponse()
