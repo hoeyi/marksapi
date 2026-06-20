@@ -15,7 +15,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         _fixture = fixture;
     }
     [Fact]
-    public void IncrementCounter_RateLimited_Returns_True()
+    public void IncrementCounter_IsRateLimited_Returns_True()
     {
         // Arrange
         // interval should be long enough for test execution
@@ -25,17 +25,17 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         rateTimer.IncrementCounter();
         
         _fixture.Logger.LogDebug("After action: {method} changed state for {@rateTime}.",
-            nameof(IncrementCounter_RateLimited_Returns_True),
+            nameof(IncrementCounter_IsRateLimited_Returns_True),
             rateTimer);
 
         // Assert
         Assert.Multiple(
-            () => Assert.True(rateTimer.RateLimited),
+            () => Assert.True(rateTimer.IsRateLimited),
             () => Assert.NotNull(rateTimer.NextReset));
     }
     
     [Fact]
-    public void InitialState_RateLimited_Returns_False()
+    public void InitialState_IsRateLimited_Returns_False()
     {
         // Arrange
         var rateTimer = new RateTimer(1, 60);
@@ -43,61 +43,63 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         // Act
         // Do nothing
         _fixture.Logger.LogDebug("After action: {method} changed state for {@rateTime}.",
-            nameof(InitialState_RateLimited_Returns_False),
+            nameof(InitialState_IsRateLimited_Returns_False),
             rateTimer);
 
         // Assert
         Assert.Multiple(
-            () => Assert.False(rateTimer.RateLimited),
+            () => Assert.False(rateTimer.IsRateLimited),
             () => Assert.Null(rateTimer.NextReset));
     }
 
     [Fact]
-    public async Task AwaitIntervalResetAsync_Not_RateLimited_Returns()
+    public async Task AwaitIntervalResetAsync_Not_IsRateLimited_Returns()
     {
         // Arrange
         var rateTimer = new RateTimer(1, 1);
         
         // Act
-        await rateTimer.AwaitIntervalResetAsync();
+        await rateTimer.CheckLimitOrAwaitIntervalResetAsync();
         _fixture.Logger.LogDebug("After action: {method} changed state for {@rateTime}.",
-            nameof(AwaitIntervalResetAsync_Not_RateLimited_Returns),
+            nameof(AwaitIntervalResetAsync_Not_IsRateLimited_Returns),
             rateTimer);
 
         // Assert
         Assert.Multiple(
-            () => Assert.False(rateTimer.RateLimited),
+            () => Assert.False(rateTimer.IsRateLimited),
             () => Assert.Equal(0, rateTimer.Counter));
     }
 
     [Fact]
-    public async Task AwaitIntervalResetAsync_RateLimited_Returns()
+    public async Task AwaitIntervalResetAsync_IsRateLimited_Returns()
     {
         // Arrange
         var rateTimer = new RateTimer(1, 5);
         
         _fixture.Logger.LogInformation(
             "Post-Arrange: {method} {@rateTime}", 
-            nameof(AwaitIntervalResetAsync_RateLimited_Returns),
+            nameof(AwaitIntervalResetAsync_IsRateLimited_Returns),
             rateTimer);
 
         // Act
         rateTimer.IncrementCounter();
-        bool rateLimited = rateTimer.RateLimited;
-        var timeOut = rateTimer.AwaitIntervalResetAsync(ct: null);
+        bool wasRateLimited = rateTimer.IsRateLimited;
+        int hadCounter = rateTimer.Counter;
+        var timeOut = rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: null);
 
         _fixture.Logger.LogInformation(
             "Post-Act: {method} {@rateTime}", 
-            nameof(AwaitIntervalResetAsync_RateLimited_Returns),
+            nameof(AwaitIntervalResetAsync_IsRateLimited_Returns),
             rateTimer);
 
         await timeOut;
 
         // Assert
         Assert.Multiple(
-            () => Assert.True(rateLimited),
-            () => Assert.False(rateTimer.RateLimited), // should be false after waiting
-            () => Assert.Equal(0, rateTimer.Counter));
+            () => Assert.True(wasRateLimited), // should be true immediately after counter increment
+            () => Assert.Equal(1, hadCounter), // should be 1 immediately after counter increment
+            () => Assert.False(rateTimer.IsRateLimited), // should be false after waiting
+            () => Assert.Equal(0, rateTimer.Counter)); // shoudl reset to zero after waiting
     }
 
     [Fact]
@@ -105,7 +107,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
     {
         // Arrange
         var cts = new CancellationTokenSource();
-        cts.CancelAfter(1000);
+        cts.CancelAfter(TimeSpan.FromSeconds(1));
         var rateTimer = new RateTimer(1, 5);
         rateTimer.IncrementCounter();
 
@@ -115,7 +117,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
             rateTimer);
 
         // TODO: Needs to simulate a long-enough day to trigger after 1 second.
-        Task task = rateTimer.AwaitIntervalResetAsync(cts.Token);
+        Task task = rateTimer.CheckLimitOrAwaitIntervalResetAsync(cts.Token);
         
         // Act
         // Assert

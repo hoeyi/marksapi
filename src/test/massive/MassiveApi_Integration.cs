@@ -11,6 +11,8 @@ namespace ApiClient.Test.Massive.Integration
     public class MassiveApi_Test : IClassFixture<IntegrationFixture>
     {
         IntegrationFixture _fixture;
+        ILogger _logger => _logger;
+
         MassiveApi ApiClient => 
             _fixture.MassiveApi ?? 
             throw new InvalidOperationException($"Instance of {nameof(MassiveApi)} required.");
@@ -51,7 +53,7 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.All(responseResult.Results, x => Assert.True(x.Close > 0))); // verifies complex serialization
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetAggregateBarResponseAsync_ReturnSuccessResponse), 
                 responseResult);
@@ -74,7 +76,7 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.All(responseResult.Results, x => Assert.False(string.IsNullOrEmpty(x?.Name)))); // verifies complex serialization
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetStocksAllTickerAsync_SingleParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);
@@ -103,7 +105,7 @@ namespace ApiClient.Test.Massive.Integration
             );
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetTickerOverviewResponseAsync_ReturnSuccessResponse), 
                 responseResult);
@@ -134,7 +136,7 @@ namespace ApiClient.Test.Massive.Integration
             );
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetTickerOverviewResponseAsync_ComplexResponse_ReturnSuccessResponse), 
                 responseResult);
@@ -159,7 +161,7 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.All(responseResult.Results, x => Assert.True(x.Date > default(DateTime)))); // verifies complex serialization
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetShortVolumeResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);
@@ -185,7 +187,7 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.All(responseResult.Results, x => Assert.True(x.Date > default(DateTime)))); // verifies complex serialization
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetShortVolumeResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);
