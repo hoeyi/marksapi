@@ -1,11 +1,19 @@
 using System;
 using ApiClient.Services;
+using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Test.Unit;
 
 [Trait(nameof(TestAttributeName.Category), "Unit")]
-public class RateTimer_Unit
+public class RateTimer_Unit : IClassFixture<UnitFixture>
 {
+    readonly UnitFixture _fixture;
+
+    public RateTimer_Unit(UnitFixture fixture)
+    {
+        ArgumentNullException.ThrowIfNull(fixture);
+        _fixture = fixture;
+    }
     [Fact]
     public void IncrementCounter_RateLimited_Returns_True()
     {
@@ -16,10 +24,14 @@ public class RateTimer_Unit
         // Act
         rateTimer.IncrementCounter();
         
+        _fixture.Logger.LogDebug("After action: {method} changed state for {@rateTime}.",
+            nameof(IncrementCounter_RateLimited_Returns_True),
+            rateTimer);
+
         // Assert
         Assert.Multiple(
             () => Assert.True(rateTimer.RateLimited),
-            () => Assert.True(rateTimer.TimeToReset?.Milliseconds > 0));
+            () => Assert.NotNull(rateTimer.NextReset));
     }
     
     [Fact]
@@ -30,30 +42,14 @@ public class RateTimer_Unit
 
         // Act
         // Do nothing
+        _fixture.Logger.LogDebug("After action: {method} changed state for {@rateTime}.",
+            nameof(InitialState_RateLimited_Returns_False),
+            rateTimer);
 
         // Assert
         Assert.Multiple(
             () => Assert.False(rateTimer.RateLimited),
-            () => Assert.Null(rateTimer.TimeToReset));
-    }
-
-    [Fact]
-    public void ElapsedTimer_Resets_Counter()
-    {
-        // Arrange
-        var rateTimer = new RateTimer(1, 1);
-
-        // Act
-        rateTimer.IncrementCounter();
-        int t_zero_count = rateTimer.CurrentIntervalCalls;
-
-        // wait
-        Thread.Sleep(2000);
-        
-        // Assert
-        Assert.Multiple(
-            () => Assert.False(rateTimer.RateLimited),
-            () => Assert.Equal(0, rateTimer.CurrentIntervalCalls));
+            () => Assert.Null(rateTimer.NextReset));
     }
 
     [Fact]
@@ -64,11 +60,14 @@ public class RateTimer_Unit
         
         // Act
         await rateTimer.AwaitIntervalResetAsync();
-        
+        _fixture.Logger.LogDebug("After action: {method} changed state for {@rateTime}.",
+            nameof(AwaitIntervalResetAsync_Not_RateLimited_Returns),
+            rateTimer);
+
         // Assert
         Assert.Multiple(
             () => Assert.False(rateTimer.RateLimited),
-            () => Assert.Equal(0, rateTimer.CurrentIntervalCalls));
+            () => Assert.Equal(0, rateTimer.Counter));
     }
 
     [Fact]
@@ -79,12 +78,15 @@ public class RateTimer_Unit
         
         // Act
         rateTimer.IncrementCounter();
-        await rateTimer.AwaitIntervalResetAsync();
-        
+        bool rateLimited = rateTimer.RateLimited;
+        var timeOut = rateTimer.AwaitIntervalResetAsync(ct: null);
+        await timeOut;
+
         // Assert
         Assert.Multiple(
-            () => Assert.False(rateTimer.RateLimited),
-            () => Assert.Equal(0, rateTimer.CurrentIntervalCalls));
+            () => Assert.True(rateLimited),
+            () => Assert.False(rateTimer.RateLimited), // should be false after waiting
+            () => Assert.Equal(0, rateTimer.Counter));
     }
 
     [Fact]

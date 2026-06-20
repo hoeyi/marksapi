@@ -103,7 +103,7 @@ namespace ApiClient.Massive
         {
             if(_rateTimer?.RateLimited ?? false)
             {
-                LogRateLimitInformation(_logger, nameof(MassiveApi), _rateTimer?.TimeToReset?.Seconds ?? default);
+                LogRateLimitInformation(_logger, nameof(MassiveApi), _rateTimer?.NextReset ?? default);
 
                 // timeOut should not be null here.
                 var timeOut = _rateTimer?.AwaitIntervalResetAsync(cts?.Token) ?? 
@@ -200,12 +200,12 @@ namespace ApiClient.Massive
         static void LogRateLimitInformation(
             ILogger? logger, 
             string apiName,
-            int timeOutSeconds)
+            DateTime nextReset)
         {
             if(logger?.IsEnabled(LogLevel.Debug) ?? false)
                 logger?.LogError(
-                    eventId: 3, "{apiName} rate limit reached. Reset in {timeOutSeconds}s.", 
-                    apiName, timeOutSeconds);
+                    eventId: 3, "{apiName} rate limit reached. Reset in {$timeOutSeconds}s.", 
+                    apiName, nextReset);
         }
 
         static void LogHttpError(ILogger? logger, HttpRequestException exception)

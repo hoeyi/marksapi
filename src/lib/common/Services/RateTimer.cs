@@ -13,8 +13,7 @@ namespace ApiClient.Services;
 public struct RateTimer
 {
     private short _counter;
-    private DateTime? _lastReset;
-    private readonly object _lock = new();
+    private DateTime? _nextReset;
     private readonly System.Timers.Timer _timer;
 
     /// <summary>
@@ -50,49 +49,29 @@ public struct RateTimer
     public int ApiCallInterval { get; private init; } 
 
     /// <summary>
-    /// Gets the count of calls in the current interval.
-    /// </summary>
-    public short CurrentIntervalCalls => Counter;
-
-    /// <summary>
     /// Gets the rate-limiting status of this limiter.
     /// </summary>
-    public bool RateLimited => Counter == ApiCallLimit;
+    public readonly bool RateLimited => Counter >= ApiCallLimit && NextReset > DateTime.UtcNow;
  
     /// <summary>
-    /// Gets the <see cref="TimeSpan"/> representing the difference between now 
-    /// and the <see cref="LastReset"/> timestamp.
+    /// Gets the <see cref="DateTime"/> representing the next estimated reset.
     /// </summary>
-    public TimeSpan? TimeToReset => LastReset?.AddSeconds(ApiCallInterval).Subtract(DateTime.UtcNow);
+    public readonly DateTime? NextReset => _nextReset;
 
     /// <summary>
     /// Gets or sets the count of API calls in this interval.
     /// </summary>
-    private short Counter
-    {
-        get { return _counter; }
-        set
-        {
-            lock (_lock)
-            {
-                if(_counter != value)
-                {
-                    _counter = value;
-                    _lastReset = DateTime.UtcNow;
-                }
-            }
-        }
-    }
-    
-    /// <summary>
-    /// Gets the UTC timestamp for the last time the <see cref="Counter"/> value was changed.
-    /// </summary>
-    private DateTime? LastReset => _lastReset;
+    public readonly short Counter => _counter;
 
     /// <summary>
     /// Increments the <see cref="Counter"> property.
     /// </summary>
-    public void IncrementCounter() => Counter++;
+    public void IncrementCounter()
+    {
+        _counter++;
+        if(_counter >= ApiCallLimit)
+            _nextReset = DateTime.UtcNow.AddSeconds(ApiCallInterval);
+    }
 
     /// <summary>
     /// Checks to see if the rate limit has been tripped and awaits until the next reset before 
@@ -100,28 +79,19 @@ public struct RateTimer
     /// </summary>
     /// <param name="ct">A <see cref="CancellationToken"/> instance.</param>
     /// <returns>An empty <see cref="Task"/>.</returns>
+#pragma warning disable IDE0251 // Make member 'readonly'
     public async Task AwaitIntervalResetAsync(CancellationToken? ct = null)
+#pragma warning restore IDE0251 // Make member 'readonly'
     {
         ct?.ThrowIfCancellationRequested();
 
-        // Validate parameters.
-        if(!RateLimited)
-            return;
-        
-        if(TimeToReset is null)
-            throw new InvalidOperationException(
-                $"Expected non-null value for '{nameof(TimeToReset)}'.");
-
-        while(Counter > 0)
+        while(RateLimited)
         {
-            if(ct?.IsCancellationRequested ?? false)
-            {
-                // Clean up here.
-                ct?.ThrowIfCancellationRequested();
-            }
-            Thread.Sleep(
-                timeout: TimeToReset ?? 
-                         new TimeSpan(hours: 0, minutes: 0, seconds: 0));
+            ct?.ThrowIfCancellationRequested();
+            TimeSpan timeOut = NextReset!.Value.Subtract(DateTime.UtcNow);
+
+            await Task.Delay(timeOut);
+            ResetCounter();
         }
 
         return;
@@ -132,8 +102,14 @@ public struct RateTimer
     /// </summary>
     /// <param name="source"></param>
     /// <param name="e"></param>
-    private void OnTimerElapsed(object? source, ElapsedEventArgs e)
+    private void OnTimerElapsed(object? source, ElapsedEventArgs e) => ResetCounter();
+
+    /// <summary>
+    /// Resets the <see cref="_counter"/> and <see cref="_nextReset"/> fields.
+    /// </summary>
+    private void ResetCounter()
     {
-        Counter = 0;
+        _counter = 0;
+        _nextReset = null;
     }
 }
