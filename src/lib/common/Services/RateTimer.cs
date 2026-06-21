@@ -13,7 +13,7 @@ namespace ApiClient.Services;
 /// <summary>
 /// Provides functionality for counting API calls for client rate-limiting.
 /// </summary>
-public class RateTimer
+public class RateTimer : IDisposable
 {
     private readonly System.Timers.Timer _timer;
     private readonly ConcurrentQueue<DateTime> _requestBuffer = [];
@@ -57,7 +57,30 @@ public class RateTimer
     /// <summary>
     /// Gets the API call interval in seconds for this timer.
     /// </summary>
-    public int ApiCallInterval { get; private init; } 
+    public int ApiCallInterval { get; private init; }
+
+    private bool disposed = false;
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // called via myClass.Dispose(). 
+                // OK to use any private object references
+            }
+            // Release unmanaged resources.
+            // Set large fields to null.                
+            disposed = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        _timer.Elapsed -= TimerElapsed;
+        GC.SuppressFinalize(this);
+    }
 
     /// <summary>
     /// Gets the rate-limiting status of this limiter.
@@ -187,7 +210,7 @@ public class RateTimer
             logger?.LogInformation("Rate limited as {count}. Next reset at {timeOut}", count, timeOut);
     }
 
-#endregion Logger methods
+    #endregion Logger methods
 
     public class RateLimitedArgs : EventArgs
     {
