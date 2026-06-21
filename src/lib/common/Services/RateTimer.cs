@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 namespace ApiClient.Services;
 
@@ -62,7 +63,7 @@ public class RateTimer
     /// Gets the rate-limiting status of this limiter.
     /// </summary>
     // public bool IsRateLimited => Counter >= ApiCallLimit && NextReset > DateTime.UtcNow;
-    public bool IsRateLimited => EvaluateRateLimit(out _);
+    public bool IsRateLimited() => EvaluateRateLimit(out _);
 
     /// <summary>
     /// Gets or sets the count of API calls in this interval.
@@ -77,17 +78,18 @@ public class RateTimer
     /// <returns>An empty <see cref="Task"/>.</returns>
     public async Task CheckLimitOrAwaitIntervalResetAsync(CancellationToken? ct = null)
     {
-        while(EvaluateRateLimit(out TimeSpan? timeout) && timeout is TimeSpan span)
+        TimeSpan? timeout = null;
+        while(EvaluateRateLimit(out timeout) && timeout is TimeSpan span)
         {
-            while(!(ct?.IsCancellationRequested ?? false))
-            {
-                
-                if(span.Seconds > 0)
-                    await Task.Delay(delay: span);
-                else
-                    break;
-            }
             ct?.ThrowIfCancellationRequested();
+
+            if(span.TotalSeconds > 0)
+            {
+                _logger?.LogInformation("Sleeping for {totalSeconds}", span.TotalSeconds);
+                await Task.Delay(delay: span, cancellationToken: ct ?? default);
+            }
+            else
+                break;
         }
 
         return;
@@ -102,7 +104,8 @@ public class RateTimer
     {
         var timestamp = DateTime.UtcNow;
         var windowRequests = _requestBuffer
-                            .Where(x => x > timestamp.AddSeconds(ApiCallInterval * -1));
+                            .Where(x => x > timestamp.AddSeconds(ApiCallInterval * -1))
+                            .ToList();
         
         if(windowRequests.Count() < ApiCallLimit)
         {
@@ -113,7 +116,9 @@ public class RateTimer
         // Calculate the next reset (time when the window from the earliest call expires)
         var dt = windowRequests.Min().AddSeconds(ApiCallInterval);
         timeout = dt.Subtract(timestamp);
-        LogDebug_RateLimited(_logger, _requestBuffer.Count(), dt);
+
+        Debug.Assert(timeout?.TotalSeconds > 0);
+        LogDebug_RateLimited(_logger, windowRequests.Count(), dt);
 
         RateLimited?.Invoke(this, new(){ NextReset = dt});
         return true;
@@ -136,9 +141,6 @@ public class RateTimer
     /// <param name="signalTime">The time for the end of the window.</param>
     private void Decrement(DateTime signalTime)
     {
-        if(!_requestBuffer.Any())
-            return;
-
         var expired = _requestBuffer
                         .Where(predicate: x => x < signalTime.AddSeconds(ApiCallInterval * -1))
                         .ToArray();
@@ -165,8 +167,8 @@ public class RateTimer
             ILogger? logger, 
             DateTime dateTime)
     {
-        if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-            logger?.LogDebug("{dateTime} successfully dequeued.", dateTime);
+        if(logger?.IsEnabled(LogLevel.Information) ?? false)
+            logger?.LogInformation("{dateTime} successfully dequeued.", dateTime);
     }
 
     private static void LogDebug_ExpiredRecords(
@@ -174,8 +176,8 @@ public class RateTimer
             int count,
             DateTime[] expired)
     {
-        if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-            logger?.LogDebug("Found {count} records to dequeue.\n{@expired}", count, expired);
+        if(logger?.IsEnabled(LogLevel.Information) ?? false)
+            logger?.LogInformation("Found {count} records to dequeue.\n{@expired}", count, expired);
     }
 
     private static void LogDebug_RateLimited(
@@ -183,8 +185,8 @@ public class RateTimer
             int count,
             DateTime timeOut)
     {
-        if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-            logger?.LogDebug("Rate limited as {count}. Next reset at {tiumeOut}", count, timeOut);
+        if(logger?.IsEnabled(LogLevel.Information) ?? false)
+            logger?.LogInformation("Rate limited as {count}. Next reset at {tiumeOut}", count, timeOut);
     }
 #endregion Logger methods
 

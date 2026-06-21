@@ -195,17 +195,6 @@ namespace ApiClient.Massive
                 logger?.LogError(eventId: 2, "Response received with {body}.", body);
         }
 
-        static void LogRateLimitInformation(
-            ILogger? logger, 
-            string apiName,
-            DateTime nextReset)
-        {
-            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-                logger?.LogError(
-                    eventId: 3, "{apiName} rate limit reached. Reset in {$timeOutSeconds}s.", 
-                    apiName, nextReset);
-        }
-
         static void LogHttpError(ILogger? logger, HttpRequestException exception)
         {
             if(logger?.IsEnabled(LogLevel.Error) ?? false)
