@@ -99,13 +99,19 @@ namespace ApiClient.Massive
         /// <param name="endPoint"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">The response body was empty.</exception>
-        internal async Task<T> GetResponseAsync<T>(QueryBuilder queryBuilder, string endPoint, CancellationTokenSource? cts = null)
+        internal async Task<T> GetResponseAsync<T>(
+            QueryBuilder queryBuilder, string endPoint, CancellationTokenSource? cts = null)
         {
             // Check for client-side rate limiting and await the reset if applicable.
             if(_rateTimer is not null)
             {
                 // timeOut should not be null here.
-                var timeOut = _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cts?.Token);
+                bool useDefaultCts = cts is null;
+                cts ??= new CancellationTokenSource();
+                if (useDefaultCts)
+                    cts.CancelAfter(_rateTimer.ApiCallInterval);
+                
+                var timeOut = _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cts.Token);
                 await timeOut;
             }
 

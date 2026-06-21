@@ -34,8 +34,8 @@ public class RateTimer : IDisposable
         ArgumentOutOfRangeException.ThrowIfGreaterThan(apiCallInterval, 3600);
 
         ApiCallLimit = apiCallLimit;
-        ApiCallInterval = apiCallInterval;
-        _timer = new(apiCallInterval * 1000)
+        ApiCallInterval = TimeSpan.FromSeconds(apiCallInterval);
+        _timer = new(ApiCallInterval)
         {
             AutoReset = true,
             Enabled = true
@@ -55,9 +55,9 @@ public class RateTimer : IDisposable
     public int ApiCallLimit { get; private init; }
 
     /// <summary>
-    /// Gets the API call interval in seconds for this timer.
+    /// Gets the API call interval for this timer.
     /// </summary>
-    public int ApiCallInterval { get; private init; }
+    public TimeSpan ApiCallInterval { get; private init; }
 
     private bool disposed = false;
 
@@ -126,17 +126,17 @@ public class RateTimer : IDisposable
     {
         var timestamp = DateTime.UtcNow;
         var windowRequests = _requestBuffer
-                            .Where(x => x > timestamp.AddSeconds(ApiCallInterval * -1))
+                            .Where(x => x > timestamp.AddSeconds(ApiCallInterval.TotalSeconds * -1))
                             .ToList();
         
-        if(windowRequests.Count() < ApiCallLimit)
+        if(windowRequests.Count < ApiCallLimit)
         {
             timeout = null;
             return false;
         }
 
         // Calculate the next reset (time when the window from the earliest call expires)
-        var dt = windowRequests.Min().AddSeconds(ApiCallInterval);
+        var dt = windowRequests.Min().AddSeconds(ApiCallInterval.TotalSeconds);
         timeout = dt.Subtract(timestamp);
 
         LogInformation_RateLimited(_logger, windowRequests.Count(), dt);
@@ -163,7 +163,8 @@ public class RateTimer : IDisposable
     private void Decrement(DateTime signalTime)
     {
         var expired = _requestBuffer
-                        .Where(predicate: x => x < signalTime.AddSeconds(ApiCallInterval * -1))
+                        .Where(predicate: 
+                            x => x < signalTime.AddSeconds(ApiCallInterval.TotalSeconds * -1))
                         .ToArray();
         
         if(expired.Length > 0)
@@ -207,7 +208,7 @@ public class RateTimer : IDisposable
             DateTime timeOut)
     {
         if(logger?.IsEnabled(LogLevel.Information) ?? false)
-            logger?.LogInformation("Rate limited as {count}. Next reset at {timeOut}", count, timeOut);
+            logger?.LogInformation("Rate limited at {count}. Next reset at {timeOut}", count, timeOut);
     }
 
     #endregion Logger methods
