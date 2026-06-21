@@ -14,7 +14,8 @@ public class Fixture
     
     public required IConfiguration Configuration { get; init; }
 
-    protected static Microsoft.Extensions.Logging.ILogger CreateLogger(IConfiguration? configuration = null)
+    public static Microsoft.Extensions.Logging.ILogger CreateLogger(
+        IConfiguration? configuration = null, string? category = null)
     {
         var logConfig = new LoggerConfiguration();
 
@@ -30,7 +31,7 @@ public class Fixture
 
         var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
 
-        return loggerFactory.CreateLogger(categoryName: $"{nameof(ApiClient)}.Test");
+        return loggerFactory.CreateLogger(categoryName: category ?? $"{nameof(ApiClient)}.Test");
     }
 }
 public class IntegrationFixture : Fixture, IDisposable

@@ -8,13 +8,13 @@ namespace ApiClient.Test.Unit;
 public class RateTimer_Unit : IClassFixture<UnitFixture>
 {
     readonly UnitFixture _fixture;
-
+    readonly ILogger _logger;
     public RateTimer_Unit(UnitFixture fixture)
     {
         ArgumentNullException.ThrowIfNull(fixture);
         _fixture = fixture;
+        _logger = Fixture.CreateLogger(category: $"{nameof(ApiClient)}.Test.{nameof(RateTimer_Unit)}");
     }
-    
     
     [Fact]
     public void InitialState_IsRateLimited_Returns_False()
@@ -53,7 +53,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
             () => Assert.True(rateTimer.IsRateLimited),
             () => Assert.Equal(1, rateTimer.Counter));
     }
-    
+
     [Fact]
     public void Increment_ToRateLimit_Invokes_RateLimited()
     {
@@ -109,7 +109,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
     public async Task AwaitIntervalResetAsync_IsRateLimited_Returns()
     {
         // Arrange
-        var rateTimer = new RateTimer(1, 5);
+        var rateTimer = new RateTimer(1, 5, _logger);
         var cts = new CancellationTokenSource();
         cts.CancelAfter(15000);
 
