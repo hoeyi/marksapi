@@ -85,7 +85,6 @@ public class RateTimer
 
             if(span.TotalSeconds > 0)
             {
-                _logger?.LogInformation("Sleeping for {totalSeconds}", span.TotalSeconds);
                 await Task.Delay(delay: span, cancellationToken: ct ?? default);
             }
             else
@@ -117,8 +116,7 @@ public class RateTimer
         var dt = windowRequests.Min().AddSeconds(ApiCallInterval);
         timeout = dt.Subtract(timestamp);
 
-        Debug.Assert(timeout?.TotalSeconds > 0);
-        LogDebug_RateLimited(_logger, windowRequests.Count(), dt);
+        LogInformation_RateLimited(_logger, windowRequests.Count(), dt);
 
         RateLimited?.Invoke(this, new(){ NextReset = dt});
         return true;
@@ -180,14 +178,15 @@ public class RateTimer
             logger?.LogInformation("Found {count} records to dequeue.\n{@expired}", count, expired);
     }
 
-    private static void LogDebug_RateLimited(
+    private static void LogInformation_RateLimited(
             ILogger? logger, 
             int count,
             DateTime timeOut)
     {
         if(logger?.IsEnabled(LogLevel.Information) ?? false)
-            logger?.LogInformation("Rate limited as {count}. Next reset at {tiumeOut}", count, timeOut);
+            logger?.LogInformation("Rate limited as {count}. Next reset at {timeOut}", count, timeOut);
     }
+
 #endregion Logger methods
 
     public class RateLimitedArgs : EventArgs

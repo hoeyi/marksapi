@@ -143,7 +143,6 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
     {
         // Arrange
         var cts = new CancellationTokenSource();
-        cts.CancelAfter(TimeSpan.FromSeconds(1));
         var rateTimer = new RateTimer(1, 5);
         rateTimer.Increment();
 
@@ -152,7 +151,8 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
             nameof(AwaitIntervalResetAsync_CancelRequested_ThrowsCancellationException),
             rateTimer);
 
-        // TODO: Needs to simulate a long-enough day to trigger after 1 second.
+        // TODO: Needs to simulate a long-enough delay to trigger after 1 second.
+        cts.Cancel();
         Task task = rateTimer.CheckLimitOrAwaitIntervalResetAsync(cts.Token);
         
         // Act
