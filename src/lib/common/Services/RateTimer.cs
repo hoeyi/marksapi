@@ -5,6 +5,7 @@ using System.Timers;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Services;
 
@@ -16,12 +17,13 @@ public class RateTimer
     private readonly System.Timers.Timer _timer;
     private readonly ConcurrentQueue<DateTime> _requestBuffer = [];
 
+    private readonly ILogger? _logger;
     /// <summary>
     /// Constructs a new instance of <see cref="RateTimer"/>.
     /// </summary>
     /// <param name="apiCallLimit">The API call limit per interval. Allowable range (0, 1000].</param>
     /// <param name="apiCallInterval">The API interval in seconds. Allowable range (0, 3600)</param>
-    public RateTimer(int apiCallLimit, int apiCallInterval)
+    public RateTimer(int apiCallLimit, int apiCallInterval, ILogger? logger = null)
     {
         // Validate arguments.
         ArgumentOutOfRangeException.ThrowIfLessThan(apiCallLimit, 0);
@@ -38,10 +40,12 @@ public class RateTimer
             Enabled = true
         };
         _timer.Elapsed += TimerElapsed;
+        _logger = logger;
     }
-
     
-
+    /// <summary>
+    /// Event raised when the rate limit is tripped.
+    /// </summary>
     public event EventHandler<RateLimitedArgs>? RateLimited;
 
     /// <summary>
@@ -90,6 +94,32 @@ public class RateTimer
     }
 
     /// <summary>
+    /// Checks the request buffer to determine if rate limiting applies.
+    /// </summary>
+    /// <param name="timeout">If rate limited, the delay until the first in item in the queue expires.</param>
+    /// <returns><see cref="true"/>if rate limited, else false.</returns>
+    public bool EvaluateRateLimit(out TimeSpan? timeout)
+    {
+        var timestamp = DateTime.UtcNow;
+        var windowRequests = _requestBuffer
+                            .Where(x => x > timestamp.AddSeconds(ApiCallInterval * -1));
+        
+        if(windowRequests.Count() < ApiCallLimit)
+        {
+            timeout = null;
+            return false;
+        }
+
+        // Calculate the next reset (time when the window from the earliest call expires)
+        var dt = windowRequests.Min().AddSeconds(ApiCallInterval);
+        timeout = dt.Subtract(timestamp);
+        LogDebug_RateLimited(_logger, _requestBuffer.Count(), dt);
+
+        RateLimited?.Invoke(this, new(){ NextReset = dt});
+        return true;
+    }
+
+    /// <summary>
     /// Increments the rate counter.
     /// </summary>
     /// <returns>An <see cref="int"/> representing the number of queued items.</returns>
@@ -109,32 +139,18 @@ public class RateTimer
         if(!_requestBuffer.Any())
             return;
 
-        if(_requestBuffer.Any(predicate: x => x < signalTime.AddSeconds(ApiCallInterval * -1)))
-            _requestBuffer.TryDequeue(out _);
-    }
+        var expired = _requestBuffer
+                        .Where(predicate: x => x < signalTime.AddSeconds(ApiCallInterval * -1))
+                        .ToArray();
         
-    /// <summary>
-    /// Checks the request buffer to determine if rate limiting applies.
-    /// </summary>
-    /// <param name="timeout">If rate limited, the delay until the first in item in the queue expires.</param>
-    /// <returns><see cref="true"/>if rate limited, else false.</returns>
-    private bool EvaluateRateLimit(out TimeSpan? timeout)
-    {
-        var timestamp = DateTime.UtcNow;
-        var windowRequests = _requestBuffer
-                            .Where(x => x > timestamp.AddSeconds(ApiCallInterval * -1));
-        
-        if(windowRequests.Count() < ApiCallLimit)
-        {
-            timeout = null;
-            return false;
-        }
+        if(expired.Length > 0)
+            LogDebug_ExpiredRecords(_logger, expired.Length, expired);
 
-        // Clean-up events outside the window
-        var dt = windowRequests.Min().AddSeconds(ApiCallInterval);
-        timeout = dt.Subtract(timestamp);
-        RateLimited?.Invoke(this, new(){ NextReset = dt});
-        return true;
+        foreach (var e in expired)
+        {
+            if(_requestBuffer.TryDequeue(out DateTime result))
+                LogDebug_Decrement(_logger, result);
+        }
     }
 
     /// <summary>
@@ -143,12 +159,40 @@ public class RateTimer
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void TimerElapsed(object? sender, ElapsedEventArgs e) => Decrement(e.SignalTime);
-}
 
-public class RateLimitedArgs : EventArgs
-{
-    /// <summary>
-    /// Gets or sets the <see cref="DateTime"/> upon which the next estimated reset will occur.
-    /// </summary>
-    public DateTime NextReset { get; init; }
+#region Logger methods
+    private static void LogDebug_Decrement(
+            ILogger? logger, 
+            DateTime dateTime)
+    {
+        if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+            logger?.LogDebug("{dateTime} successfully dequeued.", dateTime);
+    }
+
+    private static void LogDebug_ExpiredRecords(
+            ILogger? logger, 
+            int count,
+            DateTime[] expired)
+    {
+        if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+            logger?.LogDebug("Found {count} records to dequeue.\n{@expired}", count, expired);
+    }
+
+    private static void LogDebug_RateLimited(
+            ILogger? logger, 
+            int count,
+            DateTime timeOut)
+    {
+        if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+            logger?.LogDebug("Rate limited as {count}. Next reset at {tiumeOut}", count, timeOut);
+    }
+#endregion Logger methods
+
+    public class RateLimitedArgs : EventArgs
+    {
+        /// <summary>
+        /// Gets or sets the <see cref="DateTime"/> upon which the next estimated reset will occur.
+        /// </summary>
+        public DateTime NextReset { get; init; }
+    }
 }
