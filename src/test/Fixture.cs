@@ -14,9 +14,10 @@ public class Fixture
     
     public required IConfiguration Configuration { get; init; }
 
-    public static Microsoft.Extensions.Logging.ILogger CreateLogger(
-        IConfiguration? configuration = null, string? category = null)
+    public static Microsoft.Extensions.Logging.ILogger CreateLogger<T>(
+        IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
         var logConfig = new LoggerConfiguration();
 
         if(configuration is not null)
@@ -31,7 +32,7 @@ public class Fixture
 
         var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
 
-        return loggerFactory.CreateLogger(categoryName: category ?? $"{nameof(ApiClient)}.Test");
+        return loggerFactory.CreateLogger<T>();
     }
 }
 public class IntegrationFixture : Fixture, IDisposable
@@ -59,7 +60,7 @@ public class IntegrationFixture : Fixture, IDisposable
         ArgumentException.ThrowIfNullOrWhiteSpace(Configuration?["massive:api_key"]);
         MassiveApi = new MassiveApi(Configuration["massive:api_key"]!, rateOptions: options);
         
-        Logger = CreateLogger(Configuration);
+        Logger = CreateLogger<IntegrationFixture>(Configuration);
     }
     
     public MassiveApi MassiveApi { get; init; }
@@ -72,11 +73,10 @@ public class UnitFixture : Fixture, IDisposable
     public UnitFixture()
     {
         Configuration = new ConfigurationBuilder()
-            .AddUserSecrets<IntegrationFixture>()
             .AddJsonFile("appsettings.json")
             .Build();
             
-        Logger = CreateLogger(Configuration);
+        Logger = CreateLogger<UnitFixture>(Configuration);
     }
 
     public void Dispose() => GC.SuppressFinalize(this);

@@ -13,7 +13,7 @@ namespace ApiClient.Services
     /// </summary>        
     public class QueryBuilder
     {
-        private readonly short _maximumDateRangeInDays = 30;
+        private readonly short _maximumDateRangeInDays = 31;
         
         private readonly Dictionary<string, string> _params = [];
 
