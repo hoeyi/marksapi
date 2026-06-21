@@ -91,7 +91,6 @@ namespace ApiClient.Massive
             {
                 await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: null);
                 var response = await GetTickerOverviewResponseAsync(market, ticker, date);
-                _rateTimer.IncrementCounter();
                 
                 if(response is null)
                     _logger?.LogWarning("Received empty resonse.");

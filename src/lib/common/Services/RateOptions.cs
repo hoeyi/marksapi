@@ -6,7 +6,7 @@ namespace ApiClient.Services
     /// <summary>
     /// Rate-limiting options for binding to clients.
     /// </summary>
-    public sealed class RateOptions
+    public class RateOptions
     {
         /// <summary>
         /// Gets or sets the limit on API calls per interval.

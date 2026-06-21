@@ -22,7 +22,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         var rateTimer = new RateTimer(1, 60); 
 
         // Act
-        rateTimer.IncrementCounter();
+        rateTimer.Increment();
         
         _fixture.Logger.LogDebug("After action: {method} changed state for {@rateTime}.",
             nameof(IncrementCounter_IsRateLimited_Returns_True),
@@ -31,7 +31,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         // Assert
         Assert.Multiple(
             () => Assert.True(rateTimer.IsRateLimited),
-            () => Assert.NotNull(rateTimer.NextReset));
+            () => Assert.Equal(1, rateTimer.Counter));
     }
     
     [Fact]
@@ -49,7 +49,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         // Assert
         Assert.Multiple(
             () => Assert.False(rateTimer.IsRateLimited),
-            () => Assert.Null(rateTimer.NextReset));
+            () => Assert.Equal(0, rateTimer.Counter));
     }
 
     [Fact]
@@ -80,12 +80,14 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
             "Post-Arrange: {method} {@rateTime}", 
             nameof(AwaitIntervalResetAsync_IsRateLimited_Returns),
             rateTimer);
+        var cts = new CancellationTokenSource();
+        cts.CancelAfter(10000);
 
         // Act
-        rateTimer.IncrementCounter();
+        rateTimer.Increment();
         bool wasRateLimited = rateTimer.IsRateLimited;
         int hadCounter = rateTimer.Counter;
-        var timeOut = rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: null);
+        var timeOut = rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: cts.Token);
 
         _fixture.Logger.LogInformation(
             "Post-Act: {method} {@rateTime}", 
@@ -109,7 +111,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         var cts = new CancellationTokenSource();
         cts.CancelAfter(TimeSpan.FromSeconds(1));
         var rateTimer = new RateTimer(1, 5);
-        rateTimer.IncrementCounter();
+        rateTimer.Increment();
 
         _fixture.Logger.LogDebug(
             "{method} {@rateTime}", 

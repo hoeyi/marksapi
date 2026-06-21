@@ -118,6 +118,9 @@ namespace ApiClient.Massive
 
             try
             {
+                // increment counter
+                _rateTimer?.Increment();
+
                 HttpResponseMessage response = await HttpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
@@ -129,9 +132,6 @@ namespace ApiClient.Massive
                 T genericResponse = JsonConvert
                     .DeserializeObject<T>(responseBody) ??
                     throw new InvalidOperationException(message: $"{nameof(responseBody)} was null.");
-
-                // increment counter
-                _rateTimer?.IncrementCounter();
                 
                 return genericResponse;
             }

@@ -11,12 +11,9 @@ namespace ApiClient.Services;
 /// <summary>
 /// Provides functionality for counting API calls for client rate-limiting.
 /// </summary>
-public sealed class RateTimer
+public class RateTimer
 {
-    private short _counter;
-    private DateTime? _nextReset;
     private readonly System.Timers.Timer _timer;
-    private readonly object _lock = new();
     private readonly ConcurrentQueue<DateTime> _requestBuffer = [];
 
     /// <summary>
@@ -43,7 +40,7 @@ public sealed class RateTimer
         _timer.Elapsed += TimerElapsed;
     }
 
-    private void TimerElapsed(object? sender, ElapsedEventArgs e) => ResetCounter();
+    
 
     public event EventHandler<RateLimitedArgs>? RateLimited;
 
@@ -57,49 +54,16 @@ public sealed class RateTimer
     /// </summary>
     public int ApiCallInterval { get; private init; } 
 
-    private float EnforcedRate => ApiCallLimit / ApiCallInterval;
-
     /// <summary>
     /// Gets the rate-limiting status of this limiter.
     /// </summary>
     // public bool IsRateLimited => Counter >= ApiCallLimit && NextReset > DateTime.UtcNow;
-    internal bool IsRateLimited
-    {
-        get
-        {
-            lock (_lock)
-            {
-                return _counter >= ApiCallLimit && _nextReset > DateTime.UtcNow;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Gets the <see cref="DateTime"/> representing the next estimated reset.
-    /// </summary>
-    internal DateTime? NextReset => _nextReset;
+    public bool IsRateLimited => EvaluateRateLimit(out _);
 
     /// <summary>
     /// Gets or sets the count of API calls in this interval.
     /// </summary>
-    internal short Counter => _counter;
-
-    /// <summary>
-    /// Increments the <see cref="Counter"> property.
-    /// </summary>
-    public void IncrementCounter()
-    {
-        _requestBuffer.Enqueue(DateTime.UtcNow);
-        if(_requestBuffer.Count >= ApiCallLimit)
-        {
-            _nextReset = DateTime.UtcNow.AddSeconds(ApiCallInterval);
-            var eventArgs = new RateLimitedArgs()
-            {
-                NextReset = (DateTime)_nextReset
-            };
-            RateLimited?.Invoke(sender: this, e: eventArgs);
-        }
-    }
+    public int Counter => _requestBuffer.Count();
 
     /// <summary>
     /// Checks to see if the rate limit has been tripped and awaits until the next reset before 
@@ -109,18 +73,15 @@ public sealed class RateTimer
     /// <returns>An empty <see cref="Task"/>.</returns>
     public async Task CheckLimitOrAwaitIntervalResetAsync(CancellationToken? ct = null)
     {
-        while(IsRateLimited)
+        while(EvaluateRateLimit(out TimeSpan? timeout) && timeout is TimeSpan span)
         {
             while(!(ct?.IsCancellationRequested ?? false))
             {
                 
-                TimeSpan timeOut = _nextReset?.Subtract(DateTime.UtcNow) ?? new();
-
-                if(timeOut.Seconds > 0)
-                    await Task.Delay(timeOut);
+                if(span.Seconds > 0)
+                    await Task.Delay(delay: span);
                 else
                     break;
-                // ResetCounter();
             }
             ct?.ThrowIfCancellationRequested();
         }
@@ -129,46 +90,59 @@ public sealed class RateTimer
     }
 
     /// <summary>
-    /// Resets the <see cref="_counter"/> and <see cref="_nextReset"/> fields.
+    /// Increments the rate counter.
     /// </summary>
-    private void ResetCounter()
+    /// <returns>An <see cref="int"/> representing the number of queued items.</returns>
+    public int Increment()
     {
-        lock (_lock)
-        {
-            _counter = 0;
-            _nextReset = null;
-        }
+        _requestBuffer.Enqueue(DateTime.UtcNow);
+        return _requestBuffer.Count();
     }
+    
+    /// <summary>
+    /// Handles clean-up of <see cref="_requestBuffer"/> by clearing any items in the 
+    /// queue outside the API call window, based on the given time.
+    /// </summary>
+    /// <param name="signalTime">The time for the end of the window.</param>
+    private void Decrement(DateTime signalTime)
+    {
+        if(!_requestBuffer.Any())
+            return;
 
-    private void Dequeue()
-    {
-        var currentTime = DateTime.UtcNow;
-        var outsideWindowDateTimes = _requestBuffer.Select(x => x.AddSeconds(ApiCallInterval) < currentTime);
-        foreach(var dt in outsideWindowDateTimes)
-            _requestBuffer.De(dt, out bool _);
+        if(_requestBuffer.Any(predicate: x => x < signalTime.AddSeconds(ApiCallInterval * -1)))
+            _requestBuffer.TryDequeue(out _);
     }
+        
+    /// <summary>
+    /// Checks the request buffer to determine if rate limiting applies.
+    /// </summary>
+    /// <param name="timeout">If rate limited, the delay until the first in item in the queue expires.</param>
+    /// <returns><see cref="true"/>if rate limited, else false.</returns>
     private bool EvaluateRateLimit(out TimeSpan? timeout)
     {
-        var currentCount = _requestBuffer.Count();
-        if(currentCount == 0)
+        var timestamp = DateTime.UtcNow;
+        var windowRequests = _requestBuffer
+                            .Where(x => x > timestamp.AddSeconds(ApiCallInterval * -1));
+        
+        if(windowRequests.Count() < ApiCallLimit)
         {
             timeout = null;
             return false;
         }
 
         // Clean-up events outside the window
-        var dt = _requestBuffer.First();
-        var timestamp = DateTime.UtcNow;
-        while(dt.AddSeconds(ApiCallInterval) < timestamp)
-        {
-            if(_requestBuffer.TryDequeue(out DateTime result))
-                dt = result;
-            else
-                break;
-
-        }
-        
+        var dt = windowRequests.Min().AddSeconds(ApiCallInterval);
+        timeout = dt.Subtract(timestamp);
+        RateLimited?.Invoke(this, new(){ NextReset = dt});
+        return true;
     }
+
+    /// <summary>
+    /// Handles the interval time elapsing.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void TimerElapsed(object? sender, ElapsedEventArgs e) => Decrement(e.SignalTime);
 }
 
 public class RateLimitedArgs : EventArgs
