@@ -5,16 +5,14 @@ using Microsoft.Extensions.Logging;
 namespace ApiClient.Test.Unit;
 
 [Trait(nameof(TestAttributeName.Category), "Unit")]
-public class RateTimer_Unit : IClassFixture<UnitFixture>
+public class RateTimer_Unit : IClassFixture<UnitFixture<RateTimer>>
 {
-    readonly UnitFixture _fixture;
-    readonly ILogger _logger;
-    public RateTimer_Unit(UnitFixture fixture)
+    readonly UnitFixture<RateTimer> _fixture;
+    ILogger _logger => _fixture.Logger;
+    public RateTimer_Unit(UnitFixture<RateTimer> fixture)
     {
         ArgumentNullException.ThrowIfNull(fixture);
         _fixture = fixture;
-        _logger = Fixture.CreateLogger<RateTimer>(_fixture.Configuration);
-        _logger.LogInformation("Executing unit tests for {class}", nameof(RateTimer));
     }
     
     [Fact]

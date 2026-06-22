@@ -8,20 +8,27 @@ using Microsoft.Extensions.Logging;
 namespace ApiClient.Test.Massive.Integration
 {
     [Trait(nameof(TestAttributeName.Category), "Integration")]
-    public class MassiveApi_Test : IClassFixture<IntegrationFixture>
+    public class MassiveApi_Test : IClassFixture<IntegrationFixture<MassiveApi>>
     {
-        IntegrationFixture _fixture;
-        ILogger _logger;
+        readonly IntegrationFixture<MassiveApi> _fixture;
+        ILogger _logger => _fixture.Logger;
 
         MassiveApi ApiClient => 
             _fixture.MassiveApi ?? 
             throw new InvalidOperationException($"Instance of {nameof(MassiveApi)} required.");
-        public MassiveApi_Test(IntegrationFixture fixture)
+        public MassiveApi_Test(IntegrationFixture<MassiveApi> fixture)
         {
             _fixture = fixture;
-            _logger = Fixture.CreateLogger<MassiveApi>(fixture.Configuration);
         }
 
+        [Fact]
+        public void InitializesContext()
+        {
+            // This method allows generation of logs for inspecting / confirming the 
+            // test context was initialized.
+            Assert.True(true);
+        }
+        
         [Theory]
         [InlineData("Stocks", "AAPL", 1, "Day", "2025-11-25", "2025-11-28", 5, 3)]
         [InlineData("Options", "SPY260821C00640000", 1, "Day", "2026-06-08", "2026-06-11", 5, 4)]
