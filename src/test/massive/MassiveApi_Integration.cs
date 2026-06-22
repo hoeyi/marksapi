@@ -8,17 +8,27 @@ using Microsoft.Extensions.Logging;
 namespace ApiClient.Test.Massive.Integration
 {
     [Trait(nameof(TestAttributeName.Category), "Integration")]
-    public class MassiveApi_Test : IClassFixture<IntegrationFixture>
+    public class MassiveApi_Test : IClassFixture<IntegrationFixture<MassiveApi>>
     {
-        IntegrationFixture _fixture;
+        readonly IntegrationFixture<MassiveApi> _fixture;
+        ILogger _logger => _fixture.Logger;
+
         MassiveApi ApiClient => 
             _fixture.MassiveApi ?? 
             throw new InvalidOperationException($"Instance of {nameof(MassiveApi)} required.");
-        public MassiveApi_Test(IntegrationFixture fixture)
+        public MassiveApi_Test(IntegrationFixture<MassiveApi> fixture)
         {
             _fixture = fixture;
         }
 
+        [Fact]
+        public void InitializesContext()
+        {
+            // This method allows generation of logs for inspecting / confirming the 
+            // test context was initialized.
+            Assert.True(true);
+        }
+        
         [Theory]
         [InlineData("Stocks", "AAPL", 1, "Day", "2025-11-25", "2025-11-28", 5, 3)]
         [InlineData("Options", "SPY260821C00640000", 1, "Day", "2026-06-08", "2026-06-11", 5, 4)]
@@ -51,7 +61,7 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.All(responseResult.Results, x => Assert.True(x.Close > 0))); // verifies complex serialization
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetAggregateBarResponseAsync_ReturnSuccessResponse), 
                 responseResult);
@@ -74,7 +84,7 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.All(responseResult.Results, x => Assert.False(string.IsNullOrEmpty(x?.Name)))); // verifies complex serialization
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetStocksAllTickerAsync_SingleParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);
@@ -103,7 +113,7 @@ namespace ApiClient.Test.Massive.Integration
             );
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetTickerOverviewResponseAsync_ReturnSuccessResponse), 
                 responseResult);
@@ -134,7 +144,7 @@ namespace ApiClient.Test.Massive.Integration
             );
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetTickerOverviewResponseAsync_ComplexResponse_ReturnSuccessResponse), 
                 responseResult);
@@ -159,7 +169,7 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.All(responseResult.Results, x => Assert.True(x.Date > default(DateTime)))); // verifies complex serialization
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetShortVolumeResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);
@@ -185,7 +195,7 @@ namespace ApiClient.Test.Massive.Integration
                 () => Assert.All(responseResult.Results, x => Assert.True(x.Date > default(DateTime)))); // verifies complex serialization
 
             // Print result            
-            _fixture.Logger.LogInformation(
+            _logger.LogInformation(
                 "'{method}' returned:\n{@responseResult}", 
                 nameof(GetShortVolumeResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);

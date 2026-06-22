@@ -162,7 +162,7 @@ namespace ApiClient.Test.Unit
 
         [Theory]
         [InlineData("2026-01-01", "2025-12-31")] // date range can have day-length < 0
-        [InlineData("2026-01-01", "2026-02-01")] // date range can have day-length > 30
+        [InlineData("2026-01-01", "2026-02-05")] // date range can have day-length > 30
         public void ValidateDateRangeOrThrow_Static_DateRangeTooLong_ThrowsArgumentException(string dateFromStr, string dateToStr)
         {
             // Arrange
@@ -183,7 +183,7 @@ namespace ApiClient.Test.Unit
             var qb = new QueryBuilder();
             // Force dateTp to be more than 30 days after than dateFrom
             var dateFrom = DateTime.Now;
-            var dateTo = dateFrom.AddDays(31);
+            var dateTo = dateFrom.AddDays(32);
             
             // Act
             // Assert

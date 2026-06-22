@@ -13,7 +13,7 @@ namespace ApiClient.Massive
     /// <summary>
     /// Service class for handling sending and receiving requests to Massive API.
     /// </summary>
-    public partial class MassiveApi : Services.ApiClient, IMassiveApi
+    public partial class MassiveApi : Services.ApiClient, IMassiveApi, IDisposable
     {
         /// <summary>
         /// Collection of the relative endpoints for the api as stirng patterns.
@@ -91,6 +91,12 @@ namespace ApiClient.Massive
             _logger = logger;
         }
 
+        public void Dispose()
+        {
+            _rateTimer?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+        
         /// <summary>
         /// Posts a GET request from the given <see cref="QueryBuilder"/> and <see cref="Endpoint"/>. 
         /// </summary>
@@ -99,15 +105,19 @@ namespace ApiClient.Massive
         /// <param name="endPoint"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">The response body was empty.</exception>
-        internal async Task<T> GetResponseAsync<T>(QueryBuilder queryBuilder, string endPoint, CancellationTokenSource? cts = null)
+        internal async Task<T> GetResponseAsync<T>(
+            QueryBuilder queryBuilder, string endPoint, CancellationTokenSource? cts = null)
         {
-            if(_rateTimer?.RateLimited ?? false)
+            // Check for client-side rate limiting and await the reset if applicable.
+            if(_rateTimer is not null)
             {
-                LogRateLimitInformation(_logger, nameof(MassiveApi), _rateTimer?.NextReset ?? default);
-
                 // timeOut should not be null here.
-                var timeOut = _rateTimer?.AwaitIntervalResetAsync(cts?.Token) ?? 
-                                throw new InvalidOperationException();
+                bool useDefaultCts = cts is null;
+                cts ??= new CancellationTokenSource();
+                if (useDefaultCts)
+                    cts.CancelAfter(_rateTimer.ApiCallInterval);
+                
+                var timeOut = _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cts.Token);
                 await timeOut;
             }
 
@@ -120,6 +130,9 @@ namespace ApiClient.Massive
 
             try
             {
+                // increment counter
+                _rateTimer?.Increment();
+
                 HttpResponseMessage response = await HttpClient.GetAsync(requestUrl);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
@@ -131,9 +144,6 @@ namespace ApiClient.Massive
                 T genericResponse = JsonConvert
                     .DeserializeObject<T>(responseBody) ??
                     throw new InvalidOperationException(message: $"{nameof(responseBody)} was null.");
-
-                // increment counter
-                _rateTimer?.IncrementCounter();
                 
                 return genericResponse;
             }
@@ -195,17 +205,6 @@ namespace ApiClient.Massive
         {
             if(logger?.IsEnabled(LogLevel.Debug) ?? false)
                 logger?.LogError(eventId: 2, "Response received with {body}.", body);
-        }
-
-        static void LogRateLimitInformation(
-            ILogger? logger, 
-            string apiName,
-            DateTime nextReset)
-        {
-            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-                logger?.LogError(
-                    eventId: 3, "{apiName} rate limit reached. Reset in {$timeOutSeconds}s.", 
-                    apiName, nextReset);
         }
 
         static void LogHttpError(ILogger? logger, HttpRequestException exception)

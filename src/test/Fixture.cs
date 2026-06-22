@@ -5,17 +5,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Formatting.Compact;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ApiClient.Test;
 
 public class Fixture
 {
-    public required Microsoft.Extensions.Logging.ILogger  Logger { get; init; }
+    public required ILogger Logger { get; init; }
     
     public required IConfiguration Configuration { get; init; }
 
-    protected static Microsoft.Extensions.Logging.ILogger CreateLogger(IConfiguration? configuration = null)
+    public static ILogger CreateLogger<T>(
+        IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(configuration);
         var logConfig = new LoggerConfiguration();
 
         if(configuration is not null)
@@ -30,15 +33,15 @@ public class Fixture
 
         var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
 
-        return loggerFactory.CreateLogger(categoryName: $"{nameof(ApiClient)}.Test");
+        return loggerFactory.CreateLogger<T>();
     }
 }
-public class IntegrationFixture : Fixture, IDisposable
+public class IntegrationFixture<T> : Fixture, IDisposable
 {
     public IntegrationFixture()
     {
         Configuration = new ConfigurationBuilder()
-            .AddUserSecrets<IntegrationFixture>()
+            .AddUserSecrets<IntegrationFixture<T>>()
             .AddJsonFile("appsettings.json")
             .Build();
         
@@ -58,25 +61,67 @@ public class IntegrationFixture : Fixture, IDisposable
         ArgumentException.ThrowIfNullOrWhiteSpace(Configuration?["massive:api_key"]);
         MassiveApi = new MassiveApi(Configuration["massive:api_key"]!, rateOptions: options);
         
-        Logger = CreateLogger(Configuration);
+        Logger = CreateLogger<T>(Configuration);
+        LogInitialize(Logger, typeof(T).FullName!);
     }
     
     public MassiveApi MassiveApi { get; init; }
 
-    public void Dispose() => GC.SuppressFinalize(this);
+    public void Dispose()
+    {
+        LogStartCleanup(Logger, typeof(MassiveApi).FullName!);
+
+        MassiveApi.Dispose();
+        LogCleanup(Logger, nameof(MassiveApi));
+        LogComplete(Logger);
+
+        GC.SuppressFinalize(this);
+    }
+
+    private static void LogInitialize(ILogger logger, string @class)
+    {
+        if(logger.IsEnabled(LogLevel.Information))
+            logger.LogInformation(
+                "Initialzed integration test context for {class}.",
+                @class);
+    }
+
+    private static void LogStartCleanup(ILogger logger, string @class)
+    {
+        if(logger.IsEnabled(LogLevel.Information))
+            logger.LogInformation("Cleaning integration test context for {class}", @class);
+    }
+    private static void LogCleanup(ILogger logger, string member)
+    {
+        if(logger.IsEnabled(LogLevel.Information))
+            logger.LogInformation("Cleaned up {member}", member);
+    }
+
+    private static void LogComplete(ILogger logger)
+    {
+        if(logger.IsEnabled(LogLevel.Information))
+            logger.LogInformation("Done.");
+    }
 }
 
-public class UnitFixture : Fixture, IDisposable
+public class UnitFixture<T> : Fixture
 {
     public UnitFixture()
     {
         Configuration = new ConfigurationBuilder()
-            .AddUserSecrets<IntegrationFixture>()
             .AddJsonFile("appsettings.json")
             .Build();
             
-        Logger = CreateLogger(Configuration);
+        Logger = CreateLogger<T>(Configuration);
+
+        LogInitialize(Logger, typeof(T).FullName!);
     }
 
-    public void Dispose() => GC.SuppressFinalize(this);
+    private static void LogInitialize(ILogger logger, string @class)
+    {
+        if(logger.IsEnabled(LogLevel.Information))
+            logger.LogInformation(
+                "Initialzed unit test context for {class}.",
+                @class);
+    }
 }
