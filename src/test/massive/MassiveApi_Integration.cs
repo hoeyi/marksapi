@@ -11,7 +11,7 @@ namespace ApiClient.Test.Massive.Integration
     public class MassiveApi_Test : IClassFixture<IntegrationFixture>
     {
         IntegrationFixture _fixture;
-        ILogger _logger => _logger;
+        ILogger _logger;
 
         MassiveApi ApiClient => 
             _fixture.MassiveApi ?? 
@@ -19,6 +19,7 @@ namespace ApiClient.Test.Massive.Integration
         public MassiveApi_Test(IntegrationFixture fixture)
         {
             _fixture = fixture;
+            _logger = Fixture.CreateLogger<MassiveApi>(fixture.Configuration);
         }
 
         [Theory]

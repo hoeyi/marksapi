@@ -65,10 +65,14 @@ public class IntegrationFixture : Fixture, IDisposable
     
     public MassiveApi MassiveApi { get; init; }
 
-    public void Dispose() => GC.SuppressFinalize(this);
+    public void Dispose()
+    {
+        MassiveApi.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }
 
-public class UnitFixture : Fixture, IDisposable
+public class UnitFixture : Fixture
 {
     public UnitFixture()
     {
@@ -78,6 +82,4 @@ public class UnitFixture : Fixture, IDisposable
             
         Logger = CreateLogger<UnitFixture>(Configuration);
     }
-
-    public void Dispose() => GC.SuppressFinalize(this);
 }

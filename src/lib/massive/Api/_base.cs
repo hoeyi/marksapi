@@ -13,7 +13,7 @@ namespace ApiClient.Massive
     /// <summary>
     /// Service class for handling sending and receiving requests to Massive API.
     /// </summary>
-    public partial class MassiveApi : Services.ApiClient, IMassiveApi
+    public partial class MassiveApi : Services.ApiClient, IMassiveApi, IDisposable
     {
         /// <summary>
         /// Collection of the relative endpoints for the api as stirng patterns.
@@ -91,6 +91,12 @@ namespace ApiClient.Massive
             _logger = logger;
         }
 
+        public void Dispose()
+        {
+            _rateTimer?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+        
         /// <summary>
         /// Posts a GET request from the given <see cref="QueryBuilder"/> and <see cref="Endpoint"/>. 
         /// </summary>

@@ -14,6 +14,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         ArgumentNullException.ThrowIfNull(fixture);
         _fixture = fixture;
         _logger = Fixture.CreateLogger<RateTimer>(_fixture.Configuration);
+        _logger.LogInformation("Executing unit tests for {class}", nameof(RateTimer));
     }
     
     [Fact]
@@ -24,7 +25,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
 
         // Act
         // Do nothing
-        _fixture.Logger.LogDebug("After action: {method} changed state for {@rateTime}.",
+        _logger.LogDebug("After action: {method} changed state for {@rateTime}.",
             nameof(InitialState_IsRateLimited_Returns_False),
             rateTimer);
 
@@ -44,7 +45,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         // Act
         rateTimer.Increment();
         
-        _fixture.Logger.LogInformation("After action: {method} changed state for {@rateTimer}.",
+        _logger.LogDebug("After action: {method} changed state for {@rateTimer}.",
             nameof(Increment_IsRateLimited_Returns_True),
             rateTimer);
 
@@ -88,14 +89,14 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         var cts = new CancellationTokenSource();
         cts.CancelAfter(3000);
 
-        _fixture.Logger.LogInformation(
+        _logger.LogDebug(
             "Post-Arrange: {method} {@rateTime}", 
             nameof(AwaitIntervalResetAsync_IsRateLimited_Not_Returns),
             rateTimer);
 
         // Act
         await rateTimer.CheckLimitOrAwaitIntervalResetAsync();
-        _fixture.Logger.LogDebug("After action: {method} changed state for {@rateTime}.",
+        _logger.LogDebug("After action: {method} changed state for {@rateTime}.",
             nameof(AwaitIntervalResetAsync_IsRateLimited_Not_Returns),
             rateTimer);
 
@@ -113,7 +114,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         var cts = new CancellationTokenSource();
         cts.CancelAfter(15000);
 
-        _fixture.Logger.LogInformation(
+        _logger.LogDebug(
             "Post-Arrange: {method} {@rateTime}", 
             nameof(AwaitIntervalResetAsync_IsRateLimited_Returns),
             rateTimer);
@@ -124,10 +125,10 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         int hadCounter = rateTimer.Counter;
         await rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: cts.Token);
 
-        // _fixture.Logger.LogInformation(
-        //     "Post-Act: {method} {@rateTime}", 
-        //     nameof(AwaitIntervalResetAsync_IsRateLimited_Returns),
-        //     rateTimer);
+        _logger.LogDebug(
+            "Post-Act: {method} {@rateTime}", 
+            nameof(AwaitIntervalResetAsync_IsRateLimited_Returns),
+            rateTimer);
 
         // Assert
         Assert.Multiple(
@@ -146,7 +147,7 @@ public class RateTimer_Unit : IClassFixture<UnitFixture>
         var rateTimer = new RateTimer(1, 5);
         rateTimer.Increment();
 
-        _fixture.Logger.LogDebug(
+        _logger.LogDebug(
             "{method} {@rateTime}", 
             nameof(AwaitIntervalResetAsync_CancelRequested_ThrowsCancellationException),
             rateTimer);
