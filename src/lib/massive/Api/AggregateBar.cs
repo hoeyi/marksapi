@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
@@ -21,8 +22,17 @@ public partial class MassiveApi
         BarTimespanEnum timeSpan,
         DateTime from,
         DateTime to,
-        int limit = 100) => await GetGenericAggregateBarResponseAsync(
-                                    market, ticker, multiplier, timeSpan, from, to, limit);
+        int limit = 100,
+        CancellationToken? cancellationToken = null) => 
+            await GetGenericAggregateBarResponseAsync(
+                market,
+                ticker,
+                multiplier,
+                timeSpan,
+                from,
+                to,
+                limit,
+                cancellationToken);
 
     /// <inheritdoc/>
     public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
@@ -32,7 +42,8 @@ public partial class MassiveApi
         BarTimespanEnum timeSpan,
         DateTime from,
         DateTime to,
-        int limit = 100)
+        int limit = 100,
+        CancellationToken? cancellationToken = null)
     {
         List<AggregateBarResponse> responses = [];
 
@@ -43,7 +54,15 @@ public partial class MassiveApi
         foreach(var ticker in tickers)
         {
             await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: null);
-            var response = await GetAggregateBarResponseAsync(market, ticker, multiplier, timeSpan, from, to, limit);
+            var response = await GetAggregateBarResponseAsync(
+                            market,
+                            ticker,
+                            multiplier,
+                            timeSpan,
+                            from,
+                            to,
+                            limit,
+                            cancellationToken);
             _rateTimer.Increment();
 
             if(response is null)

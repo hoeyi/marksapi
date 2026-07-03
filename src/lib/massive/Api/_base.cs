@@ -106,20 +106,24 @@ namespace ApiClient.Massive
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">The response body was empty.</exception>
         internal async Task<T> GetResponseAsync<T>(
-            QueryBuilder queryBuilder, string endPoint, CancellationTokenSource? cts = null)
+            QueryBuilder queryBuilder, string endPoint, CancellationToken? token = null)
         {
+            CancellationToken GetToken()
+            {
+                var cts = new CancellationTokenSource();
+                cts.CancelAfter(_rateTimer?.ApiCallInterval ?? TimeSpan.FromSeconds(60));
+                
+                return cts.Token;
+            }
+
             // Check for client-side rate limiting and await the reset if applicable.
             if(_rateTimer is not null)
             {
-                // timeOut should not be null here.
-                bool useDefaultCts = cts is null;
-                cts ??= new CancellationTokenSource();
-                if (useDefaultCts)
-                    cts.CancelAfter(_rateTimer.ApiCallInterval);
-                
-                var timeOut = _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cts.Token);
+                var timeOut = _rateTimer.CheckLimitOrAwaitIntervalResetAsync(token);
                 await timeOut;
             }
+
+            token ??= GetToken();
 
             var absoluteUri = GetAbsoluteUri(endPoint);
             var uriBuilder = new UriBuilder(absoluteUri)
@@ -133,7 +137,7 @@ namespace ApiClient.Massive
                 // increment counter
                 _rateTimer?.Increment();
 
-                HttpResponseMessage response = await HttpClient.GetAsync(requestUrl);
+                HttpResponseMessage response = await HttpClient.GetAsync(requestUrl, cancellationToken: token.Value);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
@@ -231,6 +235,7 @@ namespace ApiClient.Massive
         /// <param name="from">Start of the time window.</param>
         /// <param name="to">End of the time window.</param>
         /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
+        /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
         private async Task<AggregateBarResponse> GetGenericAggregateBarResponseAsync(
             Market market,
@@ -239,7 +244,8 @@ namespace ApiClient.Massive
             BarTimespanEnum timeSpan,
             DateTime from,
             DateTime to,
-            int limit = 100)
+            int limit = 100,
+            CancellationToken? cancellationToken = null)
         {
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(limit, 0, nameof(limit));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(limit, 1000, nameof(limit));
@@ -268,7 +274,7 @@ namespace ApiClient.Massive
             var queryBuilder = GetQueryBuilder();
             queryBuilder.AddParameter("limit", $"{limit}");
 
-            var response = await GetResponseAsync<AggregateBarResponse>(queryBuilder, endpoint);
+            var response = await GetResponseAsync<AggregateBarResponse>(queryBuilder, endpoint, cancellationToken);
 
             return response;
         }
@@ -281,12 +287,13 @@ namespace ApiClient.Massive
         /// <item>I:{ticker}, for indices</item>
         /// <item>{ticker}, for stocks</item></list></param>
         /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
+        /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
         private async Task<TickerOverviewResponse> GetGenericTickerOverviewResponseAsync(
             Market market,
             string ticker,
-            DateTime? date = null
-        )
+            DateTime? date = null,
+            CancellationToken? cancellationToken = null)
         {
             ArgumentException.ThrowIfNullOrEmpty(ticker);
 
@@ -323,7 +330,7 @@ namespace ApiClient.Massive
             if (date is not null)
                 queryBuilder.AddParameter("date", $"{date:yyyy-MM-dd}");
 
-            var response = await GetResponseAsync<TickerOverviewResponse>(queryBuilder, endpoint);
+            var response = await GetResponseAsync<TickerOverviewResponse>(queryBuilder, endpoint, cancellationToken);
 
             return response;
         }
