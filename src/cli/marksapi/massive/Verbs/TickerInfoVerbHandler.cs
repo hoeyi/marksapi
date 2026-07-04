@@ -23,7 +23,7 @@ public static class TickerInfoHandler
                 .AddTickerArgument()
                 .AddTickersOption()
                 .AddDateOption()
-                .AddOutputOption();
+                .AddFormatOption();
 
             // TODO: Register action.
             return command;
@@ -35,73 +35,56 @@ public static class TickerInfoHandler
             string? ticker,
             string? tickers,
             DateTime? date,
-            string output,
+            string format,
             ILogger? logger = null,
             CancellationToken cancellationToken = default)
         {
-            ArgumentException.ThrowIfNullOrEmpty(market);
-            if(
-                (string.IsNullOrEmpty(ticker) & string.IsNullOrEmpty(tickers)) ||
-                (string.IsNullOrWhiteSpace(ticker) & string.IsNullOrWhiteSpace(tickers)))
+            var validator = new CommandValidator();
+            validator
+                .ValidateMarketOrThrow(market, out Market mktEnum)
+                .ValidateTickerOrTickersOrThrow(ticker, tickers)
+                .ValidateFormatOrThrow(format);
+
+            var handler = services.GetServiceOrThrow<IMassiveApi>();
+
+            if (!string.IsNullOrEmpty(ticker))
             {
-                logger?.LogError("Either {arg1} or {arg2} must be specified.", "TICKER", "--ticker");
-                throw new ArgumentException($"Parameters: {nameof(ticker)}, {nameof(tickers)}.");
-            }
+                var result = await handler.GetTickerOverviewResponseAsync(
+                    mktEnum,
+                    ticker,
+                    date,
+                    cancellationToken);
 
-            Market? mkt = IMassiveApi.ParseEnumOrThrow<Market>(market);
-
-            try
-            {
-                var handler = services.GetService<IMassiveApi>() ?? 
-                    throw new InvalidOperationException($"Service '{nameof(IMassiveApi)}' not found.");
-
-                if (!string.IsNullOrEmpty(ticker))
+                if(result.Results is TickerOverview tovw)
                 {
-                    var result = await handler.GetTickerOverviewResponseAsync(
-                        mkt!.Value,
-                        ticker,
-                        date,
-                        cancellationToken);
+                    var writeResult = await OutputService.WriteAsync(
+                                                item: tovw,
+                                                format: format,
+                                                path: $"./{result.RequestId}",
+                                                cancellationToken);
+                }
+            }
+            else if (!string.IsNullOrEmpty(tickers))
+            {
+                var result = await handler.GetTickerOverviewResponseAsync(
+                    market: mktEnum,
+                    tickers: tickers.ToValueArray(),
+                    date: date,
+                    cancellationToken);
 
-                    if(result.Results is TickerOverview tovw)
+                var resultNotNull = result.Where(x => x.Results is not null).ToArray();
+
+                if(resultNotNull.Length > 0)
+                {
+                    foreach(var res in resultNotNull)
                     {
                         var writeResult = await OutputService.WriteAsync(
-                                                    item: tovw,
-                                                    format: output,
-                                                    path: $"./{result.RequestId}",
+                                                    item: res.Results!,
+                                                    format: format,
+                                                    path: $"./{res.RequestId}",
                                                     cancellationToken);
                     }
                 }
-                else if (!string.IsNullOrEmpty(tickers))
-                {
-                    var result = await handler.GetTickerOverviewResponseAsync(
-                        mkt!.Value,
-                        tickers.Split(","),
-                        date,
-                        cancellationToken);
-
-                    var resultNotNull = result.Where(x => x.Results is not null).ToArray();
-
-                    if(resultNotNull.Length > 0)
-                    {
-                        foreach(var res in resultNotNull)
-                        {
-                            var writeResult = await OutputService.WriteAsync(
-                                                        item: res.Results!,
-                                                        format: output,
-                                                        path: $"./{res.RequestId}",
-                                                        cancellationToken);
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Error executing command: {ex.Message}");
-                Environment.Exit(1);
             }
         }
 }
-
-

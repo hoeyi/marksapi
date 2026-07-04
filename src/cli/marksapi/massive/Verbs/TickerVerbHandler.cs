@@ -1,5 +1,6 @@
 // MassiveTickers.cs
 using System.CommandLine;
+using ApiClient.Massive;
 using Marksapi.Cli;
 
 namespace Marksapi.Cli.Massive.Verbs
@@ -23,7 +24,7 @@ namespace Marksapi.Cli.Massive.Verbs
                 .AddSortDescendingOption()
                 .AddSortFieldOption()
                 .AddLimitOption()
-                .AddOutputOption();
+                .AddFormatOption();
 
             // TODO: Register action.
             return command;
@@ -39,65 +40,40 @@ namespace Marksapi.Cli.Massive.Verbs
             string? cik,
             DateTime? date,
             string? search,
-            bool inactive,
-            bool desc,
+            bool active,
+            bool asc,
             string? sort,
             int limit,
-            string output,
+            string format,
             CancellationToken cancellationToken = default)
         {
-            if (limit < 1 || limit > 1000)
-            {
-                Console.Error.WriteLine($"Error: --limit must be between 1 and 1000, got {limit}");
-                Environment.Exit(2);
-            }
+            var validator = new CommandValidator();
+            validator
+                .ValidateTickerOrThrow(ticker)
+                .ValidateLimitOrThrow(limit, Program.QueryLimit);
 
-            try
-            {
-                var handler = services.GetKeyed<IMassiveServiceHandler>("MassiveServiceHandler");
+            var handler = services.GetServiceOrThrow<IMassiveApi>();
 
-                var result = await handler.HandleTickersAsync(
-                    new TickersRequest
-                    {
-                        Ticker = ticker,
-                        Type = type,
-                        Market = market,
-                        Exchange = exchange,
-                        Cusip = cusip,
-                        Cik = cik,
-                        Date = date,
-                        Search = search,
-                        IncludeInactive = inactive,
-                        SortDescending = desc,
-                        SortField = sort,
-                        Limit = limit
-                    },
-                    output,
+            var result = await handler.GetAllTickersAsync(
+                            ticker: ticker,
+                            type: type,
+                            market: market,
+                            exchange: exchange,
+                            cusip: cusip,
+                            cik: cik,
+                            date: date,
+                            search: search,
+                            active: active,
+                            asc: asc,
+                            sort: sort,
+                            limit: limit,
+                            cancellationToken);
+
+            await OutputService.WriteAsync(
+                    item: result.Results,
+                    format: format,
+                    path: $"./{result.RequestId}",
                     cancellationToken);
-
-                result.Print();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Error executing command: {ex.Message}");
-                Environment.Exit(1);
-            }
-        }
-
-        private sealed class TickersRequest
-        {
-            public string? Ticker { get; init; }
-            public string? Type { get; init; }
-            public string? Market { get; init; }
-            public string? Exchange { get; init; }
-            public string? Cusip { get; init; }
-            public string? Cik { get; init; }
-            public DateTime? Date { get; init; }
-            public string? Search { get; init; }
-            public bool IncludeInactive { get; init; }
-            public bool SortDescending { get; init; }
-            public string? SortField { get; init; }
-            public int Limit { get; init; } = 100;
         }
     }
 }

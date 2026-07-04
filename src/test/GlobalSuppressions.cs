@@ -9,3 +9,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0130:Namespace does not match folder structure", Justification = "<Pending>", Scope = "namespace", Target = "~N:ApiClient.Test.Massive.Unit")]
 [assembly: SuppressMessage("Style", "IDE0130:Namespace does not match folder structure", Justification = "<Pending>", Scope = "namespace", Target = "~N:ApiClient.Test.Unit")]
 [assembly: SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>", Scope = "member", Target = "~M:ApiClient.Test.Massive.Integration.MassiveApi_Test.#ctor(ApiClient.Test.IntegrationFixture)")]
+[assembly: SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "<Pending>", Scope = "member", Target = "~M:ApiClient.Test.Massive.Integration.MassiveApi_Test.#ctor(ApiClient.Test.IntegrationFixture{ApiClient.Massive.MassiveApi})")]

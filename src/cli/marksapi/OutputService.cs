@@ -22,7 +22,10 @@ namespace Marksapi.Cli
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-        private static readonly FileStreamOptions _fileOptions = new();
+        private static readonly FileStreamOptions _fileOptions = new()
+        {
+            Mode = FileMode.Append
+        };
 
         /// <summary>
         /// Writes the given <typeparamref name="T"/> data to disk at the given path and format.

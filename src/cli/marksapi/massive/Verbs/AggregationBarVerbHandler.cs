@@ -1,5 +1,6 @@
 // MassAggregationBar.cs
 using System.CommandLine;
+using ApiClient.Massive;
 
 namespace Marksapi.Cli.Massive.Verbs
 {
@@ -18,60 +19,53 @@ namespace Marksapi.Cli.Massive.Verbs
                 .AddToDateOption()
                 .AddLimitOption()
                 .AddTickersOption()
-                .AddOutputOption();
+                .AddFormatOption();
 
             // TODO: Register action.
             return command;
         }
 
         private static async Task Handle(
-            IServiceProvider services, string market, string? ticker, int multiplier, string timespan, DateTime from,
-            DateTime to, int limit, string? tickers, string output, CancellationToken cancellationToken = default)
+            IServiceProvider services,
+            string market,
+            string? ticker,
+            string? tickers,
+            int multiplier,
+            string timespan,
+            DateTime? fromDate,
+            DateTime? toDate,
+            string format,
+            int? limit,
+            CancellationToken cancellationToken = default)
         {
-            // Validate required arguments
-            if (string.IsNullOrWhiteSpace(ticker) && string.IsNullOrWhiteSpace(tickers))
-            {
-                Console.Error.WriteLine("Error: Either TICKER or --tickers must be specified");
-                return;
-            }
+            var validator = new CommandValidator();
+            validator
+                .ValidateMarketOrThrow(market, out Market mktEnum)
+                .ValidateTickerOrTickersOrThrow(ticker, tickers)
+                .ValidateLimitOrThrow(limit, Program.QueryLimit)
+                .ValidateDateRangeOrThrow(fromDate, toDate)
+                .ValidateTimespanOrThrow(timespan, out BarTimespan barTimespan);
 
-            // Process validation constraints
-            if (limit < 1 || limit > 1000)
-            {
-                Console.Error.WriteLine($"Error: --limit must be between 1 and 1000, got {limit}");
-                Environment.Exit(2);
-            }
+            var handler = services.GetServiceOrThrow<IMassiveApi>();
+            var tickerArgs = !string.IsNullOrEmpty(ticker) ?
+                ticker.ToValueArray() : 
+                tickers.ToValueArray();
 
-            if (!IsValidTimespan(timespan))
-            {
-                Console.Error.WriteLine($"Error: Invalid timespan '{timespan}'. Valid options: day, week, month, hour, minute");
-                Environment.Exit(2);
-            }
-
-            try
-            {
-                var handler = services.GetKeyed<IMassiveServiceHandler>("MassiveServiceHandler");
-                
-                var result = await handler.HandleAggregateBarAsync(
-                    market,
-                    GetTickers(ticker, tickers),
-                    multiplier,
-                    timespan,
-                    from.Date,
-                    to.Date,
-                    limit,
-                    output,
+            var result = await handler.GetAggregateBarResponseAsync(
+                    market: mktEnum,
+                    tickers: tickerArgs,
+                    multiplier: multiplier,
+                    timeSpan: barTimespan,
+                    fromDate!.Value,
+                    toDate!.Value,
+                    limit ?? Program.QueryLimit.End,
                     cancellationToken);
 
-                result.Print();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine($"Error executing command: {ex.Message}");
-                Environment.Exit(1);
-            }
+                await OutputService.WriteAsync(
+                    result.Results,
+                    format,
+                    $"./massive/{result.RequestId}",
+                    cancellationToken);
         }
-
-        
     }
 }

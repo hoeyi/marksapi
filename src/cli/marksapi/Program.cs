@@ -18,7 +18,11 @@ namespace Marksapi.Cli
         static IConfiguration Configuration = InitConfiguration();
         static IMassiveApi MassiveApi = InitApi(Configuration);
         static ILogger Logger = InitLogger<Program>(Configuration);
-        public static QueryOptions QueryLimit = 
+
+        /// <summary>
+        /// Gets the program-constrained limits for records to return. Default [1, 5000].
+        /// </summary>
+        public static Interval<int> QueryLimit = 
             GetQueryOptionsOrDefault(Configuration);
         static Task<int> Main(string[] args)
         {
@@ -71,7 +75,7 @@ namespace Marksapi.Cli
             return new MassiveApi(configuration["massive:api_key"]!, rateOptions: options);
         }
 
-        private static QueryOptions GetQueryOptionsOrDefault(IConfiguration configuration)
+        private static Interval<int> GetQueryOptionsOrDefault(IConfiguration configuration)
         {   
             QueryOptions options = new();
             var section = configuration
@@ -85,7 +89,7 @@ namespace Marksapi.Cli
             else
                 section.Bind(options);
 
-            return options;
+            return new Interval<int>(options.LowerLimit, options.UpperLimit, open: false);
         }
         private static IConfiguration InitConfiguration()
         {

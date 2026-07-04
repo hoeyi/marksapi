@@ -106,9 +106,9 @@ namespace Marksapi.Cli.Massive.Verbs
             return command;
         }
 
-        public static Command AddOutputOption(this Command command)
+        public static Command AddFormatOption(this Command command)
         {
-            var outputOption = new Option<string>(name: "--output")
+            var outputOption = new Option<string>(name: "--format")
             {
                 Description = "Output format (json, csv)",
                 DefaultValueFactory = new((args) => "json")
@@ -210,7 +210,7 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var timespanOption = new Option<string>(name: "--timespan")
             {
-                Description = "Time window size (day, week, month, hour, minute)",
+                Description = "Time window size (second, minute, hour, day, week, month, quarter, year)",
                 Arity = ArgumentArity.ExactlyOne
             };
             command.Add(timespanOption);

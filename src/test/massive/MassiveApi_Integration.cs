@@ -46,7 +46,7 @@ namespace ApiClient.Test.Massive.Integration
             if(!Enum.TryParse(market, out Market marketResult))
                 throw new ArgumentException($"Test parameter '{market}' could not be parsed.");
 
-            if(!Enum.TryParse(timeSpan, out BarTimespanEnum barTimeResult))
+            if(!Enum.TryParse(timeSpan, out BarTimespan barTimeResult))
                 throw new ArgumentException(
                     $"Test parameter '{market}' could not be parsed.");
 
@@ -186,7 +186,11 @@ namespace ApiClient.Test.Massive.Integration
             var tickers = ticker.Split(",");
 
             // Act
-            var responseResult = await ApiClient.GetShortVolumeResponseAsync(tickers, fromDate, toDate);
+            var responseResult = 
+                await ApiClient.GetShortVolumeResponseAsync(
+                    tickers,
+                    fromDate,
+                    toDate);
             
             // Assert
             Assert.Multiple(

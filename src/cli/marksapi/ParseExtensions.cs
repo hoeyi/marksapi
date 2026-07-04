@@ -5,27 +5,21 @@ namespace Marksapi.Cli;
 
 static class ParseHelper
 {
-    public static IEnumerable<string> GetDelimitedValues(this string? delimitedString)
+    public static string[] ToValueArray(this string? delimitedString)
     {
-        if (!string.IsNullOrWhiteSpace(delimitedString))
+        if (!string.IsNullOrEmpty(delimitedString))
         {
             var strArray = delimitedString
                             .Split(
                                 separator: ',', 
-                                options: StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+                                options: 
+                                    StringSplitOptions.RemoveEmptyEntries | 
+                                    StringSplitOptions.TrimEntries
                             );
 
-            foreach (var t in strArray)
-                yield return t;
+            return strArray;
         }
-    }
 
-    public static bool IsValidTimespan(string timespan)
-    {
-        return timespan.ToLowerInvariant() switch
-        {
-            "day" or "week" or "month" or "hour" or "minute" => true,
-            _ => false
-        };
+        return [delimitedString ?? string.Empty];
     }
 }

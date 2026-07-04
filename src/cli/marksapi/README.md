@@ -75,7 +75,7 @@ $ marksapi massive aggregate-bar <MARKET> <TICKER> --multiplier <INT> --timespan
 | MARKET | Market identifier (e.g., stocks, forex) | Yes | — |
 | TICKER | Single case-sensitive ticker symbol | Yes | — |
 | multiplier | Timespan multiplier (e.g., 1 for 1 day, 5 for 5 days) | Yes | — |
-| timespan | Time window size (day, week, month, hour, minute) | Yes | — |
+| timespan | Time window size (second, minute, hour, day, week, month, quarter, year) | Yes | — |
 | from | Start date of time window (ISO format: YYYY-MM-DD) | Yes | — |
 | to | End date of time window (ISO format: YYYY-MM-DD) | Yes | — |
 | limit | Maximum records to return | No | 100 |
@@ -231,7 +231,7 @@ $ marksapi massive ticker-info stocks GOOGL,NASDAQ:AAPL,ARCA:TSLA
 
 ### Output Formats
 
-All commands support output formatting via `--output` flag:
+All commands support output formatting via `--format` flag:
 
 | Format | Description |
 |---|---|
@@ -239,7 +239,7 @@ All commands support output formatting via `--output` flag:
 | csv | CSV table export |
 
 ```bash
-$ marksapi massive aggregate-bar stocks AAPL --from 2024-01-01 --to 2024-01-31 --timespan day --output csv
+$ marksapi massive aggregate-bar stocks AAPL --from 2024-01-01 --to 2024-01-31 --timespan day --format csv
 ```
 
 All output is written as **utf-8**-encoded text.
