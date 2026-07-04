@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
+using ApiClient.Services;
 
 namespace ApiClient.Massive;
 

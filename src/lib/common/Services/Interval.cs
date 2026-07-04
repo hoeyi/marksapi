@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ApiClient.Massive;
+namespace ApiClient.Services;
 
 [ExcludeFromCodeCoverage]
 /// <summary>
