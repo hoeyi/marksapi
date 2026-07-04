@@ -1,5 +1,8 @@
 // MassAggregationBar.cs
+using System;
 using System.CommandLine;
+using System.Threading;
+using System.Threading.Tasks;
 using ApiClient.Massive;
 
 namespace Marksapi.Cli.Massive.Verbs
