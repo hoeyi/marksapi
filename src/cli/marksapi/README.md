@@ -4,8 +4,16 @@ A unified command line interface for querying financial, economic, and relatedd 
 **Current services**
 - [Massive](https://www.massive.com/)
 
-## Installation
+## Contents
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Commands](#commands)
+    - [General syntax](#general-syntax)
+    - [MASSIVE](#massive)
+    - [Output](#output)
+- [Troubleshooting](#troubleshooting)
 
+## Installation
 
 ## Configuration
 
@@ -32,6 +40,8 @@ $env:MASSIVE_API_KEY = "your_api_key_here"
 set MASSIVE_API_KEY=your_api_key_here
 ```
 
+<sub>[Contents](#contents)</sub>
+
 ## Commands
 
 ### General Syntax
@@ -46,6 +56,8 @@ $ marksapi <service> <verb> [arguments] [options]
 | verb | Command verb, see below | Yes | — |
 | arguments | Positional arguments depending on verb | Variable | — |
 | options | Optional flags and parameters | No | — |
+
+<sub>[Contents](#contents)</sub>
 
 ### massive 
 
@@ -227,8 +239,12 @@ All commands support output formatting via `--output` flag:
 | csv | CSV table export |
 
 ```bash
-$ marksapi massive aggregate-bar stocks AAPL --from 2024-01-01 --to 2024-01-31 --timespan day --output csv > data.csv
+$ marksapi massive aggregate-bar stocks AAPL --from 2024-01-01 --to 2024-01-31 --timespan day --output csv
 ```
+
+All output is written as **utf-8**-encoded text.
+
+<sub>[Contents](#contents)</sub>
 
 ## Troubleshooting
 
@@ -254,3 +270,5 @@ Ensure dates conform to Eastern Time (ET) requirements specified by the Massive 
 ### Authorization
 
 Verify your API key is set correctly and hasn't expired.
+
+<sub>[Contents](#contents)</sub>
