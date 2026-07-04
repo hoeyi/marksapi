@@ -98,7 +98,7 @@ namespace ApiClient.Massive
                     $"{nameof(GetTickerOverviewResponseAsync)} requires instance of '{nameof(RateTimer)}.");
             foreach(var ticker in tickers)
             {
-                await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: null);
+                await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: cancellationToken);
                 var response = await GetTickerOverviewResponseAsync(market, ticker, date, cancellationToken);
                 
                 if(response is null)

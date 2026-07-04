@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
 
@@ -156,4 +157,40 @@ public interface IMassiveApi
         string ticker,
         DateTime? date = null,
         CancellationToken? cancellationToken = null);
+
+    /// <summary>
+    /// Converts the given string to matching member of <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The desired output <see cref="Enum"/> type.</typeparam>
+    /// <param name="strValue">The string to parse.</param>
+    /// <returns>The <typeparamref name="T"/> member matching <paramref name="strValue"/>, 
+    /// else <see cref="ArgumentException"/> is thrown.</returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static T? ParseEnumOrThrow<T>(string strValue)
+        where T : struct
+    {
+        if(Enum.TryParse(strValue, out T result))
+        {
+            return result;
+        }
+        else
+            throw new ArgumentException($"Parameter '{strValue}' is not a valid {typeof(T).Name}.");
+    }
+
+    /// <summary>
+    /// Converts the given string to matching member of <typeparamref name="T"/>.
+    /// </summary>
+    /// <typeparam name="T">The desired output <see cref="Enum"/> type.</typeparam>
+    /// <param name="strValue">The string to parse.</param>
+    /// <returns>The <typeparamref name="T"/> member matching <paramref name="strValue"/>, else null.
+    public static T? ParseEnum<T>(string strValue)
+        where T : struct
+    {
+        if(Enum.TryParse(strValue, out T result))
+        {
+            return result;
+        }
+        else
+            return null;
+    }
 }
