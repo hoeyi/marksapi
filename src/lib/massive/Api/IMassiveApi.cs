@@ -31,7 +31,7 @@ public interface IMassiveApi
         Market market,
         string ticker,
         int multiplier,
-        BarTimespanEnum timeSpan,
+        BarTimespan timeSpan,
         DateTime from,
         DateTime to,
         int limit = 100,
@@ -54,7 +54,7 @@ public interface IMassiveApi
         Market market,
         string[] tickers,
         int multiplier,
-        BarTimespanEnum timeSpan,
+        BarTimespan timeSpan,
         DateTime from,
         DateTime to,
         int limit = 100,
@@ -118,7 +118,7 @@ public interface IMassiveApi
     /// <exception cref="ArgumentException"><paramref name="limit"/> was not in the interval (0,1000].</exception>
     Task<AggregateTickerResponse> GetAllTickersAsync(
         string? ticker = null,
-        TickerType? type = null,
+        string? type = null,
         string? market = null,
         string? exchange = null,
         string? cusip = null,

@@ -15,7 +15,7 @@ namespace ApiClient.Massive
         /// <inheritdoc/>
         public async Task<AggregateTickerResponse> GetAllTickersAsync(
             string? ticker = null,
-            TickerType? type = null,
+            string? type = null,
             string? market = null,
             string? exchange = null,
             string? cusip = null,
@@ -48,7 +48,7 @@ namespace ApiClient.Massive
                 queryBuilder.AddParameter("ticker", ticker);
 
             if (type is not null)
-                queryBuilder.AddParameter("type", type.Code);
+                queryBuilder.AddParameter("type", type);
 
             if (!string.IsNullOrEmpty(market))
                 queryBuilder.AddParameter("market", market);

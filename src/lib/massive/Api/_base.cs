@@ -241,7 +241,7 @@ namespace ApiClient.Massive
             Market market,
             string ticker,
             int multiplier,
-            BarTimespanEnum timeSpan,
+            BarTimespan timeSpan,
             DateTime from,
             DateTime to,
             int limit = 100,

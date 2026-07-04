@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive.Response.Stocks;
+using ApiClient.Services;
 using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Massive;
