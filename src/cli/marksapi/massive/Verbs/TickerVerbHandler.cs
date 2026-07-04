@@ -16,8 +16,8 @@ namespace Marksapi.Cli.Massive.Verbs
 
             command
                 .AddTickerOption()
+                .AddMarketArgument()
                 .AddTickerTypeOption()
-                .AddMarketOption()
                 .AddExchangeOption()
                 .AddCusipOption()
                 .AddCikOption()

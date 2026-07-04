@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "marksapi",
+            "name": "marksapi-agg-bars",
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
@@ -13,7 +13,16 @@
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-ticker-info",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "args": ["massive", "ticker-info"],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
         }
-
     ]
 }

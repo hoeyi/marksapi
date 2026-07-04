@@ -61,6 +61,12 @@ $ marksapi <service> <verb> [arguments] [options]
 
 ### massive 
 
+#### Contents
+- [aggregate-bar](#aggregate-bar)
+- [short-volume](#short-volume)
+= [ticker-info](#ticker-info)
+- [tickers](#tickers)
+
 #### aggregate-bar
 
 Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for specified ticker(s).
@@ -197,7 +203,7 @@ $ marksapi massive tickers --date 2023-06-15 --limit 200
 $ marksapi massive tickers --exchange XNYS --market stocks --limit 100
 ```
 
-#### massive ticker-info
+#### ticker-info
 
 Retrieve comprehensive details for a single ticker supported by Massive.
 

@@ -27,17 +27,6 @@ namespace Marksapi.Cli.Massive.Verbs
             return command;
         }
 
-        public static Command AddMarketOption(this Command command)
-        {
-            var exchangeOption = new Option<string>("--exchange")
-            {
-                Description = "Primary exchange MIC (ISO 10383)"
-            };
-            command.Add(exchangeOption);
-
-            return command;
-        }
-
         public static Command AddCikOption(this Command command)
         {
             var cikOption = new Option<string>("--cik")
