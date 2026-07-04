@@ -82,13 +82,14 @@ namespace Marksapi.Cli
 
         private static async Task<double> WriteJsonAsync<T>(string path, T[] data, CancellationToken cancellationToken)
         {
-            CheckPathOrThrow(path);
+            string jsonPath = $"{path}.json";
+            CheckPathOrThrow(jsonPath);
 
             cancellationToken.ThrowIfCancellationRequested();
 
             var serialized = JsonSerializer.Serialize(data, _jsonOptions);
 
-            using var writer = new StreamWriter(path, Encoding.UTF8, options: _fileOptions);
+            using var writer = new StreamWriter(jsonPath, Encoding.UTF8, options: _fileOptions);
             
             await writer.WriteAsync(
                 new StringBuilder(serialized), cancellationToken);

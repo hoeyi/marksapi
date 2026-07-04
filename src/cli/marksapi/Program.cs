@@ -4,6 +4,8 @@ using ApiClient.Services;
 using Marksapi.Cli.Massive.Verbs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Serilog;
 using Serilog.Formatting.Compact;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -16,13 +18,14 @@ namespace Marksapi.Cli
         static IConfiguration Configuration = InitConfiguration();
         static IMassiveApi MassiveApi = InitApi(Configuration);
         static ILogger Logger = InitLogger<Program>(Configuration);
-
+        public static QueryOptions QueryLimit = 
+            GetQueryOptionsOrDefault(Configuration);
         static Task<int> Main(string[] args)
         {
             var rootCommand = new RootCommand("A unified command line interface for querying financial data APIs.");
 
             // Massive service subcommand
-            var massiveCommand = new Command("massive", "Access Massive API services")
+            var massiveCommand = new Command("massive", "Access Massive API endpoints")
             {
                 TickerHandler.CreateCommand(),
                 TickerInfoHandler.CreateCommand(),
@@ -38,6 +41,7 @@ namespace Marksapi.Cli
             });
 
             Configuration = InitConfiguration();
+
             return rootCommand.Parse(args).InvokeAsync();
         }
 
@@ -48,12 +52,12 @@ namespace Marksapi.Cli
             throw new NotImplementedException();
         }
 
-        private static IMassiveApi InitApi(IConfiguration configuration)
+        private static MassiveApi InitApi(IConfiguration configuration)
         {
             RateOptions options = new();
-                var section = configuration
-                    .GetSection("massive")?
-                    .GetSection(nameof(RateOptions));
+            var section = configuration
+                .GetSection("massive")?
+                .GetSection(nameof(RateOptions));
             if (section is null)
             {
                 options.Limit = 5;
@@ -64,10 +68,25 @@ namespace Marksapi.Cli
 
             ArgumentException.ThrowIfNullOrWhiteSpace(configuration["massive:api_key"]);
             
-            
             return new MassiveApi(configuration["massive:api_key"]!, rateOptions: options);
         }
 
+        private static QueryOptions GetQueryOptionsOrDefault(IConfiguration configuration)
+        {   
+            QueryOptions options = new();
+            var section = configuration
+                .GetSection("massive")?
+                .GetSection(nameof(QueryOptions));
+            if (section is null)
+            {
+                options.UpperLimit = 5000;
+                options.LowerLimit = 1;
+            }
+            else
+                section.Bind(options);
+
+            return options;
+        }
         private static IConfiguration InitConfiguration()
         {
             var config = new ConfigurationBuilder()
