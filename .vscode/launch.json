@@ -5,12 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (console)",
+            "name": "marksapi",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "build",
-            "program": "${workspaceFolder}/bin/Debug/<target-framework>/<project-name.dll>",
-            "args": [],
+            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "args": ["--version"],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
