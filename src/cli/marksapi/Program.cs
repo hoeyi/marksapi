@@ -18,15 +18,23 @@ namespace Marksapi.Cli
     
     public class Program
     {
-        static IConfiguration Configuration = InitConfiguration();
-        static IMassiveApi MassiveApi = InitApi(Configuration);
-        static ILogger Logger = InitLogger<Program>(Configuration);
+        /// <summary>
+        /// Gets the <see cref="IConfiguration"/> instance for this program.
+        /// </summary>
+        public static IConfiguration Configuration { get; private set; } = default!;
+        
+        public static IMassiveApi MassiveApi  { get; private set; } = default!;
+        
+        /// <summary>
+        /// Gets the default <see cref="ILogger"/> for the program.
+        /// </summary>
+        public static ILogger Logger  { get; private set; } = default!;
 
         /// <summary>
         /// Gets the program-constrained limits for records to return. Default [1, 5000].
         /// </summary>
-        public static Interval<int> QueryLimit = 
-            GetQueryOptionsOrDefault(Configuration);
+        public static Interval<int> QueryLimit { get; private set; }
+
         static Task<int> Main(string[] args)
         {
             var rootCommand = new RootCommand("A unified command line interface for querying financial data APIs.");
@@ -47,7 +55,21 @@ namespace Marksapi.Cli
                 return DoRootCommand(args, cancellationToken);
             });
 
-            Configuration = InitConfiguration();
+            try
+            {
+                Configuration = InitConfiguration();
+                MassiveApi = InitApi(Configuration);
+                Logger = InitLogger<Program>(Configuration);
+                QueryLimit = GetQueryOptionsOrDefault(Configuration);
+            }
+            catch(Exception e)
+            {
+                Console.Error.Write($"Error during startup.\n\n{e.Message}\n");
+                #if DEBUG
+                Console.Error.Write($"\n{e.StackTrace}");
+                #endif
+                Environment.Exit(1);
+            }
 
             return rootCommand.Parse(args).InvokeAsync();
         }
