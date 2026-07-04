@@ -9,8 +9,31 @@ namespace ApiClient.Massive;
 /// </summary>
 /// <typeparam name="T">The base type for the interval.</typeparam>
 public readonly record struct Interval<T>
-    where T : IEquatable<T>
+    where T : struct, IEquatable<T>, IComparable<T>
 {
+    public Interval()
+    {
+    }
+
+    public Interval(T min, T max, bool open = false)
+    {
+        Start = min;
+        End = max;
+        OpenLeft = open;
+        OpenRight = open;
+    }
+
+    public bool Contains(T other)
+    {
+        bool testLeft = OpenLeft ? 
+            IsGreater(other, Start) : 
+            IsGreaterOrEqual(other, Start);
+        bool testRight = OpenRight ? 
+            IsLess(other, End) : 
+            IsLessOrEqual(other, End);
+        
+        return testLeft && testRight;
+    }
     /// <summary>
     /// Represents the staring value of the interval.
     /// </summary>
@@ -35,4 +58,11 @@ public readonly record struct Interval<T>
     /// Flag indicating the interval is open left/right.
     /// </summary>
     public readonly bool IsOpen => OpenLeft && OpenRight;
+
+    private static bool IsGreater(T a, T b) => a.CompareTo(b) > 0;
+    private static bool IsGreaterOrEqual(T a, T b) => 
+        a.Equals(b) || a.CompareTo(b) > 0;
+    private static bool IsLess(T a, T b) => a.CompareTo(b) < 0;
+    private static bool IsLessOrEqual(T a, T b) => 
+        a.Equals(b) || a.CompareTo(b) < 0;
 }
