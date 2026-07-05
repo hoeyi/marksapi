@@ -1,5 +1,7 @@
 ﻿using System;
 using System.CommandLine;
+using System.CommandLine.Help;
+using System.CommandLine.Invocation;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Formatting.Compact;
+using Spectre.Console;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Marksapi.Cli
@@ -41,7 +44,10 @@ namespace Marksapi.Cli
 
         static Task<int> Main(string[] args)
         {
-            var rootCommand = new RootCommand("A unified command line interface for querying financial data APIs.");
+            var rootCommand = new RootCommand()
+            {
+                Description = "A unified command line interface for querying financial data APIs."
+            };
 
             // Massive service subcommand
             var massiveCommand = new Command("massive", "Access Massive API endpoints")
@@ -53,11 +59,13 @@ namespace Marksapi.Cli
             };
 
             rootCommand.Add(massiveCommand);
-            var parse = rootCommand.Parse(args);
-            rootCommand.SetAction((args, cancellationToken) =>
+            for (int i = 0; i < rootCommand.Options.Count; i++)
             {
-                return DoRootCommand(args, cancellationToken);
-            });
+                if (rootCommand.Options[i] is VersionOption)
+                    rootCommand.Options[i].Action = new CustomVersionAction();
+            }
+            var parse = rootCommand.Parse(args);
+            rootCommand.SetAction(DoRootCommand);
 
             try
             {
@@ -85,11 +93,13 @@ namespace Marksapi.Cli
             return rootCommand.Parse(args).InvokeAsync();
         }
 
-        private static Task<int> DoRootCommand(
-            ParseResult parseResult,
-            CancellationToken cancellationToken)
+        private static int DoRootCommand(ParseResult parseResult)
         {
-            throw new NotImplementedException();
+            AnsiConsole.Write(new FigletText(nameof(Marksapi).ToLower()));
+            AnsiConsole.WriteLine(
+                $"\n{parseResult.RootCommandResult.Command.Description!}");
+            
+            return 0;
         }
 
         private static MassiveApi InitApi(IConfiguration configuration)
@@ -156,6 +166,5 @@ namespace Marksapi.Cli
 
             return loggerFactory.CreateLogger<T>();
         }
-
     }
 }

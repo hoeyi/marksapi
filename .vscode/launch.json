@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "marksapi-agg-bars",
+            "name": "marksapi-version",
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
@@ -15,11 +15,21 @@
             "console": "internalConsole"
         },
         {
+            "name": "marksapi-help",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "args": ["--help"],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
             "name": "marksapi-aggregate-bar",
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "aggregate-bar"],
+            "args": ["massive", "aggregate-bar", "stocks", "AAPL", "--from", "2026-06-30", "--to", "2026-06-30"],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
