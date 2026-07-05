@@ -77,7 +77,7 @@ namespace Marksapi.Cli.Massive.Verbs
                 .ValidateTickerOrTickersOrThrow(ticker, tickers)
                 .ValidateLimitOrThrow(limit, Program.QueryLimit)
                 .ValidateDateRangeOrThrow(fromDate, toDate)
-                .ValidateTimespanOrThrow(timespan, out BarTimespan barTimespan);
+                .ValidateTimespanOrThrow(timespan, out BarTimespan? barTimespan);
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
             var tickerArgs = !string.IsNullOrEmpty(ticker) ?
@@ -88,7 +88,7 @@ namespace Marksapi.Cli.Massive.Verbs
                     market: mktEnum,
                     tickers: tickerArgs,
                     multiplier: multiplier,
-                    timeSpan: barTimespan,
+                    timeSpan: barTimespan ?? BarTimespan.Day,
                     fromDate!.Value,
                     toDate!.Value,
                     limit ?? Program.QueryLimit.End,

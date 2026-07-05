@@ -20,7 +20,7 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var tickerArgument = new Argument<string>(name: "TICKER")
             {
-                Arity = ArgumentArity.ZeroOrOne
+                Arity = ArgumentArity.ExactlyOne
             };
             command.Add(tickerArgument);
 
@@ -31,7 +31,8 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var cikOption = new Option<string>("--cik")
             {
-                Description = "Central Index Key filter"
+                Description = "Central Index Key filter",
+                Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(cikOption);
 
@@ -42,7 +43,8 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var cusipOption = new Option<string>("--cusip")
             {
-                Description = "CUSIP code filter"
+                Description = "CUSIP code filter",
+                Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(cusipOption);
 
@@ -53,18 +55,20 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var exchangeOption = new Option<string>(name: "--exchange")
             {
-                Description = "Primary exchange MIC (ISO 10383)"
+                Description = "Primary exchange MIC (ISO 10383)",
+                Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(exchangeOption);
 
             return command;
         }
 
-        public static Command AddInactiveOption(this Command command)
+        public static Command AddActiveOnlyOption(this Command command)
         {
-            var inactiveOption = new Option<bool>("--inactive")
+            var inactiveOption = new Option<bool>("--active-only")
             {
-                Description = "Include inactive tickers"
+                Description = "Exclude inactive tickers. Default is true.",
+                DefaultValueFactory = (args) => true
             };
             command.Add(inactiveOption);
 
@@ -75,8 +79,8 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var limitOption = new Option<int>(name: "--limit")
             {
-                Description = "Maximum records to return",
-                DefaultValueFactory = new((args) => 100)
+                Description = "Maximum records to return. Default is 100.",
+                DefaultValueFactory = (args) => 100
             };
             command.Add(limitOption);
 
@@ -87,8 +91,9 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var multiplierOption = new Option<int>(name: "--multiplier")
             {
-                Description = "Timespan multiplier (e.g., 1 for 1 day, 5 for 5 days)",
-                Arity = ArgumentArity.ExactlyOne
+                Description = "Timespan multiplier (e.g., 1 for 1 day, 5 for 5 days). Default is 1.",
+                Arity = ArgumentArity.ExactlyOne,
+                DefaultValueFactory = (args) => 1
             };
             command.Add(multiplierOption);
 
@@ -100,6 +105,7 @@ namespace Marksapi.Cli.Massive.Verbs
             var outputOption = new Option<string>(name: "--format")
             {
                 Description = "Output format (json, csv)",
+                Arity = ArgumentArity.ZeroOrOne,
                 DefaultValueFactory = new((args) => "json")
             };
             command.Add(outputOption);
@@ -111,7 +117,8 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var ratioMinOption = new Option<float>(name: "--ratio-min")
             {
-                Description = "Minimum short volume ratio filter"
+                Description = "Minimum short volume ratio filter",
+                Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(ratioMinOption);
 
@@ -122,7 +129,8 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var ratioMaxOption = new Option<float>(name: "--ratio-max")
             {
-                Description = "Maximum short volume ratio filter"
+                Description = "Maximum short volume ratio filter",
+                Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(ratioMaxOption);
 
@@ -133,7 +141,8 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var searchOption = new Option<string>("--search")
             {
-                Description = "Search within ticker/company name"
+                Description = "Search within ticker/company name",
+                Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(searchOption);
 
@@ -144,7 +153,8 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var sortOption = new Option<string>(name: "--desc")
                 {
-                    Description = "Sort descending"
+                    Description = "Sort descending",
+                    Arity = ArgumentArity.ZeroOrOne
                 };
                 command.Add(sortOption);
 
@@ -155,7 +165,8 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var sortOption = new Option<string>(name: "--sort")
                 {
-                    Description = "Field to sort results by"
+                    Description = "Field to sort results by",
+                    Arity = ArgumentArity.ZeroOrOne
                 };
                 command.Add(sortOption);
 
@@ -200,8 +211,9 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var timespanOption = new Option<string>(name: "--timespan")
             {
-                Description = "Time window size (second, minute, hour, day, week, month, quarter, year)",
-                Arity = ArgumentArity.ExactlyOne
+                Description = "Time window size (second, minute, hour, day, week, month, quarter, year).\nDefault is 'day'.",
+                Arity = ArgumentArity.ExactlyOne,
+                DefaultValueFactory = (args) => "day"
             };
             command.Add(timespanOption);
 
@@ -212,7 +224,8 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var dateOption = new Option<DateTime>(name: "--date")
             {
-                Description = "Snapshot date (YYYY-MM-DD)"
+                Description = "Snapshot date (YYYY-MM-DD)",
+                Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(dateOption);
 

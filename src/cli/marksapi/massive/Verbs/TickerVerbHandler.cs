@@ -24,7 +24,7 @@ namespace Marksapi.Cli.Massive.Verbs
                 .AddCikOption()
                 .AddDateOption()
                 .AddSearchOption()
-                .AddInactiveOption()
+                .AddActiveOnlyOption()
                 .AddSortDescendingOption()
                 .AddSortFieldOption()
                 .AddLimitOption()

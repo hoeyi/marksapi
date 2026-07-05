@@ -64,7 +64,7 @@ $ marksapi <service> <verb> [arguments] [options]
 #### Contents
 - [aggregate-bar](#aggregate-bar)
 - [short-volume](#short-volume)
-= [ticker-info](#ticker-info)
+- [ticker-info](#ticker-info)
 - [tickers](#tickers)
 
 #### aggregate-bar
@@ -80,10 +80,10 @@ $ marksapi massive aggregate-bar <MARKET> <TICKER> --multiplier <INT> --timespan
 |---|---|---:|---|
 | MARKET | Market identifier (e.g., stocks, forex) | Yes | — |
 | TICKER | Single case-sensitive ticker symbol | Yes | — |
-| multiplier | Timespan multiplier (e.g., 1 for 1 day, 5 for 5 days) | Yes | — |
-| timespan | Time window size (second, minute, hour, day, week, month, quarter, year) | Yes | — |
 | from | Start date of time window (ISO format: YYYY-MM-DD) | Yes | — |
 | to | End date of time window (ISO format: YYYY-MM-DD) | Yes | — |
+| multiplier | Timespan multiplier (e.g., 1 for 1 day, 5 for 5 days). Defaults to 1 if not provided. | No | — |
+| timespan | Time window size (second, minute, hour, day, week, month, quarter, year). Defaults to 'day' if not provided. | No | — |
 | limit | Maximum records to return | No | 100 |
 
 | Option | Type | Range |
@@ -167,7 +167,7 @@ $ marksapi massive tickers [--ticker <STRING>] [--type <TYPE>] [--market <STRING
 | --cik | Central Index Key filter | No | None |
 | --date | Point-in-time snapshot (YYYY-MM-DD) | No | Most recent |
 | --search | Search within ticker/company name | No | None |
-| --inactive | Include inactive tickers | No | Active only |
+| --active-only | Include inactive tickers | No | Active only |
 | --desc | Sort descending | No | Ascending |
 | --sort | Field to sort results by | No | Default |
 | --limit | Number of results | No | 100 |

@@ -1,4 +1,6 @@
 using System;
+using System.CommandLine;
+using System.Globalization;
 using ApiClient.Massive;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
@@ -69,7 +71,12 @@ namespace Marksapi.Cli.Massive.Verbs
             string? market,
             out Market mktEnum)
         {
-            if(!Enum.TryParse(market, out Market result))
+            ArgumentException.ThrowIfNullOrEmpty(market, nameof(market));
+            ArgumentException.ThrowIfNullOrWhiteSpace(market, nameof(market));
+
+            var culture = CultureInfo.InvariantCulture;
+            var marketTitle = culture.TextInfo.ToTitleCase(market!);
+            if(!Enum.TryParse(marketTitle, out Market result))
             {
                 _logger?.LogError(
                     "Argument <{arg}> must be one of: crypto, fx, indices, options, stocks.",
@@ -129,17 +136,23 @@ namespace Marksapi.Cli.Massive.Verbs
 
         public CommandValidator ValidateTimespanOrThrow(
             string? timespan,
-            out BarTimespan barTimespan)
+            out BarTimespan? barTimespan)
         {
-            if(!Enum.TryParse(timespan, out BarTimespan result))
+            if (!string.IsNullOrEmpty(timespan))
             {
-                _logger?.LogError(
-                    "Option <{opt}> must be one of: second, minute, hour, day, week, month, quarter, year.",
-                    "--timespan");
-                throw new ArgumentException(
-                    $"Invalid parameters: {nameof(timespan)}.");
+                var culture = CultureInfo.InvariantCulture;
+                string? timespanTitle = culture.TextInfo.ToTitleCase(timespan);
+                if(!Enum.TryParse(timespanTitle, out BarTimespan result))
+                {
+                    _logger?.LogError(
+                        "Option <{opt}> must be one of: second, minute, hour, day, week, month, quarter, year.",
+                        "--timespan");
+                    throw new ArgumentException(
+                        $"Invalid parameters: {nameof(timespan)}.");
+                }
+                barTimespan = result;
             }
-            barTimespan = result;
+            barTimespan = null;
             return this;
         }
     }
