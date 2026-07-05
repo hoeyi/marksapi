@@ -7,7 +7,7 @@ public enum Market
 {
     Crypto,
 
-    FX,
+    Fx,
 
     Indices,
 

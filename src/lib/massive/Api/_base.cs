@@ -257,7 +257,7 @@ namespace ApiClient.Massive
             string tickerAdj = market switch
             {
                 Market.Crypto => $"X:{ticker}",
-                Market.FX => $"C:{ticker}",
+                Market.Fx => $"C:{ticker}",
                 Market.Indices => $"I:{ticker}",
                 Market.Options => $"O:{ticker}",
                 Market.Stocks => ticker,
@@ -302,7 +302,7 @@ namespace ApiClient.Massive
             {
                 Market.Crypto => 
                     QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview),
-                Market.FX => 
+                Market.Fx => 
                     QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview),
                 Market.Indices => 
                     QueryBuilder.ConvertEndpointToStringPattern(Endpoint.ReferenceTickerOverview),
@@ -317,7 +317,7 @@ namespace ApiClient.Massive
             string tickerAdj = market switch
             {
                 Market.Crypto => $"X:{ticker}",
-                Market.FX => $"C:{ticker}",
+                Market.Fx => $"C:{ticker}",
                 Market.Indices => $"I:{ticker}",
                 Market.Options => $"O:{ticker}",
                 Market.Stocks => ticker,
