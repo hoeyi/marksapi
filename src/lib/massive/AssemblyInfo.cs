@@ -1,5 +1,5 @@
 global using Newtonsoft.Json;
-global using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using System.Reflection;
 
 [assembly: InternalsVisibleTo("ApiClient.test")]
