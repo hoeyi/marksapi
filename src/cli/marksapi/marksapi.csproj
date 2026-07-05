@@ -8,8 +8,19 @@
     <IsPackable>true</IsPackable>
     <RootNamespace>Marksapi.Cli</RootNamespace>
     <StartupObject>Marksapi.Cli.Program</StartupObject>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UserSecretsId>2e43ec9b-a948-43d4-8a48-7f81aaad0818</UserSecretsId>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <!-- Include must be the fully qualified .NET type name of the Attribute to create. -->
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <!-- _Parameter1, _Parameter2, etc. correspond to the
+          matching parameter of a constructor of that .NET attribute type -->
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$(Date)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.1.0" />
