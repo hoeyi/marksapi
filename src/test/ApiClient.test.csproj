@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../cli/marksapi/marksapi.csproj" />
     <ProjectReference Include="../lib/common/ApiClient.Common.csproj" />
     <ProjectReference Include="../lib/massive/ApiClient.massive.csproj" />
   </ItemGroup>
