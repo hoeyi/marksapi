@@ -1,5 +1,6 @@
 using System;
 using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
@@ -8,7 +9,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
 {
-    public static class ShortVolumeHandler
+    [ExcludeFromCodeCoverage]
+    static class ShortVolumeHandler
     {
         public static Command CreateCommand()
         {

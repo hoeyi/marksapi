@@ -1,8 +1,10 @@
 using System;
 using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Marksapi.Cli.Massive.Verbs
 {
+    [ExcludeFromCodeCoverage]
     static class CommandBuilder
     {
         public static Command AddMarketArgument(this Command command)

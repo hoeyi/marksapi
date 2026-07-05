@@ -1,6 +1,7 @@
 // MassAggregationBar.cs
 using System;
 using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
 {
+    [ExcludeFromCodeCoverage]
     public static class AggregateBarHandler
     {
         public static Command CreateCommand()

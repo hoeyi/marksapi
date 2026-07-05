@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -15,17 +16,12 @@ namespace Marksapi.Cli
     /// </summary>
     public class OutputService
     {
-        private static readonly JsonSerializerOptions _jsonOptions = new()
-            {
-                WriteIndented = true,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-        private static readonly FileStreamOptions _fileOptions = new()
-        {
-            Mode = FileMode.Append
-        };
+        [ExcludeFromCodeCoverage]
+        private static JsonSerializerOptions _jsonOptions { get; } = JsonOptions();
 
+        [ExcludeFromCodeCoverage]
+        private static FileStreamOptions FileOptions { get; } = FileStreamOptions();
+        
         /// <summary>
         /// Writes the given <typeparamref name="T"/> data to disk at the given path and format.
         /// </summary>
@@ -82,6 +78,7 @@ namespace Marksapi.Cli
             CancellationToken cancellationToken = default)
                 => await WriteAsync<T>(data: [item], format, path, cancellationToken);
 
+        [ExcludeFromCodeCoverage]
         private static async Task<double> WriteJsonAsync<T>(string path, T[] data, CancellationToken cancellationToken)
         {
             string jsonPath = $"{path}.json";
@@ -91,7 +88,7 @@ namespace Marksapi.Cli
 
             var serialized = JsonSerializer.Serialize(data, _jsonOptions);
 
-            using var writer = new StreamWriter(jsonPath, Encoding.UTF8, options: _fileOptions);
+            using var writer = new StreamWriter(jsonPath, Encoding.UTF8, options: FileOptions);
             
             await writer.WriteAsync(
                 new StringBuilder(serialized), cancellationToken);
@@ -99,13 +96,14 @@ namespace Marksapi.Cli
             return writer.BaseStream.Length;
         }
 
+        [ExcludeFromCodeCoverage]
         private static async Task<double> WriteCsvAsync<T>(string path, T[] data, CancellationToken cancellationToken)
         {
             CheckPathOrThrow(path);
 
             cancellationToken.ThrowIfCancellationRequested();
             
-            using var writer = new StreamWriter(path, Encoding.UTF8, options: _fileOptions);
+            using var writer = new StreamWriter(path, Encoding.UTF8, options: FileOptions);
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
 
             await csv.WriteRecordsAsync(data, cancellationToken);
@@ -113,6 +111,7 @@ namespace Marksapi.Cli
             return writer.BaseStream.Length;
         }
 
+        [ExcludeFromCodeCoverage]
         private static void CheckPathOrThrow(string path)
         {
             FileAttributes fileAttr = File.GetAttributes(path);
@@ -120,5 +119,19 @@ namespace Marksapi.Cli
                 throw new InvalidOperationException(
                             $"Parameter '{nameof(path)}' must be a file, not directory.");
         }
+
+        [ExcludeFromCodeCoverage]
+        private static JsonSerializerOptions JsonOptions() => new()
+            {
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+        
+        [ExcludeFromCodeCoverage]
+        private static FileStreamOptions FileStreamOptions() => new()
+            {
+                Mode = FileMode.Append
+            };
     }
 }

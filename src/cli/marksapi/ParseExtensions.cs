@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Marksapi.Cli;
 
+[ExcludeFromCodeCoverage]
 static class ParseHelper
 {
     public static string[] ToValueArray(this string? delimitedString)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
@@ -13,7 +14,7 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Marksapi.Cli
 {
-    
+    [ExcludeFromCodeCoverage]
     public class Program
     {
         /// <summary>

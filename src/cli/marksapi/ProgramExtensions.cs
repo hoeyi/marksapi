@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Marksapi.Cli;
 
+[ExcludeFromCodeCoverage]
 static class ProgramExtensions
 {
     /// <summary>
@@ -25,6 +27,7 @@ static class ProgramExtensions
 /// <summary>
 /// Simple service provider.
 /// </summary>
+[ExcludeFromCodeCoverage]
 class SingletonServiceProvider : IServiceProvider
 {
     private readonly Dictionary<Type, object> _servies = [];

@@ -2,6 +2,7 @@
 using System;
 using System.CommandLine;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
@@ -9,7 +10,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
 {
-    public static class TickerHandler
+    [ExcludeFromCodeCoverage]
+    static class TickerHandler
     {
         public static Command CreateCommand()
         {
