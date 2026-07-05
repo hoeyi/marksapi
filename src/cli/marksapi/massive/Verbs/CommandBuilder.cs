@@ -164,7 +164,7 @@ namespace Marksapi.Cli.Massive.Verbs
 
         public static Command AddTickerOption(this Command command)
         {
-            var tickerArgument = new Argument<string>(name: "TICKER")
+            var tickerArgument = new Argument<string>(name: "--ticker")
             {
                 Arity = ArgumentArity.ZeroOrOne
             };
@@ -177,6 +177,7 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var tickerOption = new Option<string>(name: "--tickers")
             {
+                Arity = ArgumentArity.ZeroOrOne,
                 Description = "Multiple comma-separated ticker symbols"
             };
             command.Add(tickerOption);

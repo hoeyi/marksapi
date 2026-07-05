@@ -4,6 +4,7 @@ using System.CommandLine;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
+using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
 {
@@ -24,24 +25,53 @@ namespace Marksapi.Cli.Massive.Verbs
                 .AddTickersOption()
                 .AddFormatOption();
 
+            
             // TODO: Register action.
+            command.SetAction((pr, ct) =>
+            {
+                string? market = pr.GetValue<string>("MARKET");
+                string? ticker = pr.GetValue<string>("TICKER");
+                string? tickers = pr.GetValue<string>("--tickers");
+                int multiplier = pr.GetValue<int>("--multiplier");
+                string? timespan = pr.GetValue<string>("--timespan");
+                DateTime? fromDate = pr.GetValue<DateTime?>("--from");
+                DateTime? toDate = pr.GetValue<DateTime?>("--to");
+                string? format = pr.GetValue<string>("--format");
+                int? limit = pr.GetValue<int?>("--limit");
+
+                return Handle(
+                    Program.Services,
+                    market,
+                    ticker,
+                    tickers,
+                    multiplier,
+                    timespan,
+                    fromDate,
+                    toDate,
+                    format,
+                    limit,
+                    ct);
+            });
+
             return command;
         }
 
         private static async Task Handle(
             IServiceProvider services,
-            string market,
+            string? market,
             string? ticker,
             string? tickers,
             int multiplier,
-            string timespan,
+            string? timespan,
             DateTime? fromDate,
             DateTime? toDate,
-            string format,
+            string? format,
             int? limit,
             CancellationToken cancellationToken = default)
         {
-            var validator = new CommandValidator();
+            var logger = services.GetServiceOrThrow<ILogger>();
+
+            var validator = new CommandValidator(logger);
             validator
                 .ValidateMarketOrThrow(market, out Market mktEnum)
                 .ValidateTickerOrTickersOrThrow(ticker, tickers)
@@ -66,7 +96,7 @@ namespace Marksapi.Cli.Massive.Verbs
 
                 await OutputService.WriteAsync(
                     result.Results,
-                    format,
+                    format!,
                     $"./massive/{result.RequestId}",
                     cancellationToken);
         }

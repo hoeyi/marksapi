@@ -1,6 +1,4 @@
 using System;
-using System.CommandLine;
-using System.ComponentModel.Design.Serialization;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -9,8 +7,6 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using CsvHelper;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli
 {

@@ -1,7 +1,5 @@
 using System;
-using System.CommandLine;
 using ApiClient.Massive;
-using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
 
@@ -32,7 +30,7 @@ namespace Marksapi.Cli.Massive.Verbs
         public CommandValidator ValidateFormatOrThrow(string? format)
         {
             string[] supported = ["csv", "json"];
-            if(!string.IsNullOrEmpty(format) && !supported.Contains(format))
+            if(string.IsNullOrEmpty(format) || !supported.Contains(format))
             {
                 _logger?.LogError(
                     "Option <{opt}> must be one of: {supported}.", 

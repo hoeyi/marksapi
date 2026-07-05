@@ -4,8 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
@@ -27,6 +25,31 @@ namespace Marksapi.Cli.Massive.Verbs
                 .AddFormatOption();
 
             // TODO: Register action.
+            command.SetAction((pr, ct) =>
+            {
+                string? ticker = pr.GetValue<string>("TICKER");
+                string? tickers = pr.GetValue<string>("--tickers");
+                DateTime? fromDate = pr.GetValue<DateTime?>("--from");
+                DateTime? toDate = pr.GetValue<DateTime?>("--to");
+                float? ratioMin = pr.GetValue<float?>("--ratio-min");
+                float? ratioMax = pr.GetValue<float?>("--ratio-max");
+                string? format = pr.GetValue<string>("--format");
+                int? limit = pr.GetValue<int?>("--limit");
+
+                return Handle(
+                    Program.Services,
+                    ticker,
+                    tickers,
+                    fromDate,
+                    toDate,
+                    ratioMin,
+                    ratioMax,
+                    format,
+                    limit,
+                    ct
+                );
+            });
+
             return command;
         }
 
@@ -38,11 +61,12 @@ namespace Marksapi.Cli.Massive.Verbs
             DateTime? toDate,
             float? ratioMin,
             float? ratioMax,
-            string format,
+            string? format,
             int? limit,
-            ILogger? logger = null,
             CancellationToken cancellationToken = default)
         {
+            var logger = services.GetServiceOrThrow<ILogger>();
+            
             var validator = new CommandValidator(logger);
             validator 
                 .ValidateTickerOrTickersOrThrow(ticker, tickers)
@@ -53,7 +77,6 @@ namespace Marksapi.Cli.Massive.Verbs
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
             
-
             Interval<float>? interval = ratioMin.HasValue && ratioMax.HasValue ? 
                 new Interval<float>(ratioMin.Value, ratioMax.Value, open: true) : null;
 
@@ -69,7 +92,7 @@ namespace Marksapi.Cli.Massive.Verbs
 
                 await OutputService.WriteAsync(
                     result.Results,
-                    format,
+                    format!,
                     $"./massive/{result.RequestId}",
                     cancellationToken);
             }
@@ -85,7 +108,7 @@ namespace Marksapi.Cli.Massive.Verbs
 
                 await OutputService.WriteAsync(
                     result.Results,
-                    format,
+                    format!,
                     $"./massive/{result.RequestId}",
                     cancellationToken);
             }

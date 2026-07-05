@@ -7,8 +7,6 @@ using ApiClient.Services;
 using Marksapi.Cli.Massive.Verbs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Serilog;
 using Serilog.Formatting.Compact;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -21,19 +19,24 @@ namespace Marksapi.Cli
         /// <summary>
         /// Gets the <see cref="IConfiguration"/> instance for this program.
         /// </summary>
-        public static IConfiguration Configuration { get; private set; } = default!;
+        static IConfiguration Configuration { get; set; } = default!;
         
-        public static IMassiveApi MassiveApi  { get; private set; } = default!;
+        static IMassiveApi MassiveApi  { get; set; } = default!;
         
         /// <summary>
         /// Gets the default <see cref="ILogger"/> for the program.
         /// </summary>
-        public static ILogger Logger  { get; private set; } = default!;
+        static ILogger Logger  { get; set; } = default!;
 
         /// <summary>
         /// Gets the program-constrained limits for records to return. Default [1, 5000].
         /// </summary>
-        public static Interval<int> QueryLimit { get; private set; }
+        public static Interval<int> QueryLimit { get; set; }
+
+        /// <summary>
+        /// Gets the program <see cref="IServierProvider"/>.
+        /// </summary>
+        public static IServiceProvider Services { get; set; } = default!;
 
         static Task<int> Main(string[] args)
         {
@@ -61,6 +64,13 @@ namespace Marksapi.Cli
                 MassiveApi = InitApi(Configuration);
                 Logger = InitLogger<Program>(Configuration);
                 QueryLimit = GetQueryOptionsOrDefault(Configuration);
+
+                var provider = new SingletonServiceProvider();
+                provider
+                    .RegisterService(Configuration)
+                    .RegisterService(Logger)
+                    .RegisterService(MassiveApi);
+                Services = provider;
             }
             catch(Exception e)
             {
