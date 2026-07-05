@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive.Response.Stocks;
+using ApiClient.Services;
 using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Massive;
@@ -14,8 +16,8 @@ public partial class MassiveApi
         DateTime fromDate,
         DateTime toDate,
         Interval<float>? shortVolumeRatio = null,
-        int? limit = 10
-    )
+        int? limit = 10,
+        CancellationToken? cancellationToken = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(ticker);
         ArgumentOutOfRangeException.ThrowIfGreaterThan(fromDate, toDate);
@@ -38,7 +40,9 @@ public partial class MassiveApi
         queryBuilder.AddParameter("limit", $"{limit}");
 
         var response = await GetResponseAsync<ShortVolumeResponse>(
-                                queryBuilder, Endpoint.StocksFundamentalsShortVolume);
+                                queryBuilder, 
+                                Endpoint.StocksFundamentalsShortVolume,
+                                cancellationToken);
 
         return response;
     }
@@ -49,7 +53,8 @@ public partial class MassiveApi
         DateTime fromDate,
         DateTime toDate,
         Interval<float>? shortVolumeRatio = null,
-        int? limit = 10)
+        int? limit = 10,
+        CancellationToken? cancellationToken = null)
     {
         if(tickers.Length == 0)
             throw new ArgumentException($"Parameter '{tickers} must be non-empty.");
@@ -79,7 +84,9 @@ public partial class MassiveApi
         queryBuilder.AddParameter("limit", $"{limit}");
 
         var response = await GetResponseAsync<ShortVolumeResponse>(
-                                queryBuilder, Endpoint.StocksFundamentalsShortVolume);
+                                queryBuilder, 
+                                Endpoint.StocksFundamentalsShortVolume,
+                                cancellationToken);
 
         return response;
     }

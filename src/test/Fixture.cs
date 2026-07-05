@@ -11,6 +11,13 @@ namespace ApiClient.Test;
 
 public class Fixture
 {
+    public Fixture()
+    {
+        Configuration = new ConfigurationBuilder()
+                            .AddJsonFile("appsettings.json")
+                            .Build();
+        Logger = CreateLogger<Fixture>(Configuration);
+    }
     public required ILogger Logger { get; init; }
     
     public required IConfiguration Configuration { get; init; }

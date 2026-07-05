@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
@@ -14,7 +15,7 @@ namespace ApiClient.Massive
         /// <inheritdoc/>
         public async Task<AggregateTickerResponse> GetAllTickersAsync(
             string? ticker = null,
-            TickerType? type = null,
+            string? type = null,
             string? market = null,
             string? exchange = null,
             string? cusip = null,
@@ -24,7 +25,8 @@ namespace ApiClient.Massive
             bool active = true,
             bool asc = true,
             string? sort = null,
-            int limit = 100)
+            int limit = 100,
+            CancellationToken? cancellationToken = null)
         {
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(limit, 0, nameof(limit));
             ArgumentOutOfRangeException.ThrowIfGreaterThan(limit, 1000, nameof(limit));
@@ -46,7 +48,7 @@ namespace ApiClient.Massive
                 queryBuilder.AddParameter("ticker", ticker);
 
             if (type is not null)
-                queryBuilder.AddParameter("type", type.Code);
+                queryBuilder.AddParameter("type", type);
 
             if (!string.IsNullOrEmpty(market))
                 queryBuilder.AddParameter("market", market);
@@ -66,7 +68,10 @@ namespace ApiClient.Massive
             if (!string.IsNullOrEmpty(sort))
                 queryBuilder.AddParameter("sort", sort);
 
-            var response = await GetResponseAsync<AggregateTickerResponse>(queryBuilder, Endpoint.ReferenceAllTickers);
+            var response = await GetResponseAsync<AggregateTickerResponse>(
+                            queryBuilder,
+                            Endpoint.ReferenceAllTickers,
+                            cancellationToken);
 
             return response;
         }
@@ -75,12 +80,16 @@ namespace ApiClient.Massive
         public async Task<TickerOverviewResponse> GetTickerOverviewResponseAsync(
             Market market,
             string ticker,
-            DateTime? date = null
-        ) => await GetGenericTickerOverviewResponseAsync(market, ticker, date);
+            DateTime? date = null,
+            CancellationToken? cancellationToken = null) => 
+                await GetGenericTickerOverviewResponseAsync(market, ticker, date, cancellationToken);
 
         /// <inheritdoc/>
         public async Task<List<TickerOverviewResponse>> GetTickerOverviewResponseAsync(
-            Market market, string[] tickers, DateTime? date = null)
+            Market market,
+            string[] tickers,
+            DateTime? date = null,
+            CancellationToken? cancellationToken = null)
         {
             List<TickerOverviewResponse> responses = [];
 
@@ -89,8 +98,8 @@ namespace ApiClient.Massive
                     $"{nameof(GetTickerOverviewResponseAsync)} requires instance of '{nameof(RateTimer)}.");
             foreach(var ticker in tickers)
             {
-                await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: null);
-                var response = await GetTickerOverviewResponseAsync(market, ticker, date);
+                await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: cancellationToken);
+                var response = await GetTickerOverviewResponseAsync(market, ticker, date, cancellationToken);
                 
                 if(response is null)
                     _logger?.LogWarning("Received empty resonse.");
