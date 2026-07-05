@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Marksapi.Cli;
 
-public static class ProgramExtensions
+static class ProgramExtensions
 {
     /// <summary>
     /// Gets the registered service matching <typeparamref name="T"/>, else

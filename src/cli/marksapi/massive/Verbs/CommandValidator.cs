@@ -75,7 +75,7 @@ namespace Marksapi.Cli.Massive.Verbs
             ArgumentException.ThrowIfNullOrWhiteSpace(market, nameof(market));
 
             var culture = CultureInfo.InvariantCulture;
-            var marketTitle = culture.TextInfo.ToTitleCase(market!);
+            var marketTitle = culture.TextInfo.ToTitleCase(market!.ToLower());
             if(!Enum.TryParse(marketTitle, out Market result))
             {
                 _logger?.LogError(
@@ -141,7 +141,7 @@ namespace Marksapi.Cli.Massive.Verbs
             if (!string.IsNullOrEmpty(timespan))
             {
                 var culture = CultureInfo.InvariantCulture;
-                string? timespanTitle = culture.TextInfo.ToTitleCase(timespan);
+                string? timespanTitle = culture.TextInfo.ToTitleCase(timespan.ToLower());
                 if(!Enum.TryParse(timespanTitle, out BarTimespan result))
                 {
                     _logger?.LogError(
@@ -151,6 +151,7 @@ namespace Marksapi.Cli.Massive.Verbs
                         $"Invalid parameters: {nameof(timespan)}.");
                 }
                 barTimespan = result;
+                return this;
             }
             barTimespan = null;
             return this;
