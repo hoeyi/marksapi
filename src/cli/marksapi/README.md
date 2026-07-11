@@ -19,10 +19,11 @@ A unified command line interface for querying financial, economic, and relatedd 
 ### Building from source
 Use the [Dockerfile](./Dockerfile) to build from source:
 
+#### Bash
 ```bash
 git clone https://github.com/hoeyi/markets-apiclient.git
 cd markets-apiclient/src
-docker build -t marksapi:latest -f cli/marksapi/Dockerfile .
+docker build -t marksapi:latest -f cli/marksapi/build/Dockerfile .
 ```
 
 You can now access the app by running the image interactively:
@@ -37,6 +38,30 @@ marksapi --version
 ```
 
 The container will start as `root@<container_tag>` in the working directory `/app` by default. The working directory is added to `$PATH` during the Docker build.
+
+### Using <em>docker compose</em>
+You can also use `src/cli/marksapi//build/docker-compose.yml`. The volume mount provides an output location. Application logs are ephemeral unless copy to a mount location during the session.
+
+#### docker-compose.yml
+```yaml <>
+services:
+  marksapi:
+    build:
+      context: ../../../. # context: {project-root}/src/. 
+      dockerfile: ./cli/marksapi/build/Dockerfile
+    image: ghcr.io/hoeyi/marksapi:latest
+    volumes:
+    - ${HOME}/marksapi:/data
+```
+
+#### Bash
+```bash
+git clone https://github.com/hoeyi/markets-apiclient.git
+cd markets-apiclient/src
+# build the image then run
+docker compose build marksapi
+docker compose run marksapi
+```
 
 <sub>[Contents](#contents)</sub>
 
