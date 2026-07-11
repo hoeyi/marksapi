@@ -1,4 +1,4 @@
-# Contributing to ApiClient.Marketstack #
+# Contributing to <em>markets-apiclient</em> #
 
 * [Commit Message Guidelines](#commit-message-guidelines)
 * [Object Naming Conventions](#object-naming-conventions)
