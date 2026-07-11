@@ -21,6 +21,7 @@ RUN dotnet publish -c Release -o /app/publish --no-build
 FROM mcr.microsoft.com/dotnet/runtime:10.0 AS final
 WORKDIR /app
 ENV PATH="$PATH:/app"
+
 # Copy the published output from the build stage
 COPY --from=build /app/publish .
 

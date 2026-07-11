@@ -1,0 +1,8 @@
+services:
+  marksapi:
+    build:
+      context: ../../../.
+      dockerfile: ./cli/marksapi/build/Dockerfile
+    image: ghcr.io/hoeyi/marksapi:latest
+    volumes:
+    - ${HOME}/marksapi:/data
