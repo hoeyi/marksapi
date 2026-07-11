@@ -16,6 +16,30 @@ A unified command line interface for querying financial, economic, and relatedd 
 
 ## Installation
 
+### Building from source
+Use the [Dockerfile](./Dockerfile) to build from source:
+
+```bash
+git clone https://github.com/hoeyi/markets-apiclient.git
+cd markets-apiclient/src
+docker build -t marksapi:latest -f cli/marksapi/Dockerfile .
+```
+
+You can now access the app by running the image interactively:
+```bash
+docker run -it marksapi:latest bash
+```
+
+and from within the container:
+
+```bash
+marksapi --version
+```
+
+The container will start as `root@<container_tag>` in the working directory `/app` by default. The working directory is added to `$PATH` during the Docker build.
+
+<sub>[Contents](#contents)</sub>
+
 ## Configuration
 
 ### Required

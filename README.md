@@ -5,6 +5,7 @@ The Markets API Client is a collection of commerical and non-commerical API clie
 - Configurable: Configurable logging provider via **Serilog**
 
 ## Getting started
-A Docker image is planned for a future release.
+
+Generally, the [marksapi cli too](./src/cli/marksapi/README.md) is used. See the [installation](./src/cli/marksapi/README.md#installation) section for build details.
 
 [Contributing Guidelines](CONTRIBUTING.md)
