@@ -12,6 +12,7 @@ A unified command line interface for querying financial, economic, and relatedd 
     - [MASSIVE](#massive)
     - [Output](#output)
 - [Troubleshooting](#troubleshooting)
+- [Attribution / Acknowledgements](#attribution--acknowledgements)
 
 ## Installation
 
@@ -276,5 +277,11 @@ Ensure dates conform to Eastern Time (ET) requirements specified by the Massive 
 ### Authorization
 
 Verify your API key is set correctly and hasn't expired.
+
+<sub>[Contents](#contents)</sub>
+
+### Attribution / Acknowledgements
+
+See [Third-party notices](./THIRD-PARTY-NOTICES.md).
 
 <sub>[Contents](#contents)</sub>
