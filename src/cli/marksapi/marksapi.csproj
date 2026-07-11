@@ -6,6 +6,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RootNamespace>Marksapi.Cli</RootNamespace>
     <StartupObject>Marksapi.Cli.Program</StartupObject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
