@@ -1,10 +1,11 @@
-# Markets API Client
-The Markets API Client is a collection of commerical and non-commerical API client libraries covering market, economic, and other industry data.
+# markets-apiclient
+The **markets-apiclient** project is a collection of commerical and non-commerical API client libraries covering market, economic, and other industry data.
 
-- CLR Interface: Consistent methods for retrieving quotes (OHLC), price series, and company or fund metadata across supported APIs.
-- Configurable: Easy setup of API keys.
+- Common interface: Methods for retrieving price quotes, trade statistics, company fundamentals and economic data across supported APIs.
+- Configurable: Configurable logging provider via **Serilog**
 
 ## Getting started
-A Nuget package is planned for a future release.
+
+Generally, the [marksapi cli tool](./src/cli/marksapi/README.md) is used. See the [installation](./src/cli/marksapi/README.md#installation) section for build details.
 
 [Contributing Guidelines](CONTRIBUTING.md)

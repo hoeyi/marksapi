@@ -12,8 +12,58 @@ A unified command line interface for querying financial, economic, and relatedd 
     - [MASSIVE](#massive)
     - [Output](#output)
 - [Troubleshooting](#troubleshooting)
+- [Attribution / Acknowledgements](#attribution--acknowledgements)
 
 ## Installation
+
+### Building from source
+Use the [Dockerfile](./Dockerfile) to build from source:
+
+#### Bash
+```bash
+git clone https://github.com/hoeyi/markets-apiclient.git
+cd markets-apiclient/src
+docker build -t marksapi:latest -f cli/marksapi/build/Dockerfile .
+```
+
+You can now access the app by running the image interactively:
+```bash
+docker run -it marksapi:latest bash
+```
+
+and from within the container:
+
+```bash
+marksapi --version
+```
+
+The container will start as `root@<container_tag>` in the working directory `/app` by default. The working directory is added to `$PATH` during the Docker build.
+
+### Using <em>docker compose</em>
+You can also use `src/cli/marksapi//build/docker-compose.yml`. The volume mount provides an output location. Application logs are ephemeral unless copy to a mount location during the session.
+
+#### docker-compose.yml
+```yaml <>
+services:
+  marksapi:
+    build:
+      context: ../../../. # context: {project-root}/src/. 
+      dockerfile: ./cli/marksapi/build/Dockerfile
+    image: ghcr.io/hoeyi/marksapi:latest
+    volumes:
+    - ${HOME}/marksapi:/data
+```
+
+#### Bash
+```bash
+git clone https://github.com/hoeyi/markets-apiclient.git
+cd markets-apiclient/src
+# build the image then run
+docker compose build marksapi
+docker compose run marksapi
+```
+
+<sub>[Contents](#contents)</sub>
 
 ## Configuration
 
@@ -22,9 +72,23 @@ A unified command line interface for querying financial, economic, and relatedd 
 |:--- |:--- |
 | MASSIVE_API_KEY | API key for the **Massive** service. |
 
-**Considering using [docker secrets](https://docs.docker.com/engine/swarm/secrets/) to store sensitive data.** 
+#### Use [docker secrets](https://docs.docker.com/engine/swarm/secrets/) to store sensitive data. 
 
-Alternatively, set your Massive API key as an environment variable:
+**docker-compose.yml**
+```yaml
+services:
+  marksapi:
+  ...
+  secrets:
+    - MASSIVE_API_KEY
+
+secrets:
+  MASSIVE_API_KEY:
+    file: ${HOME}/.docker-secrets/massive_api_key.txt 
+```
+This approach requires [Ichyd.Extensions.Configuration.Docker](https://github.com/ichyd/dotnet-Extensions.Configuration.Docker).
+
+Alternatively, set your Massive API key as an environment variable (not recommended).
 **Linux/macOS (bash/zsh)**
 ```bash
 export MASSIVE_API_KEY="your_api_key_here"
@@ -276,5 +340,11 @@ Ensure dates conform to Eastern Time (ET) requirements specified by the Massive 
 ### Authorization
 
 Verify your API key is set correctly and hasn't expired.
+
+<sub>[Contents](#contents)</sub>
+
+### Attribution / Acknowledgements
+
+See [Third-party notices](./THIRD-PARTY-NOTICES.md).
 
 <sub>[Contents](#contents)</sub>

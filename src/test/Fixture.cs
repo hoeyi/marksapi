@@ -1,6 +1,7 @@
 
 using ApiClient.Massive;
 using ApiClient.Services;
+using Marksapi.Cli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -65,8 +66,8 @@ public class IntegrationFixture<T> : Fixture, IDisposable
             else
                 section.Bind(options);
 
-        ArgumentException.ThrowIfNullOrWhiteSpace(Configuration?["massive:api_key"]);
-        MassiveApi = new MassiveApi(Configuration["massive:api_key"]!, rateOptions: options);
+        ArgumentException.ThrowIfNullOrWhiteSpace(Configuration?[Program.MASSIVE_API_KEYPATH]);
+        MassiveApi = new MassiveApi(Configuration[Program.MASSIVE_API_KEYPATH]!, rateOptions: options);
         
         Logger = CreateLogger<T>(Configuration);
         LogInitialize(Logger, typeof(T).FullName!);
