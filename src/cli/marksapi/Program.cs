@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
+using Ichyd.Extensions.Configuration.Docker;
 using Marksapi.Cli.Massive.Verbs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -20,6 +21,8 @@ namespace Marksapi.Cli
     [ExcludeFromCodeCoverage]
     public class Program
     {
+        internal const string MASSIVE_API_KEYPATH = "MASSIVE_API_KEY";
+
         /// <summary>
         /// Gets the <see cref="IConfiguration"/> instance for this program.
         /// </summary>
@@ -116,9 +119,9 @@ namespace Marksapi.Cli
             else
                 section.Bind(options);
 
-            ArgumentException.ThrowIfNullOrWhiteSpace(configuration["massive:api_key"]);
+            ArgumentException.ThrowIfNullOrWhiteSpace(configuration[MASSIVE_API_KEYPATH]);
             
-            return new MassiveApi(configuration["massive:api_key"]!, rateOptions: options);
+            return new MassiveApi(configuration[MASSIVE_API_KEYPATH]!, rateOptions: options);
         }
 
         private static Interval<int> GetQueryOptionsOrDefault(IConfiguration configuration)
@@ -141,6 +144,7 @@ namespace Marksapi.Cli
         {
             var config = new ConfigurationBuilder()
                 .AddUserSecrets<Program>()
+                .AddDockerSecrets()
                 .AddJsonFile("appsettings.json")
                 .Build();
             

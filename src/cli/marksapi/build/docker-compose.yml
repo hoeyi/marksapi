@@ -6,3 +6,9 @@ services:
     image: ghcr.io/hoeyi/marksapi:latest
     volumes:
     - ${HOME}/marksapi:/data
+    secrets:
+        - MASSIVE_API_KEY
+
+secrets:
+  MASSIVE_API_KEY:
+    file: ${HOME}/.docker-secrets/massive_api_key.txt   

@@ -72,9 +72,23 @@ docker compose run marksapi
 |:--- |:--- |
 | MASSIVE_API_KEY | API key for the **Massive** service. |
 
-**Considering using [docker secrets](https://docs.docker.com/engine/swarm/secrets/) to store sensitive data.** 
+#### Use [docker secrets](https://docs.docker.com/engine/swarm/secrets/) to store sensitive data. 
 
-Alternatively, set your Massive API key as an environment variable:
+**docker-compose.yml**
+```yaml
+services:
+  marksapi:
+  ...
+  secrets:
+    - MASSIVE_API_KEY
+
+secrets:
+  MASSIVE_API_KEY:
+    file: ${HOME}/.docker-secrets/massive_api_key.txt 
+```
+This approach requires [Ichyd.Extensions.Configuration.Docker](https://github.com/ichyd/dotnet-Extensions.Configuration.Docker).
+
+Alternatively, set your Massive API key as an environment variable (not recommended).
 **Linux/macOS (bash/zsh)**
 ```bash
 export MASSIVE_API_KEY="your_api_key_here"
