@@ -142,13 +142,11 @@ namespace Marksapi.Cli
         }
         private static IConfiguration InitConfiguration()
         {
-            var config = new ConfigurationBuilder()
-                .AddUserSecrets<Program>()
+            var configBuilder = new ConfigurationBuilder()
                 .AddDockerSecrets()
-                .AddJsonFile("appsettings.json")
-                .Build();
-            
-            return config;
+                .AddJsonFile("appsettings.json");
+
+            return configBuilder.Build();
         }
         
         private static ILogger InitLogger<T>(IConfiguration configuration)
