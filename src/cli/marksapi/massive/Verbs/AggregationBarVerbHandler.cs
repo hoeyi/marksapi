@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace Marksapi.Cli.Massive.Verbs
 {
     [ExcludeFromCodeCoverage]
-    public static class AggregateBarHandler
+    static class AggregateBarHandler
     {
         public static Command CreateCommand()
         {

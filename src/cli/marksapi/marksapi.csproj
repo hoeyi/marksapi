@@ -10,9 +10,26 @@
     <RootNamespace>Marksapi.Cli</RootNamespace>
     <StartupObject>Marksapi.Cli.Program</StartupObject>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UserSecretsId>2e43ec9b-a948-43d4-8a48-7f81aaad0818</UserSecretsId>
   </PropertyGroup>
   
+  <!-- NuGet package details -->
+  <PropertyGroup>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <AssemblyFileVersion>1.0.0.*</AssemblyFileVersion>
+    <IsPackable>true</IsPackable>
+    <PackageId>marksapi</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Title>marksapi</Title>
+    <Authors>hoeyi</Authors>
+    <Company>Ichyd</Company>
+    <PackageDescription>A dotnet configuration provider for docker secrets.</PackageDescription>
+    <RepositoryUrl>https://github.com/Ichyd/dotnet-Extensions.Configuration.Docker</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Build metadata, excl. git commit in InformationalVersion -->
   <ItemGroup>
     <!-- Include must be the fully qualified .NET type name of the Attribute to create. -->
     <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">

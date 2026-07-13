@@ -1,7 +1,6 @@
 // MassiveTickers.cs
 using System;
 using System.CommandLine;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;

@@ -15,7 +15,7 @@ WORKDIR /src/cli/marksapi
 # Restore dependencies
 RUN dotnet restore
 # Publish the application
-RUN dotnet publish -c Release -o /app/publish --no-build
+RUN dotnet publish -c Release -o /app/publish
 
 # Stage 2: Final Runtime Image
 FROM mcr.microsoft.com/dotnet/runtime:10.0 AS final

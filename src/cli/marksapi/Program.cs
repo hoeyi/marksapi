@@ -1,9 +1,6 @@
 ﻿using System;
 using System.CommandLine;
-using System.CommandLine.Help;
-using System.CommandLine.Invocation;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
@@ -19,7 +16,11 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace Marksapi.Cli
 {
     [ExcludeFromCodeCoverage]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
     public class Program
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+
     {
         internal const string MASSIVE_API_KEYPATH = "MASSIVE_API_KEY";
 
@@ -41,7 +42,7 @@ namespace Marksapi.Cli
         public static Interval<int> QueryLimit { get; set; }
 
         /// <summary>
-        /// Gets the program <see cref="IServierProvider"/>.
+        /// Gets the program <see cref="IServiceProvider"/>.
         /// </summary>
         public static IServiceProvider Services { get; set; } = default!;
 

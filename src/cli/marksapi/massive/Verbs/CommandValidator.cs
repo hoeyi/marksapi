@@ -1,5 +1,4 @@
 using System;
-using System.CommandLine;
 using System.Globalization;
 using ApiClient.Massive;
 using ApiClient.Services;
@@ -10,7 +9,6 @@ namespace Marksapi.Cli.Massive.Verbs
     /// <summary>
     /// Handles argument validation for common command arguments and options.
     /// </summary>
-    /// <param name="logger"></param>
     class CommandValidator
     {
         private readonly ILogger? _logger;
