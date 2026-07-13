@@ -9,24 +9,20 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <RootNamespace>Marksapi.Cli</RootNamespace>
     <StartupObject>Marksapi.Cli.Program</StartupObject>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <Deterministic>false</Deterministic>
   </PropertyGroup>
   
-  <!-- NuGet package details -->
+  <!-- Assembly / build details -->
   <PropertyGroup>
-    <AssemblyVersion>1.0.0</AssemblyVersion>
-    <AssemblyFileVersion>1.0.0.*</AssemblyFileVersion>
-    <IsPackable>true</IsPackable>
-    <PackageId>marksapi</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
-    <Title>marksapi</Title>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0.*</FileVersion>
     <Authors>hoeyi</Authors>
-    <Company>Ichyd</Company>
-    <PackageDescription>A dotnet configuration provider for docker secrets.</PackageDescription>
-    <RepositoryUrl>https://github.com/Ichyd/dotnet-Extensions.Configuration.Docker</RepositoryUrl>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Copyright>hoeyi</Copyright>
+    <Company>ichyd</Company>
+    <Product>marksapi cli</Product>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS7035</NoWarn>
   </PropertyGroup>
 
   <!-- Build metadata, excl. git commit in InformationalVersion -->
@@ -67,5 +63,7 @@
     <None Update="appsettings.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="./README.md" />
+    <None Include="./LICENSE" />
   </ItemGroup>
 </Project>
