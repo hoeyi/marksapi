@@ -12,8 +12,18 @@ COPY ./lib ./lib
 
 # Set working directory to the project root for publishing
 WORKDIR /src/cli/marksapi
+
 # Restore dependencies
+# Use secrets to configure nuget/registry authentication
+RUN --mount=type=secret,id=GITHUB_USER,target=/run/secrets/GITHUB_USER \
+    --mount=type=secret,id=GITHUB_PAT,target=/run/secrets/GITHUB_PAT \
+    dotnet nuget add source \
+        --username "$(cat /run/secrets/GITHUB_USER)" \
+        --password "$(cat /run/secrets/GITHUB_PAT)" \
+        --store-password-in-clear-text \
+        --name github "https://nuget.pkg.github.com/ichyd/index.json"
 RUN dotnet restore
+
 # Publish the application
 RUN dotnet publish -c Release -o /app/publish
 
