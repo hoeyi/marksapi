@@ -10,9 +10,9 @@
       },
       "Ichyd.Extensions.Configuration.Docker": {
         "type": "Direct",
-        "requested": "[1.0.0, )",
-        "resolved": "1.0.0",
-        "contentHash": "7NQS8H5gZB0+6HSnw3xpQ1Ojjij6L3mJI2i8RmmyH95Fg4aVhUK9htmNTEMv9V157wJ+piFoNgY8/sLIZggaoQ==",
+        "requested": "[1.0.1, )",
+        "resolved": "1.0.1",
+        "contentHash": "/6tNNvCjd3RYvW57RwjQS/jUfr3BEc5S6anPYk4IzOWoE52io4zH+Nu5hAGOQKtJVwFyXOV0OPxAUV0v3eXvOA==",
         "dependencies": {
           "Microsoft.Extensions.Configuration": "10.0.9",
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.9"
