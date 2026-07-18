@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>ApiClient</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Include must be the fully qualified .NET type name of the Attribute to create. -->
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <!-- _Parameter1, _Parameter2, etc. correspond to the
+          matching parameter of a constructor of that .NET attribute type -->
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$(Date)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.10" />
+  </ItemGroup>
+
+</Project>
