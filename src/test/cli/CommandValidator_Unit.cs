@@ -100,6 +100,9 @@ namespace ApiClient.Test.Marksapi.Unit
         [Theory]
         [InlineData("csv")]
         [InlineData("json")]
+        [InlineData("console")]
+        [InlineData("CSV")]
+        [InlineData("JSON")]
         public void ValidateFormatOrThrow_ValidFormat_ReturnsSameInstance(string format)
         {
             // Arrange
@@ -567,7 +570,50 @@ namespace ApiClient.Test.Marksapi.Unit
                 validator.ValidateTimespanOrThrow(timespan, out _));
             Assert.Contains(nameof(timespan), ex.Message);
         }
+        #endregion
 
+        #region  ValidateFileOutputOrThrow
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        public void ValidateFileOuputOrThrow_EmptyOrNullString_ReturnsCommandInstance(
+            string? path)
+        {
+            // Arrange
+            var validator = new CommandValidator();
+
+            // Act
+            var validatorObs = validator.ValidateFileOuputOrThrow(path);
+            
+            // Assert
+            // Equality by reference should return true.
+            Assert.Equal(validator, validatorObs);
+        }
+
+        [Fact]
+        public void ValidateFileOuputOrThrow_MissingDirectory_DirectoryNotFoundException()
+        {
+            // Arrange
+            var validator = new CommandValidator();
+            var pathDoesNotExist = "/NOT/A/REAL/PATH";
+            
+            // Act & Assert
+            var ex = Assert.Throws<DirectoryNotFoundException>(() => 
+                validator.ValidateFileOuputOrThrow(pathDoesNotExist));
+            Assert.Contains(pathDoesNotExist, ex.Message);
+        }
+
+        [Fact]
+        public void ValidateFileOuputOrThrow_MissingDirectory_InvalidOperationException()
+        {
+            // Arrange
+            var validator = new CommandValidator();
+            var pathThatIsDirectoryNotFile = "./runtimes";
+            
+            // Act & Assert
+            var ex = Assert.Throws<InvalidOperationException>(() => 
+                validator.ValidateFileOuputOrThrow(pathThatIsDirectoryNotFile));
+        }
         #endregion
     }
 }
