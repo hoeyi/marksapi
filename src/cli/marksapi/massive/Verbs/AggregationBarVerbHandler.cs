@@ -107,7 +107,7 @@ namespace Marksapi.Cli.Massive.Verbs
                         outputPath ?? config["output_path"] ?? "./",
                         result.RequestId);
             await OutputService.WriteAsync(
-                result.Results,
+                result,
                 format!,
                 path,
                 cancellationToken);

@@ -165,10 +165,11 @@ namespace Marksapi.Cli.Massive.Verbs
 
         public static Command AddSortDescendingOption(this Command command)
         {
-            var sortOption = new Option<string>(name: "--desc")
+            var sortOption = new Option<bool>(name: "--desc")
                 {
                     Description = "Sort descending",
-                    Arity = ArgumentArity.ZeroOrOne
+                    Arity = ArgumentArity.ZeroOrOne,
+                    DefaultValueFactory = new((args) => false)
                 };
                 command.Add(sortOption);
 
@@ -189,7 +190,7 @@ namespace Marksapi.Cli.Massive.Verbs
 
         public static Command AddTickerOption(this Command command)
         {
-            var tickerArgument = new Argument<string>(name: "--ticker")
+            var tickerArgument = new Option<string>(name: "--ticker")
             {
                 Arity = ArgumentArity.ZeroOrOne
             };

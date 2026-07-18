@@ -37,14 +37,14 @@ namespace Marksapi.Cli.Massive.Verbs
             command.SetAction((pr, ct) =>
             {
                 string? market = pr.GetValue<string>("MARKET");
-                string? ticker = pr.GetValue<string>("TICKER");
+                string? ticker = pr.GetValue<string>("--ticker");
                 string? type = pr.GetValue<string>("--type");
                 string? exchange = pr.GetValue<string>("--exchange");
                 string? cusip = pr.GetValue<string>("--cusip");
                 string? cik = pr.GetValue<string>("--cik");
                 string? search = pr.GetValue<string>("--search");
-                bool active = pr.GetValue<bool>("--active");
-                bool asc = pr.GetValue<bool>("--asc");
+                bool active = pr.GetValue<bool>("--active-only");
+                bool desc = pr.GetValue<bool>("--desc");
                 string? sort = pr.GetValue<string>("--sort");
                 DateTime? date = pr.GetValue<DateTime?>("--date");
                 string? format = pr.GetValue<string>("--format");
@@ -62,7 +62,7 @@ namespace Marksapi.Cli.Massive.Verbs
                     date,
                     search,
                     active,
-                    asc,
+                    !desc,
                     sort,
                     limit,
                     format,
