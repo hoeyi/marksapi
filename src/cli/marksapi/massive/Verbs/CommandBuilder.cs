@@ -108,7 +108,7 @@ namespace Marksapi.Cli.Massive.Verbs
             {
                 Description = "Output format (json, csv, console)",
                 Arity = ArgumentArity.ZeroOrOne,
-                DefaultValueFactory = new((args) => "json")
+                DefaultValueFactory = new((args) => "console")
             };
             command.Add(formatOption);
 
