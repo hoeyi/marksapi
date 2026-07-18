@@ -119,7 +119,7 @@ namespace Marksapi.Cli.Massive.Verbs
         {
             var formatOption = new Option<string>(name: "--to-file")
             {
-                Description = "Output path for results",
+                Description = "Directory to write results to",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(formatOption);
