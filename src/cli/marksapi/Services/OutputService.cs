@@ -98,6 +98,8 @@ namespace Marksapi.Cli.Services
             return writer.BaseStream.Length;
         }
 
+        public static string CombinePath(params string[] paths) => Path.Combine(paths);
+
         [ExcludeFromCodeCoverage]
         private static async Task<double> WriteCsvAsync<T>(string path, T[] data, CancellationToken cancellationToken)
         {
@@ -121,7 +123,7 @@ namespace Marksapi.Cli.Services
 
             return Encoding.UTF8.GetByteCount(serialized);
         }
-
+        
         [ExcludeFromCodeCoverage]
         private static void CheckPathOrThrow(string path)
         {
@@ -149,7 +151,8 @@ namespace Marksapi.Cli.Services
         [ExcludeFromCodeCoverage]
         private static FileStreamOptions FileStreamOptions() => new()
             {
-                Mode = FileMode.OpenOrCreate
+                Mode = FileMode.OpenOrCreate,
+                Access = FileAccess.ReadWrite
             };
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
 using Marksapi.Cli.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
@@ -73,6 +74,7 @@ namespace Marksapi.Cli.Massive.Verbs
             CancellationToken cancellationToken = default)
         {
             var logger = services.GetServiceOrThrow<ILogger>();
+            var config = services.GetServiceOrThrow<IConfiguration>();
             
             var validator = new CommandValidator(logger);
             validator 
@@ -80,6 +82,7 @@ namespace Marksapi.Cli.Massive.Verbs
                 .ValidateDateRangeOrThrow(fromDate, toDate)
                 .ValidateRatioRangeOrThrow(ratioMin, ratioMax)
                 .ValidateFormatOrThrow(format)
+                .ValidateFileOuputOrThrow(outputPath)
                 .ValidateLimitOrThrow(limit, Program.QueryLimit);
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
@@ -97,10 +100,13 @@ namespace Marksapi.Cli.Massive.Verbs
                     limit,
                     cancellationToken);
 
+                var path = OutputService.CombinePath(
+                        outputPath ?? config["output_path"] ?? "./",
+                        result.RequestId);
                 await OutputService.WriteAsync(
                     result.Results,
                     format!,
-                    $"./massive/{result.RequestId}",
+                    path,
                     cancellationToken);
             }
             else if (!string.IsNullOrEmpty(tickers))
@@ -113,10 +119,13 @@ namespace Marksapi.Cli.Massive.Verbs
                     limit,
                     cancellationToken);
 
+                var path = OutputService.CombinePath(
+                        outputPath ?? config["output_path"] ?? "./",
+                        result.RequestId);
                 await OutputService.WriteAsync(
                     result.Results,
                     format!,
-                    $"./massive/{result.RequestId}",
+                    path,
                     cancellationToken);
             }
         }

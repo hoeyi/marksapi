@@ -1,12 +1,14 @@
 using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Massive.Response;
 using Marksapi.Cli.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
@@ -63,13 +65,16 @@ namespace Marksapi.Cli.Massive.Verbs
             CancellationToken cancellationToken = default)
         {
             var logger = services.GetServiceOrThrow<ILogger>();
-        
+            var config = services.GetServiceOrThrow<IConfiguration>();
+
             var validator = new CommandValidator(logger);
             validator
                 .ValidateMarketOrThrow(market, out Market mktEnum)
                 .ValidateTickerOrTickersOrThrow(ticker, tickers)
-                .ValidateFormatOrThrow(format);
-
+                .ValidateFormatOrThrow(format)
+                .ValidateFileOuputOrThrow(outputPath);
+            
+            
             var handler = services.GetServiceOrThrow<IMassiveApi>();
 
             if (!string.IsNullOrEmpty(ticker))
@@ -82,10 +87,13 @@ namespace Marksapi.Cli.Massive.Verbs
 
                 if(result.Results is TickerOverview tovw)
                 {
+                    var path = OutputService.CombinePath(
+                        outputPath ?? config["output_path"] ?? "./",
+                        result.RequestId);
                     var writeResult = await OutputService.WriteAsync(
                                                 item: tovw,
                                                 format: format!,
-                                                path: $"./massive/{result.RequestId}",
+                                                path: path,
                                                 cancellationToken);
                 }
             }
@@ -103,10 +111,13 @@ namespace Marksapi.Cli.Massive.Verbs
                 {
                     foreach(var res in resultNotNull)
                     {
+                        var path = OutputService.CombinePath(
+                        outputPath ?? config["output_path"] ?? "./",
+                        res.RequestId);
                         var writeResult = await OutputService.WriteAsync(
                                                     item: res.Results!,
                                                     format: format!,
-                                                    path: $"./massive/{res.RequestId}",
+                                                    path: path,
                                                     cancellationToken);
                     }
                 }

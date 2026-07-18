@@ -576,7 +576,8 @@ namespace ApiClient.Test.Marksapi.Unit
         [Theory]
         [InlineData("")]
         [InlineData(null)]
-        public void ValidateFileOuputOrThrow_EmptyOrNullString_ReturnsCommandInstance(
+        [InlineData("./runtimes")]
+        public void ValidateFileOuputOrThrow_Validstring_ReturnsCommandInstance(
             string? path)
         {
             // Arrange
@@ -601,18 +602,6 @@ namespace ApiClient.Test.Marksapi.Unit
             var ex = Assert.Throws<DirectoryNotFoundException>(() => 
                 validator.ValidateFileOuputOrThrow(pathDoesNotExist));
             Assert.Contains(pathDoesNotExist, ex.Message);
-        }
-
-        [Fact]
-        public void ValidateFileOuputOrThrow_MissingDirectory_InvalidOperationException()
-        {
-            // Arrange
-            var validator = new CommandValidator();
-            var pathThatIsDirectoryNotFile = "./runtimes";
-            
-            // Act & Assert
-            var ex = Assert.Throws<InvalidOperationException>(() => 
-                validator.ValidateFileOuputOrThrow(pathThatIsDirectoryNotFile));
         }
         #endregion
     }

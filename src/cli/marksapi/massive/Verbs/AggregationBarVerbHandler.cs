@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using Marksapi.Cli.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
@@ -76,13 +77,15 @@ namespace Marksapi.Cli.Massive.Verbs
             CancellationToken cancellationToken = default)
         {
             var logger = services.GetServiceOrThrow<ILogger>();
-
+            var config = services.GetServiceOrThrow<IConfiguration>();
+            
             var validator = new CommandValidator(logger);
             validator
                 .ValidateMarketOrThrow(market, out Market mktEnum)
                 .ValidateTickerOrTickersOrThrow(ticker, tickers)
                 .ValidateLimitOrThrow(limit, Program.QueryLimit)
                 .ValidateDateRangeOrThrow(fromDate, toDate)
+                .ValidateFileOuputOrThrow(outputPath)
                 .ValidateTimespanOrThrow(timespan, out BarTimespan? barTimespan);
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
@@ -99,12 +102,15 @@ namespace Marksapi.Cli.Massive.Verbs
                     toDate!.Value,
                     limit ?? Program.QueryLimit.End,
                     cancellationToken);
-
-                await OutputService.WriteAsync(
-                    result.Results,
-                    format!,
-                    $"./massive/{result.RequestId}",
-                    cancellationToken);
+            
+            var path = OutputService.CombinePath(
+                        outputPath ?? config["output_path"] ?? "./",
+                        result.RequestId);
+            await OutputService.WriteAsync(
+                result.Results,
+                format!,
+                path,
+                cancellationToken);
         }
     }
 }

@@ -45,6 +45,23 @@
             "console": "internalConsole"
         },
         {
+            "name": "marksapi-aggregate-bar-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "args": [
+                "massive", "aggregate-bar", 
+                "stocks", "AAPL", 
+                "--from", "2026-06-30", 
+                "--to", "2026-06-30", 
+                "--format", "json", 
+                "--to-file", "./AAPL-20260630.json"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
             "name": "marksapi-short-volume",
             "type": "coreclr",
             "request": "launch",

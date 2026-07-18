@@ -161,19 +161,14 @@ namespace Marksapi.Cli.Massive.Verbs
         }
 
         public CommandValidator ValidateFileOuputOrThrow(
-            string? path)
+            string? directoryPath)
         {
-            if(string.IsNullOrEmpty(path))
+            if(string.IsNullOrEmpty(directoryPath))
                 return this;
 
-            var directory = Path.GetDirectoryName(path);
+            var directory = Path.GetDirectoryName(directoryPath);
             if(string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
-                throw new DirectoryNotFoundException($"Could not find part of the path: {path}");
-
-            FileAttributes fileAttr = File.GetAttributes(path);
-            if(fileAttr.HasFlag(FileAttributes.Directory))
-                throw new InvalidOperationException(
-                            $"Parameter '{nameof(path)}' must be a file, not directory.");
+                throw new DirectoryNotFoundException($"Could not find part of the path: {directoryPath}");
 
             return this;
         }
