@@ -1,10 +1,10 @@
-// MassiveTickers.cs
 using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
+using Marksapi.Cli.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
@@ -29,7 +29,8 @@ namespace Marksapi.Cli.Massive.Verbs
                 .AddSortDescendingOption()
                 .AddSortFieldOption()
                 .AddLimitOption()
-                .AddFormatOption();
+                .AddFormatOption()
+                .AddFileOutputOption();
 
             // TODO: Register action.
             command.SetAction((pr, ct) =>
@@ -47,6 +48,7 @@ namespace Marksapi.Cli.Massive.Verbs
                 DateTime? date = pr.GetValue<DateTime?>("--date");
                 string? format = pr.GetValue<string>("--format");
                 int? limit = pr.GetValue<int?>("--limit");
+                string? outputPath = pr.GetValue<string>("--to-file");
 
                 return Handle(
                     Program.Services,
@@ -63,6 +65,7 @@ namespace Marksapi.Cli.Massive.Verbs
                     sort,
                     limit,
                     format,
+                    outputPath,
                     ct);
             });
 
@@ -84,6 +87,7 @@ namespace Marksapi.Cli.Massive.Verbs
             string? sort,
             int? limit,
             string? format,
+            string? outputPath,
             CancellationToken cancellationToken = default)
         {
             var logger = services.GetServiceOrThrow<ILogger>();
@@ -114,7 +118,7 @@ namespace Marksapi.Cli.Massive.Verbs
             await OutputService.WriteAsync(
                     item: result.Results,
                     format: format!,
-                    path: $"./{result.RequestId}",
+                    path: $"./massive/{result.RequestId}",
                     cancellationToken);
         }
     }

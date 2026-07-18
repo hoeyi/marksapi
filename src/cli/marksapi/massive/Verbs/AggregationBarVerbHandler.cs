@@ -1,10 +1,10 @@
-// MassAggregationBar.cs
 using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
+using Marksapi.Cli.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
@@ -25,7 +25,8 @@ namespace Marksapi.Cli.Massive.Verbs
                 .AddToDateOption()
                 .AddLimitOption()
                 .AddTickersOption()
-                .AddFormatOption();
+                .AddFormatOption()
+                .AddFileOutputOption();
 
             
             // TODO: Register action.
@@ -40,6 +41,7 @@ namespace Marksapi.Cli.Massive.Verbs
                 DateTime? toDate = pr.GetValue<DateTime?>("--to");
                 string? format = pr.GetValue<string>("--format");
                 int? limit = pr.GetValue<int?>("--limit");
+                string? outputPath = pr.GetValue<string>("--to-file");
 
                 return Handle(
                     Program.Services,
@@ -52,6 +54,7 @@ namespace Marksapi.Cli.Massive.Verbs
                     toDate,
                     format,
                     limit,
+                    outputPath,
                     ct);
             });
 
@@ -69,6 +72,7 @@ namespace Marksapi.Cli.Massive.Verbs
             DateTime? toDate,
             string? format,
             int? limit,
+            string? outputPath,
             CancellationToken cancellationToken = default)
         {
             var logger = services.GetServiceOrThrow<ILogger>();

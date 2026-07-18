@@ -104,13 +104,25 @@ namespace Marksapi.Cli.Massive.Verbs
 
         public static Command AddFormatOption(this Command command)
         {
-            var outputOption = new Option<string>(name: "--format")
+            var formatOption = new Option<string>(name: "--format")
             {
-                Description = "Output format (json, csv)",
+                Description = "Output format (json, csv, console)",
                 Arity = ArgumentArity.ZeroOrOne,
                 DefaultValueFactory = new((args) => "json")
             };
-            command.Add(outputOption);
+            command.Add(formatOption);
+
+            return command;
+        }
+
+        public static Command AddFileOutputOption(this Command command)
+        {
+            var formatOption = new Option<string>(name: "--to-file")
+            {
+                Description = "Output path for results",
+                Arity = ArgumentArity.ZeroOrOne
+            };
+            command.Add(formatOption);
 
             return command;
         }

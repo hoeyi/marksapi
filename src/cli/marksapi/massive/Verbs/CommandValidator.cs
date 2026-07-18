@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using ApiClient.Massive;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
@@ -29,8 +31,11 @@ namespace Marksapi.Cli.Massive.Verbs
 
         public CommandValidator ValidateFormatOrThrow(string? format)
         {
-            string[] supported = ["csv", "json"];
-            if(string.IsNullOrEmpty(format) || !supported.Contains(format))
+            string[] supported = ["csv", "json", "console"];
+
+            bool matcher(string? x) => x.CompareTo(format, StringComparison.InvariantCultureIgnoreCase) == 0;
+
+            if (string.IsNullOrEmpty(format) || !supported.Any(matcher))
             {
                 _logger?.LogError(
                     "Option <{opt}> must be one of: {supported}.", 
@@ -152,6 +157,24 @@ namespace Marksapi.Cli.Massive.Verbs
                 return this;
             }
             barTimespan = null;
+            return this;
+        }
+
+        public CommandValidator ValidateFileOuputOrThrow(
+            string? path)
+        {
+            if(string.IsNullOrEmpty(path))
+                return this;
+
+            var directory = Path.GetDirectoryName(path);
+            if(string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+                throw new DirectoryNotFoundException($"Could not find part of the path: {path}");
+
+            FileAttributes fileAttr = File.GetAttributes(path);
+            if(fileAttr.HasFlag(FileAttributes.Directory))
+                throw new InvalidOperationException(
+                            $"Parameter '{nameof(path)}' must be a file, not directory.");
+
             return this;
         }
     }

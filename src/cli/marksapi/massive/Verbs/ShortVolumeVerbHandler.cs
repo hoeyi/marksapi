@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
+using Marksapi.Cli.Services;
 using Microsoft.Extensions.Logging;
 
 namespace Marksapi.Cli.Massive.Verbs
@@ -24,7 +25,8 @@ namespace Marksapi.Cli.Massive.Verbs
                 .AddRatioMinOption()
                 .AddRatioMaxOption()
                 .AddLimitOption()
-                .AddFormatOption();
+                .AddFormatOption()
+                .AddFileOutputOption();
 
             // TODO: Register action.
             command.SetAction((pr, ct) =>
@@ -37,6 +39,7 @@ namespace Marksapi.Cli.Massive.Verbs
                 float? ratioMax = pr.GetValue<float?>("--ratio-max");
                 string? format = pr.GetValue<string>("--format");
                 int? limit = pr.GetValue<int?>("--limit");
+                string? outputPath = pr.GetValue<string>("--to-file");
 
                 return Handle(
                     Program.Services,
@@ -48,6 +51,7 @@ namespace Marksapi.Cli.Massive.Verbs
                     ratioMax,
                     format,
                     limit,
+                    outputPath,
                     ct
                 );
             });
@@ -65,6 +69,7 @@ namespace Marksapi.Cli.Massive.Verbs
             float? ratioMax,
             string? format,
             int? limit,
+            string? outputPath,
             CancellationToken cancellationToken = default)
         {
             var logger = services.GetServiceOrThrow<ILogger>();

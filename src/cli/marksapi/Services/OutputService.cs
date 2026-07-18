@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Security.AccessControl;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -9,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CsvHelper;
 
-namespace Marksapi.Cli
+namespace Marksapi.Cli.Services
 {
     /// <summary>
     /// Handles writing output.
@@ -47,15 +48,16 @@ namespace Marksapi.Cli
 
             var normalizedFormat = format.ToLowerInvariant();
 
-            if (normalizedFormat is not ("json" or "csv"))
+            if (normalizedFormat is not ("json" or "csv" or "console"))
                 throw new ArgumentOutOfRangeException(
-                    nameof(format), $"Unsupported format '{format}'. Supported formats: json, csv");
+                    nameof(format), $"Unsupported format '{format}'. Supported formats: json, csv, console");
 
 
             return normalizedFormat switch
             {
                 "json" => await WriteJsonAsync(path, data, cancellationToken),
                 "csv" => await WriteCsvAsync(path, data, cancellationToken),
+                "console" => await Task.Run(() => WriteConsole(data), cancellationToken),
                 _ => throw new NotImplementedException("D"),
             };
         }
@@ -65,7 +67,7 @@ namespace Marksapi.Cli
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="item">The record(s) to write.</param>
-        /// <param name="format">One of (json, csv). Case insensitive.</param>
+        /// <param name="format">One of (json, csv, console). Case insensitive.</param>
         /// <param name="path">The file path to write output to.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>A <see cref="Task"/> containing a count of bytes written.</returns>
@@ -112,8 +114,24 @@ namespace Marksapi.Cli
         }
 
         [ExcludeFromCodeCoverage]
+        private static double WriteConsole<T>(T[] data)
+        {
+            var serialized = JsonSerializer.Serialize(data, _jsonOptions);
+            Console.Write(serialized);
+
+            return Encoding.UTF8.GetByteCount(serialized);
+        }
+
+        [ExcludeFromCodeCoverage]
         private static void CheckPathOrThrow(string path)
         {
+            var directory = Path.GetDirectoryName(path);
+            if(string.IsNullOrEmpty(directory))
+                throw new InvalidOperationException($"Could not find part of the path: {path}");
+
+            if(!File.Exists(path))
+                return;
+            
             FileAttributes fileAttr = File.GetAttributes(path);
             if(fileAttr.HasFlag(FileAttributes.Directory))
                 throw new InvalidOperationException(
@@ -131,7 +149,7 @@ namespace Marksapi.Cli
         [ExcludeFromCodeCoverage]
         private static FileStreamOptions FileStreamOptions() => new()
             {
-                Mode = FileMode.Append
+                Mode = FileMode.OpenOrCreate
             };
     }
 }
