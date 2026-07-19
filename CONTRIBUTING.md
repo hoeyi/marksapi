@@ -1,4 +1,4 @@
-# Contributing to ApiClient.Marketstack #
+# Contributing to <em>markets-apiclient</em> #
 
 * [Commit Message Guidelines](#commit-message-guidelines)
 * [Object Naming Conventions](#object-naming-conventions)
@@ -20,7 +20,6 @@ Commit messages should follow the format:
 Must be one of the following:
 
 * **build**: Changes that affect the build system or external dependencies
-* **docs**: Documentation only changes
 * **feat**: A new feature
 * **fix**: A bug fix
 * **perf**: A code change that improves performance
@@ -36,6 +35,20 @@ Use the `scope` component of the commit subject to descript the endpoint the cha
 Example: 
 ```
 feat(eod): implement methods for /eod enpoint
+```
+
+Scope should also declare which API library it impacts.
+
+Example:
+```
+feat(massive/eod): implement methods for massive/eod endpoint
+```
+
+Use the type **docs** for changes to internal and external documentation.
+
+Example:
+```
+docs(marksapi): add method documentation for '{method}'
 ```
 
 ### Subject ###

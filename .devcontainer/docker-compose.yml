@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  dev_markets_apiclient:
+    image: mcr.microsoft.com/devcontainers/dotnet:10.0-noble
+    volumes:
+      - ../..:/workspaces:cached
+    command: sleep infinity
