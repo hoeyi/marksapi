@@ -22,8 +22,13 @@ public partial class MassiveApi : IMassiveApi
         CancellationToken? cancellationToken = null)
     {
         if(numOp is not null && dates.Length > 1)
+
             throw new ArgumentException(
                 $"Parameter '{nameof(dates)}' expects length 1 if '{nameof(numOp)}' provided.");
+        if(_rateTimer is null)
+                throw new InvalidOperationException(
+                    $"{nameof(GetTreasuryYieldResponseAsync)} requires instance of '{nameof(RateTimer)}.");
+        await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cancellationToken);
 
         var queryBuilder = GetQueryBuilder();
 
@@ -50,6 +55,11 @@ public partial class MassiveApi : IMassiveApi
             throw new ArgumentException(
                 $"Parameter '{nameof(dates)}' expects length 1 if '{nameof(numOp)}' provided.");
 
+        if(_rateTimer is null)
+                throw new InvalidOperationException(
+                    $"{nameof(GetInflationResponseAsync)} requires instance of '{nameof(RateTimer)}.");
+        await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cancellationToken);
+        
         var queryBuilder = GetQueryBuilder();
 
         queryBuilder.AddParameter(
@@ -75,6 +85,11 @@ public partial class MassiveApi : IMassiveApi
             throw new ArgumentException(
                 $"Parameter '{nameof(dates)}' expects length 1 if '{nameof(numOp)}' provided.");
 
+        if(_rateTimer is null)
+                throw new InvalidOperationException(
+                    $"{nameof(GetInflationExpectationResponseAsync)} requires instance of '{nameof(RateTimer)}.");
+        await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cancellationToken);
+        
         var queryBuilder = GetQueryBuilder();
 
         queryBuilder.AddParameter(
@@ -99,6 +114,12 @@ public partial class MassiveApi : IMassiveApi
         if(numOp is not null && dates.Length > 1)
             throw new ArgumentException(
                 $"Parameter '{nameof(dates)}' expects length 1 if '{nameof(numOp)}' provided.");
+
+        if(_rateTimer is null)
+                throw new InvalidOperationException(
+                    $"{nameof(GetLaborMarketResponseAsync)} requires instance of '{nameof(RateTimer)}.");
+        await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cancellationToken);
+        
 
         var queryBuilder = GetQueryBuilder();
 

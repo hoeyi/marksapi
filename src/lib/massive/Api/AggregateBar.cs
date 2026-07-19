@@ -53,7 +53,7 @@ public partial class MassiveApi
 
         foreach(var ticker in tickers)
         {
-            await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: null);
+            await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: cancellationToken);
             var response = await GetAggregateBarResponseAsync(
                             market,
                             ticker,
