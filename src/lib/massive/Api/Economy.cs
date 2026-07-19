@@ -14,6 +14,16 @@ namespace ApiClient.Massive;
 
 public partial class MassiveApi : IMassiveApi
 {
+    private string ProcessDateQuery(DateTime[] dates, NumericComparisonOperator? numOp)
+    {
+        if(numOp is null)
+            return "date";
+        else
+        {
+            var datesOnly = dates.Select(x => DateOnly.FromDateTime(x).ToString("O"));
+            return string.Join(",", datesOnly);
+        }
+    }
     /// <inheritdoc/>
     public async Task<TreasuryYieldsResponse> GetTreasuryYieldResponseAsync(
         DateTime[] dates,
@@ -21,10 +31,6 @@ public partial class MassiveApi : IMassiveApi
         int? limit = 100,
         CancellationToken? cancellationToken = null)
     {
-        if(numOp is not null && dates.Length > 1)
-
-            throw new ArgumentException(
-                $"Parameter '{nameof(dates)}' expects length 1 if '{nameof(numOp)}' provided.");
         if(_rateTimer is null)
                 throw new InvalidOperationException(
                     $"{nameof(GetTreasuryYieldResponseAsync)} requires instance of '{nameof(RateTimer)}.");
@@ -32,8 +38,7 @@ public partial class MassiveApi : IMassiveApi
 
         var queryBuilder = GetQueryBuilder();
 
-        queryBuilder.AddParameter(
-            "date.any_of", string.Join(",", dates.Select(x => x.ToString("YYYY-MM-DD"))));
+        queryBuilder.AddDateParameterWithComparison(dates, numOp);
         queryBuilder.AddParameter("limit", $"{limit}");
 
         var response = await GetResponseAsync<TreasuryYieldsResponse>(
@@ -51,10 +56,6 @@ public partial class MassiveApi : IMassiveApi
         int? limit = 100,
         CancellationToken? cancellationToken = null)
     {
-        if(numOp is not null && dates.Length > 1)
-            throw new ArgumentException(
-                $"Parameter '{nameof(dates)}' expects length 1 if '{nameof(numOp)}' provided.");
-
         if(_rateTimer is null)
                 throw new InvalidOperationException(
                     $"{nameof(GetInflationResponseAsync)} requires instance of '{nameof(RateTimer)}.");
@@ -62,8 +63,7 @@ public partial class MassiveApi : IMassiveApi
         
         var queryBuilder = GetQueryBuilder();
 
-        queryBuilder.AddParameter(
-            "date.any_of", string.Join(",", dates.Select(x => x.ToString("YYYY-MM-DD"))));
+        queryBuilder.AddDateParameterWithComparison(dates, numOp);
         queryBuilder.AddParameter("limit", $"{limit}");
 
         var response = await GetResponseAsync<InflationResponse>(
@@ -81,10 +81,6 @@ public partial class MassiveApi : IMassiveApi
         int? limit = 100,
         CancellationToken? cancellationToken = null)
     {
-        if(numOp is not null && dates.Length > 1)
-            throw new ArgumentException(
-                $"Parameter '{nameof(dates)}' expects length 1 if '{nameof(numOp)}' provided.");
-
         if(_rateTimer is null)
                 throw new InvalidOperationException(
                     $"{nameof(GetInflationExpectationResponseAsync)} requires instance of '{nameof(RateTimer)}.");
@@ -92,8 +88,7 @@ public partial class MassiveApi : IMassiveApi
         
         var queryBuilder = GetQueryBuilder();
 
-        queryBuilder.AddParameter(
-            "date.any_of", string.Join(",", dates.Select(x => x.ToString("YYYY-MM-DD"))));
+        queryBuilder.AddDateParameterWithComparison(dates, numOp);
         queryBuilder.AddParameter("limit", $"{limit}");
 
         var response = await GetResponseAsync<InflationExpectationResponse>(
@@ -111,10 +106,6 @@ public partial class MassiveApi : IMassiveApi
         int? limit = 100,
         CancellationToken? cancellationToken = null)
     {
-        if(numOp is not null && dates.Length > 1)
-            throw new ArgumentException(
-                $"Parameter '{nameof(dates)}' expects length 1 if '{nameof(numOp)}' provided.");
-
         if(_rateTimer is null)
                 throw new InvalidOperationException(
                     $"{nameof(GetLaborMarketResponseAsync)} requires instance of '{nameof(RateTimer)}.");
@@ -123,8 +114,7 @@ public partial class MassiveApi : IMassiveApi
 
         var queryBuilder = GetQueryBuilder();
 
-        queryBuilder.AddParameter(
-            "date.any_of", string.Join(",", dates.Select(x => x.ToString("YYYY-MM-DD"))));
+        queryBuilder.AddDateParameterWithComparison(dates, numOp);
         queryBuilder.AddParameter("limit", $"{limit}");
 
         var response = await GetResponseAsync<LaborMarketResponse>(
