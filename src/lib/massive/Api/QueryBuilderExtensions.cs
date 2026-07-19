@@ -27,9 +27,9 @@ static class QueryBuilderExtensions
     {
         bool numOpNull = numOp is null;
 
-        if(numOpNull && dates.Length > 1)
+        if(!numOpNull && dates.Length > 1)
             throw new ArgumentException(
-                $"Parameter '{nameof(dates)}' expects length 1 if '{nameof(numOp)}' provided.");
+                $"Expecting parameter '{nameof(dates)}' has length 1 if '{nameof(numOp)}' provided.");
 
         var dateDelimStr = string.Join(
             ",",

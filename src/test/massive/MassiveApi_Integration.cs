@@ -261,7 +261,7 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("2026-05-13")]
+        [InlineData("2026-06-01")]
         public async Task GetInflationResponseAsync_SingleDate_ReturnSuccessResponse(
             string dateStr)
         {
@@ -284,7 +284,7 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("2026-05-13|2026-04-13")]
+        [InlineData("2026-04-01|2026-05-01")]
         public async Task GetInflationResponseAsync_MultiDate_ReturnSuccessResponse(
             string datePipeDelim)
         {
@@ -307,7 +307,7 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("2026-05-13")]
+        [InlineData("2026-06-01")]
         public async Task GetInflationExpectationResponseAsync_SingleDate_ReturnSuccessResponse(
             string dateStr)
         {
@@ -331,7 +331,7 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("2026-05-13|2026-04-13")]
+        [InlineData("2026-05-01|2026-06-01")]
         public async Task GetInflationExpectationResponseAsync_MultiDate_ReturnSuccessResponse(
             string datePipeDelim)
         {
@@ -355,7 +355,7 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("2026-06-05")]
+        [InlineData("2026-06-01")]
         public async Task GetLaborMarketResponseAsync_SingleDate_ReturnSuccessResponse(
             string dateStr)
         {
