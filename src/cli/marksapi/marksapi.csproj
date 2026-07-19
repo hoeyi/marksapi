@@ -16,8 +16,8 @@
   
   <!-- Assembly / build details -->
   <PropertyGroup>
-    <Version>0.1.0</Version>
-    <FileVersion>0.1.0.*</FileVersion>
+    <Version>0.1.1</Version>
+    <FileVersion>0.1.1.*</FileVersion>
     <Authors>hoeyi</Authors>
     <Copyright>hoeyi</Copyright>
     <Company>ichyd</Company>
