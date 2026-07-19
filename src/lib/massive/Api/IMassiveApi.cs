@@ -142,9 +142,9 @@ public interface IMassiveApi
     /// Retrieve comprehensive details for a single ticker supported by Massive that is active as-of a given date.
     /// </summary>
     /// <param name="market">FIlter by applicable market.</param>
-    /// <param name="ticker">Filter by a ticker symbol(s).</param>
+    /// <param name="tickers">Filter by a ticker symbol(s).</param>
     /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
-    /// <param name="cancellationTokenSource">Provide a token source for synchronizing cancels.</param>
+    /// <param name="cancellationToken">Provide a token source for synchronizing cancels.</param>
     /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
     Task<List<TickerOverviewResponse>> GetTickerOverviewResponseAsync(
         Market market,
@@ -247,7 +247,7 @@ public interface IMassiveApi
     /// </summary>
     /// <typeparam name="T">The desired output <see cref="Enum"/> type.</typeparam>
     /// <param name="strValue">The string to parse.</param>
-    /// <returns>The <typeparamref name="T"/> member matching <paramref name="strValue"/>, else null.
+    /// <returns>The <typeparamref name="T"/> member matching <paramref name="strValue"/>, else null.</returns>
     public static T? ParseEnum<T>(string? strValue)
         where T : struct
     {

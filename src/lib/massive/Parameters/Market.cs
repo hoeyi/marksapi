@@ -5,6 +5,7 @@ namespace ApiClient.Massive;
 /// </summary>
 public enum Market
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     Crypto,
 
     Fx,
@@ -14,4 +15,5 @@ public enum Market
     Options,
 
     Stocks
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

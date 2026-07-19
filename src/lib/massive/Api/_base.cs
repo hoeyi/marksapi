@@ -70,6 +70,12 @@ namespace ApiClient.Massive
         private readonly ILogger? _logger;
         private readonly RateTimer? _rateTimer;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="MassiveApi"/>.
+        /// </summary>
+        /// <param name="apiKey">API key for Massive authentication.</param>
+        /// <param name="rateOptions">The <see cref="RateOptions"/> instance for this client.</param>
+        /// <param name="logger">The <see cref="ILogger"/> instance for this client.</param>
         public MassiveApi(string apiKey, RateOptions? rateOptions = null, ILogger? logger = null)
             : this(new HttpClient(), apiKey, rateOptions, logger)
         {
@@ -101,6 +107,7 @@ namespace ApiClient.Massive
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             _rateTimer?.Dispose();
@@ -111,9 +118,11 @@ namespace ApiClient.Massive
         /// Posts a GET request from the given <see cref="QueryBuilder"/> and <see cref="Endpoint"/>. 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="queryBuilder"></param>
-        /// <param name="endPoint"></param>
-        /// <returns></returns>
+        /// <param name="queryBuilder">The <see cref="QueryBuilder"/> instance from which query parameters
+        ///  are taken.</param>
+        /// <param name="endPoint">The endpoin to query.</param>
+        /// <param name="token">The cancellation token for communication cancel events.</param>
+        /// <returns>A <see cref="Task"/> containing a <typeparamref name="T"/> response.</returns>
         /// <exception cref="InvalidOperationException">The response body was empty.</exception>
         internal async Task<T> GetResponseAsync<T>(
             QueryBuilder queryBuilder, string endPoint, CancellationToken? token = null)
@@ -173,7 +182,7 @@ namespace ApiClient.Massive
         /// </summary>
         /// <param name="dateFrom">Start date of the range tested.</param>
         /// <param name="dateTo">End date of the range tested.</param>
-        /// <returns>Return <see cref="True"/> if the range is acceptable, else throw <see cref="ArgumentException"/>.</returns>
+        /// <returns>Returns <see langword="true"/> if the range is acceptable, else throw <see cref="ArgumentException"/>.</returns>
         /// <exception cref="ArgumentException"><paramref name="dateFrom"/> is greater than <paramref name="dateTo"/> or the 
         /// range measured in days is too long.</exception>
         internal bool ValidateDateRangeOrThrow(DateTime dateFrom, DateTime dateTo)
@@ -292,6 +301,7 @@ namespace ApiClient.Massive
         /// <summary>
         /// Retrieve comprehensive details for a single ticker supported by Massive that is active as-of a given date.
         /// </summary>
+        /// <param name="market">The <see cref="Market"/> to query.</param>
         /// <param name="ticker">Filter by a ticker symbol.Use patterns 
         /// <list><item>O:{ticker}, for options</item>
         /// <item>I:{ticker}, for indices</item>
