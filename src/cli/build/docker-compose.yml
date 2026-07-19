@@ -1,8 +1,8 @@
 services:
   marksapi:
     build:
-      context: ../../../.
-      dockerfile: ./cli/marksapi/build/Dockerfile
+      context: ../../.
+      dockerfile: ./cli/build/Dockerfile
       secrets:
         - GITHUB_USER
         - GITHUB_PAT

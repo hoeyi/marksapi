@@ -60,7 +60,7 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.10" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../lib/massive/ApiClient.massive.csproj" />
+    <ProjectReference Include="../lib/massive/ApiClient.massive.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json">
