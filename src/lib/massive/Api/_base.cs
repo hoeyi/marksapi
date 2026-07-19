@@ -7,6 +7,8 @@ using ApiClient.Massive.Response.Stocks;
 using ApiClient.Massive.Response;
 using System.Threading;
 using System.Net.Http.Headers;
+using ApiClient.Massive.Response.Economy;
+using ApiClient.Massive.Parameters;
 
 namespace ApiClient.Massive
 {
@@ -20,6 +22,14 @@ namespace ApiClient.Massive
         /// </summary>
         private readonly struct Endpoint
         {
+            public const string TreasuryYields = "/fed/v1/treasury-yields";
+            
+            public const string Inflation = "/fed/v1/inflation";
+
+            public const string InflationExpectations = "/fed/v1/inflation-expectations";
+
+            public const string LaborMarket = "/fed/v1/labor-market";
+
             /// <summary>
             /// Handles stocks, options, indices.
             /// </summary>
