@@ -7,8 +7,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <RootNamespace>Marksapi.Cli</RootNamespace>
-    <StartupObject>Marksapi.Cli.Program</StartupObject>
+    <RootNamespace>Ihcyd.Marksapi.Cli</RootNamespace>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Deterministic>false</Deterministic>
     <UserSecretsId>ea2dd241-8ca8-4d00-9af8-8d1b5e08df40</UserSecretsId>
@@ -16,8 +15,8 @@
   
   <!-- Assembly / build details -->
   <PropertyGroup>
-    <Version>0.1.1</Version>
-    <FileVersion>0.1.1.*</FileVersion>
+    <Version>0.2.0</Version>
+    <FileVersion>0.2.0.*</FileVersion>
     <Authors>hoeyi</Authors>
     <Copyright>hoeyi</Copyright>
     <Company>ichyd</Company>

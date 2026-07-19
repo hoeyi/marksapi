@@ -268,7 +268,7 @@
           "Microsoft.Extensions.Logging": "[10.0.10, )"
         }
       },
-      "apiclient.massive": {
+      "Ichyd.ApiClient.Massive": {
         "type": "Project",
         "dependencies": {
           "ApiClient.Common": "[1.0.0, )",

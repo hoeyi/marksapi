@@ -5,11 +5,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
-using Marksapi.Cli.Services;
+using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Marksapi.Cli.Massive.Verbs
+namespace Ichyd.Marksapi.Cli.Massive.Verbs
 {
     [ExcludeFromCodeCoverage]
     static class ShortVolumeHandler

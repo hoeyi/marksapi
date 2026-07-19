@@ -6,6 +6,25 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>  
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <NoWarn>$(NoWarn);CS7035</NoWarn>
+  </PropertyGroup>
+
+  <!-- NuGet package details -->
+  <PropertyGroup>
+    <AssemblyName>Ichyd.ApiClient.Massive</AssemblyName>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <AssemblyFileVersion>1.1.0.*</AssemblyFileVersion>
+    <IsPackable>true</IsPackable>
+    <PackageId>Ichyd.ApiClient.Massive</PackageId>
+    <PackageVersion>1.1.0</PackageVersion>
+    <Title>Massive dotnet API client</Title>
+    <Authors>hoeyi</Authors>
+    <Company>ichyd</Company>
+    <PackageDescription>A dotnet configuration provider using docker secrets.</PackageDescription>
+    <RepositoryUrl>https://github.com/Ichyd/dotnet-Extensions.Configuration.Docker</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,5 +47,9 @@
 
   <ItemGroup>
     <ProjectReference Include="../common/ApiClient.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="./LICENSE" />
   </ItemGroup>
 </Project>

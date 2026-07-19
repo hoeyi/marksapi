@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CsvHelper;
 
-namespace Marksapi.Cli.Services
+namespace Ichyd.Marksapi.Cli.Services
 {
     /// <summary>
     /// Handles writing output.

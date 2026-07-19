@@ -6,7 +6,7 @@ using ApiClient.Massive;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Marksapi.Cli.Massive.Verbs
+namespace Ichyd.Marksapi.Cli.Massive.Verbs
 {
     /// <summary>
     /// Handles argument validation for common command arguments and options.

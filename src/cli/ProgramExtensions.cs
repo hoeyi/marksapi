@@ -7,7 +7,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;
 
-namespace Marksapi.Cli
+namespace Ichyd.Marksapi.Cli
 {
     [ExcludeFromCodeCoverage]
     static class ProgramExtensions

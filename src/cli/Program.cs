@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
 using Ichyd.Extensions.Configuration.Docker;
-using Marksapi.Cli.Massive.Verbs;
+using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -13,7 +13,7 @@ using Serilog.Formatting.Compact;
 using Spectre.Console;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
-namespace Marksapi.Cli
+namespace Ichyd.Marksapi.Cli
 {
     [ExcludeFromCodeCoverage]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

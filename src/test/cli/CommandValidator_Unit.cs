@@ -1,8 +1,8 @@
 using System;
 using ApiClient.Massive;
 using ApiClient.Services;
-using Marksapi.Cli;
-using Marksapi.Cli.Massive.Verbs;
+using Ichyd.Marksapi.Cli;
+using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Microsoft.Extensions.Configuration;
 using Xunit;
 

@@ -2,7 +2,7 @@ using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Marksapi.Cli.Massive.Verbs
+namespace Ichyd.Marksapi.Cli.Massive.Verbs
 {
     [ExcludeFromCodeCoverage]
     static class CommandBuilder
