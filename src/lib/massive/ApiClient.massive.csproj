@@ -12,11 +12,11 @@
   <!-- NuGet package details -->
   <PropertyGroup>
     <AssemblyName>Ichyd.ApiClient.Massive</AssemblyName>
-    <AssemblyVersion>1.1.0</AssemblyVersion>
-    <AssemblyFileVersion>1.1.0.*</AssemblyFileVersion>
+    <AssemblyVersion>2.0.0</AssemblyVersion>
+    <AssemblyFileVersion>2.0.0.*</AssemblyFileVersion>
     <IsPackable>true</IsPackable>
     <PackageId>Ichyd.ApiClient.Massive</PackageId>
-    <PackageVersion>1.1.0</PackageVersion>
+    <PackageVersion>2.0.0</PackageVersion>
     <Title>Massive dotnet API client</Title>
     <Authors>hoeyi</Authors>
     <Company>ichyd</Company>

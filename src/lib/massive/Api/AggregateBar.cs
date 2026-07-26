@@ -35,7 +35,7 @@ public partial class MassiveApi
                 cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
+    public async Task<List<AggregateBarResponse>> GetAggregateBarResponseAsync(
         Market market,
         string[] tickers,
         int multiplier,
@@ -72,13 +72,6 @@ public partial class MassiveApi
             
         }
         
-        var compositeResponse = new AggregateBarResponse()
-        {
-            RequestId = string.Join(",", responses.Select(x => x.RequestId)),
-            Ticker = string.Join(",", responses.Select(x =>x.Ticker)),
-            Status = string.Join(",", responses.Select(x => x.Status)),
-            Results = responses.SelectMany(x => x.Results).ToList()
-        };
-        return compositeResponse;
+        return responses;
     }
 }

@@ -22,7 +22,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var tickerArgument = new Argument<string>(name: "TICKER")
             {
-                Arity = ArgumentArity.ExactlyOne
+                Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(tickerArgument);
 

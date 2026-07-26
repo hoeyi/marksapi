@@ -53,7 +53,7 @@ public interface IMassiveApi
     /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
     /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
     /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
-    Task<AggregateBarResponse> GetAggregateBarResponseAsync(
+    Task<List<AggregateBarResponse>> GetAggregateBarResponseAsync(
         Market market,
         string[] tickers,
         int multiplier,

@@ -1,3 +1,6 @@
+using ApiClient.Massive.Response.Stocks;
+using Newtonsoft.Json.Bson;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 

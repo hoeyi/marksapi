@@ -1,12 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
+using Spectre.Console;
 
 namespace Ichyd.Marksapi.Cli.Massive.Verbs
 {
@@ -93,7 +97,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 ticker.ToValueArray() : 
                 tickers.ToValueArray();
 
-            var result = await handler.GetAggregateBarResponseAsync(
+            var results = await handler.GetAggregateBarResponseAsync(
                     market: mktEnum,
                     tickers: tickerArgs,
                     multiplier: multiplier,
@@ -103,14 +107,25 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                     limit ?? Program.QueryLimit.End,
                     cancellationToken);
             
-            var path = OutputService.CombinePath(
+            var writeTasks = new List<Task>();
+            string path = default!;
+            foreach(var result in results)
+            {
+                if(string.IsNullOrEmpty(result.RequestId))
+                    continue;
+                else
+                    path = OutputService.CombinePath(
                         outputPath ?? config["output_path"] ?? "./",
-                        result.RequestId);
-            await OutputService.WriteAsync(
-                result,
-                format!,
-                path,
-                cancellationToken);
+                        result.RequestId); 
+                    writeTasks.Add(Task.Run(
+                        async () => await OutputService.WriteAsync(
+                            result,
+                            format!,
+                            path,
+                            cancellationToken)));
+            };
+
+            await Task.WhenAll(writeTasks);
         }
     }
 }
