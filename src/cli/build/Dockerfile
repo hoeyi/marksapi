@@ -3,15 +3,15 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy project files first for layer caching
-# Since context is /src, we copy from cli/marksapi/*.csproj
-COPY ./cli/marksapi/*.csproj ./cli/marksapi/
+# Since context is /src, we copy from cli/*.csproj
+COPY ./cli/*.csproj ./cli/
 
 # Copy all project files (handles nested .csproj files)
 COPY ./cli ./cli
 COPY ./lib ./lib
 
 # Set working directory to the project root for publishing
-WORKDIR /src/cli/marksapi
+WORKDIR /src/cli
 
 # Restore dependencies
 # Use secrets to configure nuget/registry authentication
