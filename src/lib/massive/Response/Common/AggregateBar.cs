@@ -103,7 +103,7 @@ namespace ApiClient.Massive.Response
         /// </summary>
         [System.Text.Json.Serialization.JsonIgnore]
         [Newtonsoft.Json.JsonIgnore]
-        public DateTime DateTimestamp => DateTime.FromFileTimeUtc(Timestamp);
+        public DateTime DateTimestamp => DateTime.UnixEpoch.AddMilliseconds(Timestamp);
 
         #endregion
     }
