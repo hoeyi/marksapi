@@ -81,7 +81,10 @@ namespace Ichyd.Marksapi.Cli.Services
                 => await WriteAsync<T>(data: [item], format, path, cancellationToken);
 
         [ExcludeFromCodeCoverage]
-        private static async Task<double> WriteJsonAsync<T>(string path, T[] data, CancellationToken cancellationToken)
+        private static async Task<double> WriteJsonAsync<T>(
+            string path,
+            T[] data,
+            CancellationToken cancellationToken)
         {
             string jsonPath = $"{path}.json";
             CheckPathOrThrow(jsonPath);
@@ -101,7 +104,10 @@ namespace Ichyd.Marksapi.Cli.Services
         public static string CombinePath(params string[] paths) => Path.Combine(paths);
 
         [ExcludeFromCodeCoverage]
-        private static async Task<double> WriteCsvAsync<T>(string path, T[] data, CancellationToken cancellationToken)
+        private static async Task<double> WriteCsvAsync<T>(
+            string path,
+            T[] data,
+            CancellationToken cancellationToken)
         {
             CheckPathOrThrow(path);
 
