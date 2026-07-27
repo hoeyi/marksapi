@@ -86,8 +86,9 @@
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": [
                 "massive", "aggregate-bar", 
-                "stocks", "AAPL,MSFT", 
-                "--from", "2026-06-30", 
+                "stocks", 
+                "--tickers", "AAPL,MSFT",
+                "--from", "2026-06-20", 
                 "--to", "2026-06-30", 
                 "--format", "json"
             ],
