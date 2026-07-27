@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <RootNamespace>Ihcyd.Marksapi.Cli</RootNamespace>
+    <RootNamespace>Ichyd.Marksapi.Cli</RootNamespace>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Deterministic>false</Deterministic>
     <UserSecretsId>ea2dd241-8ca8-4d00-9af8-8d1b5e08df40</UserSecretsId>
