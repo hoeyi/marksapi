@@ -15,7 +15,14 @@ WORKDIR /src/cli
 
 # Restore dependencies
 # Use secrets to configure nuget/registry authentication
-RUN ls -l /run/secrets
+RUN --mount=type=secret,id=GITHUB_USER,target=/run/secrets/GITHUB_USER \
+    --mount=type=secret,id=GITHUB_PAT,target=/run/secrets/GITHUB_PAT \
+    ls -l /run/secrets
+RUN --mount=type=secret,id=GITHUB_USER,target=/run/secrets/GITHUB_USER \
+    cat /run/secrets/GITHUB_USER
+RUN --mount=type=secret,id=GITHUB_PAT,target=/run/secrets/GITHUB_PAT \
+    cat /run/secrets/GITHUB_PAT
+
 RUN --mount=type=secret,id=GITHUB_USER,target=/run/secrets/GITHUB_USER \
     --mount=type=secret,id=GITHUB_PAT,target=/run/secrets/GITHUB_PAT \
     dotnet nuget add source \
