@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
+using ApiClient.Massive.Response;
+using ApiClient.Massive.Response.Stocks;
 using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using Spectre.Console;
@@ -116,13 +120,39 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 else
                     path = OutputService.CombinePath(
                         outputPath ?? config["output_path"] ?? "./",
-                        result.RequestId); 
-                    writeTasks.Add(Task.Run(
-                        async () => await OutputService.WriteAsync(
-                            result,
-                            format!,
-                            path,
-                            cancellationToken)));
+                        result.RequestId);
+                    
+
+                    // For CSV, we want flattened results for the response.
+                    
+                    if(format.CompareTo("csv", StringComparison.InvariantCultureIgnoreCase) == 0)
+                    {
+                        result.Results.ForEach(x =>
+                        {
+                            x.Ticker = result.Ticker;
+                            x.Adjusted = result.Adjusted; 
+                            x.Status = result.Status;
+                        });
+                        writeTasks.Add(
+                            Task.Run(
+                                () => OutputService.WriteAsync(
+                                    data: [.. result.Results],
+                                    format!,
+                                    path,
+                                    cancellationToken)));
+                    }
+                    // For preserving JSON response, write single response result otherwise.
+                    else
+                    {
+                        writeTasks.Add(
+                            Task.Run(
+                                () => OutputService.WriteAsync(
+                                    item: result,
+                                    format!,
+                                    path,
+                                    cancellationToken)));
+                        
+                    }
             };
 
             await Task.WhenAll(writeTasks);

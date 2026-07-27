@@ -82,7 +82,7 @@ namespace ApiClient.Massive.Response
         /// </summary>
         [System.Text.Json.Serialization.JsonIgnore]
         [Newtonsoft.Json.JsonIgnore]
-        public required string? Ticker { get; set; }
+        public string? Ticker { get; set; }
 
         /// <summary>
         /// Whether or not this response was adjusted for splits.
@@ -90,6 +90,13 @@ namespace ApiClient.Massive.Response
         [System.Text.Json.Serialization.JsonIgnore]
         [Newtonsoft.Json.JsonIgnore]
         public bool? Adjusted { get; set; }
+
+        /// <summary>
+        /// The status of this request's response.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public string? Status { get; set; }
 
         /// <summary>
         /// The datetime from the <see cref="Timestamp"/> for the start of the aggregate window.

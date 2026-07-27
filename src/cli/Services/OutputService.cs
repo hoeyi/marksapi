@@ -113,7 +113,7 @@ namespace Ichyd.Marksapi.Cli.Services
 
             cancellationToken.ThrowIfCancellationRequested();
             
-            using var writer = new StreamWriter(path, Encoding.UTF8, options: FileOptions);
+            using var writer = new StreamWriter($"{path}.csv", Encoding.UTF8, options: FileOptions);
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
 
             await csv.WriteRecordsAsync(data, cancellationToken);

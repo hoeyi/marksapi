@@ -10,7 +10,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -20,7 +19,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["--version"],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -30,7 +28,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["--help"],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -46,23 +43,54 @@
                 "AAPL,MSFT", 
                 "--from", "2026-06-30", 
                 "--to", "2026-06-30"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-aggregate-bar-csv",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": [
+                "massive", 
+                "aggregate-bar", 
+                "stocks", 
+                "AAPL", 
+                "--from", "2026-06-20", 
+                "--to", "2026-06-30",
+                "--format", "csv"],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
         {
-            "name": "marksapi-aggregate-bar-json",
+            "name": "marksapi-aggregate-bar-tickers-csv",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": [
+                "massive", 
+                "aggregate-bar", 
+                "stocks", 
+                "--tickers", "AAPL,MSFT",
+                "--from", "2026-06-20", 
+                "--to", "2026-06-30",
+                "--format", "csv"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },           
+        {
+            "name": "marksapi-aggregate-bar-tickers-json",
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": [
                 "massive", "aggregate-bar", 
-                "stocks", "AAPL", 
+                "stocks", "AAPL,MSFT", 
                 "--from", "2026-06-30", 
                 "--to", "2026-06-30", 
                 "--format", "json"
             ],
-            "cwd": "${workspaceFolder}/src/cli/bin/Debug/net10.0/",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -72,7 +100,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "short-volume", "AAPL"],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -88,7 +115,6 @@
                 "--to", "2026-06-30", 
                 "--format", "json"
             ],
-            "cwd": "${workspaceFolder}/src/cli/bin/Debug/net10.0/",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -98,7 +124,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "ticker-info"],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -108,7 +133,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "ticker-info", "stocks", "AAPL", "--format", "json"],
-            "cwd": "${workspaceFolder}/src/cli/bin/Debug/net10.0/",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -118,7 +142,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "tickers"],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -128,7 +151,6 @@
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "tickers", "stocks", "--ticker", "AAPL", "--format", "json"],
-            "cwd": "${workspaceFolder}/src/cli/bin/Debug/net10.0/",
             "stopAtEntry": false,
             "console": "internalConsole"
         }
