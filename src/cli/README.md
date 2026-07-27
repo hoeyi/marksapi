@@ -22,8 +22,11 @@ Use the [Dockerfile](./Dockerfile) to build from source:
 #### Bash
 ```bash
 git clone https://github.com/hoeyi/markets-apiclient.git
-cd markets-apiclient/src
-docker build -t marksapi:latest -f cli/marksapi/build/Dockerfile .
+cd markets-apiclient/src/cli/build
+GITHUB_USER="<your user id>"
+GITHUB_PAT="<your github personal token>; Requires read pacakges permission"
+export GITHUB_USER GITHUB_PAT
+docker compose build
 ```
 
 You can now access the app by running the image interactively:
