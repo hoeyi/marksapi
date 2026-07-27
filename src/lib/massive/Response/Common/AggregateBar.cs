@@ -1,5 +1,6 @@
 using ApiClient.Massive.Response.Stocks;
 using Newtonsoft.Json.Bson;
+using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
@@ -74,5 +75,29 @@ namespace ApiClient.Massive.Response
         [JsonPropertyName("vw")]
         [JsonProperty(PropertyName = "vw")]
         public decimal VolumeWeightedAveragePrice { get; set; }
+
+        #region Non-json properties
+        /// <summary>
+        /// The exchange symbol that this item is traded under.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public required string? Ticker { get; set; }
+
+        /// <summary>
+        /// Whether or not this response was adjusted for splits.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public bool? Adjusted { get; set; }
+
+        /// <summary>
+        /// The datetime from the <see cref="Timestamp"/> for the start of the aggregate window.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public DateTime DateTimestamp => DateTime.FromFileTimeUtc(Timestamp);
+
+        #endregion
     }
 }
