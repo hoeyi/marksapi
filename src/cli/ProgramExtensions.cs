@@ -41,10 +41,13 @@ namespace Ichyd.Marksapi.Cli
             AnsiConsole.WriteLine(
                 $"\n{parseResult.RootCommandResult.Command.Description!}");
 
-            var appVersion = Assembly.GetExecutingAssembly().GetName().Version;
+            var appInfoVersion = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion;
             var runtimeVersion = Environment.Version;
 
-            Console.WriteLine($"App Version: {appVersion}");
+            Console.WriteLine($"App Version: {appInfoVersion}");
             Console.WriteLine($".NET Runtime Version: {runtimeVersion}");
             return 0;
         }
