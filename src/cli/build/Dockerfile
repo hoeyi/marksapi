@@ -2,6 +2,9 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
+ARG GIT_COMMIT
+LABEL git_commit="$GIT_COMMIT"
+
 # Copy project files first for layer caching
 # Since context is /src, we copy from cli/*.csproj
 COPY ./cli/*.csproj ./cli/
