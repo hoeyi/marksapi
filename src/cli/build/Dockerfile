@@ -2,9 +2,6 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-ARG GIT_COMMIT
-LABEL git_commit="$GIT_COMMIT"
-
 # Copy project files first for layer caching
 # Since context is /src, we copy from cli/*.csproj
 COPY ./cli/*.csproj ./cli/
@@ -40,6 +37,10 @@ RUN dotnet publish -c Release -o /app/publish
 
 # Stage 2: Final Runtime Image
 FROM mcr.microsoft.com/dotnet/runtime:10.0 AS final
+
+ARG GIT_COMMIT
+LABEL git_commit="$GIT_COMMIT"
+
 WORKDIR /app
 ENV PATH="$PATH:/app"
 
