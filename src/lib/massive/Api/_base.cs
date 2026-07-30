@@ -7,8 +7,7 @@ using ApiClient.Massive.Response.Stocks;
 using ApiClient.Massive.Response;
 using System.Threading;
 using System.Net.Http.Headers;
-using ApiClient.Massive.Response.Economy;
-using ApiClient.Massive.Parameters;
+using static ApiClient.Services.RateTimer;
 
 namespace ApiClient.Massive
 {
@@ -105,15 +104,19 @@ namespace ApiClient.Massive
 
             _logger = logger;
             _rateTimer = new RateTimer(options.Limit, options.Interval, _logger);
+            _rateTimer.RateLimited += HandleRateLimit;
         }
 
         /// <inheritdoc/>
         public void Dispose()
         {
+            _rateTimer?.RateLimited -= HandleRateLimit;
             _rateTimer?.Dispose();
             GC.SuppressFinalize(this);
         }
         
+        private void HandleRateLimit(object? sender, RateLimitedArgs args) => LogWarning_RateLimited(_logger, args);
+
         /// <summary>
         /// Posts a GET request from the given <see cref="QueryBuilder"/> and <see cref="Endpoint"/>. 
         /// </summary>
@@ -124,7 +127,7 @@ namespace ApiClient.Massive
         /// <param name="token">The cancellation token for communication cancel events.</param>
         /// <returns>A <see cref="Task"/> containing a <typeparamref name="T"/> response.</returns>
         /// <exception cref="InvalidOperationException">The response body was empty.</exception>
-        internal async Task<T> GetResponseAsync<T>(
+        private async Task<T> GetResponseAsync<T>(
             QueryBuilder queryBuilder, string endPoint, CancellationToken? token = null)
         {
             CancellationToken GetToken()
@@ -185,7 +188,7 @@ namespace ApiClient.Massive
         /// <returns>Returns <see langword="true"/> if the range is acceptable, else throw <see cref="ArgumentException"/>.</returns>
         /// <exception cref="ArgumentException"><paramref name="dateFrom"/> is greater than <paramref name="dateTo"/> or the 
         /// range measured in days is too long.</exception>
-        internal bool ValidateDateRangeOrThrow(DateTime dateFrom, DateTime dateTo)
+        private bool ValidateDateRangeOrThrow(DateTime dateFrom, DateTime dateTo)
         {
             if (dateFrom > dateTo)
             {
@@ -246,6 +249,17 @@ namespace ApiClient.Massive
         {
             if(logger?.IsEnabled(LogLevel.Error) ?? false)
                 logger.LogError(eventId: 50, "HTTP request failed.\n{@exception}", exception);
+        }
+
+        static void LogWarning_RateLimited(
+            ILogger? logger,
+            RateLimitedArgs args)
+        {
+            if(logger?.IsEnabled(LogLevel.Warning) ?? false)
+                    logger.LogWarning(
+                        "Rate limited for {timeout}s. Estimated reset at {reset}.", 
+                        args.TimeOut.TotalSeconds,
+                        args.NextReset);
         }
     }
     #endregion

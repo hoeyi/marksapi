@@ -1,5 +1,4 @@
 using ApiClient.Massive.Response.Generic;
-using System;
 
 namespace ApiClient.Massive.Response.Economy;
 

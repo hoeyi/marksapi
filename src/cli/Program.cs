@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
-using Ichyd.Extensions.Configuration.Docker;
 using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;

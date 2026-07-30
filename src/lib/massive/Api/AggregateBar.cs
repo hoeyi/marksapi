@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;

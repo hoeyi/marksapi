@@ -1,20 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.CommandLine;
-using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
-using ApiClient.Massive.Response;
-using ApiClient.Massive.Response.Stocks;
 using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
-using Spectre.Console;
 
 namespace Ichyd.Marksapi.Cli.Massive.Verbs
 {

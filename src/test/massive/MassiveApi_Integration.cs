@@ -3,8 +3,6 @@ using ApiClient.Massive.Parameters;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Economy;
 using ApiClient.Massive.Response.Stocks;
-using ApiClient.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Test.Massive.Integration

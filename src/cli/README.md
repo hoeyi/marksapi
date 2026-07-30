@@ -328,8 +328,7 @@ All output is written as **utf-8**-encoded text.
 | 0 | Success |
 | 1 | General error |
 | 2 | Invalid argument |
-| 3 | Authentication failure |
-| 4 | API rate limited |
+| 4 | Authentication failure |
 | 5 | Network error |
 
 ### Rate Limiting

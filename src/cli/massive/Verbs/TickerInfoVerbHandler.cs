@@ -1,13 +1,10 @@
 using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
-using ApiClient.Massive.Response;
 using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

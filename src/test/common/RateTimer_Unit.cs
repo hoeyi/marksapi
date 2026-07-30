@@ -1,4 +1,3 @@
-using System;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
 

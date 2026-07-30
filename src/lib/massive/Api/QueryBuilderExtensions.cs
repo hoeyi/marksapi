@@ -1,14 +1,7 @@
 using ApiClient.Massive.Parameters;
-using ApiClient.Massive.Response;
-using ApiClient.Massive.Response.Economy;
-using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ApiClient.Massive;
 

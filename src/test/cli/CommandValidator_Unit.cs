@@ -1,10 +1,7 @@
-using System;
 using ApiClient.Massive;
 using ApiClient.Services;
-using Ichyd.Marksapi.Cli;
 using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Microsoft.Extensions.Configuration;
-using Xunit;
 
 namespace ApiClient.Test.Marksapi.Unit
 {
