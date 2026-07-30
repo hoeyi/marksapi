@@ -124,7 +124,7 @@ namespace Ichyd.Marksapi.Cli
         }
 
         #region Initializers
-        private static MassiveApi InitMassiveApi(IConfiguration configuration, ILogger? logger = null)
+        private static IMassiveApi InitMassiveApi(IConfiguration configuration, ILogger? logger = null)
         {
             RateOptions options = new();
             var section = configuration
