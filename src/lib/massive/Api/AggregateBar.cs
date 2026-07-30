@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive.Response;
@@ -23,16 +24,33 @@ public partial class MassiveApi
         DateTime from,
         DateTime to,
         int limit = 100,
-        CancellationToken? cancellationToken = null) => 
-            await GetGenericAggregateBarResponseAsync(
-                market,
-                ticker,
-                multiplier,
-                timeSpan,
-                from,
-                to,
-                limit,
-                cancellationToken);
+        CancellationToken? cancellationToken = null)
+    {
+        var guid = Guid.NewGuid();
+        LogInfo_ResponseRequest_Submitting(_logger, new
+        {
+            id = guid.ToString("N"),
+            market,
+            ticker,
+            from,
+            to,
+            multiplier,
+            timeSpan
+        });
+        var result = await GetGenericAggregateBarResponseAsync(
+            market,
+            ticker,
+            multiplier,
+            timeSpan,
+            from,
+            to,
+            limit,
+            cancellationToken);
+
+        LogInfo_ResponseRequest_Received(_logger, guid.ToString("N"));
+
+        return result;
+    } 
 
     /// <inheritdoc/>
     public async Task<List<AggregateBarResponse>> GetAggregateBarResponseAsync(

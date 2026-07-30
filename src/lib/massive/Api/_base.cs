@@ -160,8 +160,8 @@ namespace ApiClient.Massive
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
-                LogHeaderDebug(_logger, response.Headers);
-                    LogBodyDebug(_logger, responseBody);
+                LogDebug_ResponseHeader_Received(_logger, response.Headers);
+                LogDebug_ResponseBody_Received(_logger, responseBody);
 
                 // Parse the JSON response. If the response is null thow invalid operation
                 T genericResponse = JsonConvert
@@ -172,7 +172,7 @@ namespace ApiClient.Massive
             }
             catch (HttpRequestException e)
             {
-                LogHttpError(_logger, e);
+                LogError_HttpRequestException(_logger, e);
                 throw;
             }
         }
@@ -190,12 +190,12 @@ namespace ApiClient.Massive
             if (dateFrom > dateTo)
             {
                 throw new ArgumentException(
-                    $"Range invalid: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");
+                    $"Range invalid: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}]");
             }
             if (dateTo.Subtract(dateFrom).Days > _maximumDateRangeInDays)
             {
                 throw new ArgumentException(
-                    $"Range too long: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");
+                    $"Range too long: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}]");
             }
             return true;
         }
@@ -217,23 +217,35 @@ namespace ApiClient.Massive
     #region Logger methods
     public partial class MassiveApi
     {
-        static void LogHeaderDebug(
+        static void LogInfo_ResponseRequest_Submitting(ILogger? logger, object request)
+        {
+            if(logger?.IsEnabled(LogLevel.Information) ?? false)
+                logger.LogInformation("Submitting: {request}...", request);
+        }
+
+        static void LogInfo_ResponseRequest_Received(ILogger? logger, string id)
+        {
+            if(logger?.IsEnabled(LogLevel.Information) ?? false)
+                logger.LogInformation("Received request response:{id}", id);
+        }
+
+        static void LogDebug_ResponseHeader_Received(
             ILogger? logger, HttpResponseHeaders headers)
         {
             if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-                logger?.LogError(eventId: 1, "Response received: {@headers}.", headers);
+                logger.LogDebug(eventId: 20, "Response received: {@headers}.", headers);
         }
 
-        static void LogBodyDebug(ILogger? logger, string body)
+        static void LogDebug_ResponseBody_Received(ILogger? logger, string body)
         {
             if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-                logger?.LogError(eventId: 2, "Response received with {body}.", body);
+                logger.LogDebug(eventId: 21, "Response received with {body}.", body);
         }
 
-        static void LogHttpError(ILogger? logger, HttpRequestException exception)
+        static void LogError_HttpRequestException(ILogger? logger, HttpRequestException exception)
         {
             if(logger?.IsEnabled(LogLevel.Error) ?? false)
-                logger?.LogError(eventId: 4, "Http request failed. {@exception}", exception);
+                logger.LogError(eventId: 50, "Http request failed.\n{@exception}", exception);
         }
     }
     #endregion

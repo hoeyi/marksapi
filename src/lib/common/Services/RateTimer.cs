@@ -104,6 +104,11 @@ public class RateTimer : IDisposable
         TimeSpan? timeout = null;
         while(EvaluateRateLimit(out timeout) && timeout is TimeSpan span)
         {
+            if(_logger?.IsEnabled(LogLevel.Warning) ?? false)
+                _logger.LogWarning(
+                    "Rate limited for {seconds}s. Estimated Next reset at {time}", 
+                    span.TotalSeconds,
+                    DateTime.UtcNow.AddSeconds(span.TotalSeconds));
             ct?.ThrowIfCancellationRequested();
 
             if(span.TotalSeconds > 0)
