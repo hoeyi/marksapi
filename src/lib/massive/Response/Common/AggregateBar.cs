@@ -105,6 +105,12 @@ namespace ApiClient.Massive.Response
         [Newtonsoft.Json.JsonIgnore]
         public DateTime DateTimestamp => DateTime.UnixEpoch.AddMilliseconds(Timestamp);
 
+        /// <summary>
+        /// A request id assigned by the server.
+        /// </summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        public string? RequestId { get; set; }
         #endregion
     }
 }
