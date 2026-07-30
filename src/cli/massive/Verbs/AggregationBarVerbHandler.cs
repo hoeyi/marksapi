@@ -86,12 +86,15 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var logger = services.GetServiceOrThrow<ILogger>();
             var config = services.GetServiceOrThrow<IConfiguration>();
-            
+            var queryLimit = config
+                            .GetQueryOptionsOrDefault()
+                            .QueryLimit();
+
             var validator = new CommandValidator(logger);
             validator
                 .ValidateMarketOrThrow(market, out Market mktEnum)
                 .ValidateTickerOrTickersOrThrow(ticker, tickers)
-                .ValidateLimitOrThrow(limit, Program.QueryLimit)
+                .ValidateLimitOrThrow(limit, queryLimit)
                 .ValidateDateRangeOrThrow(fromDate, toDate)
                 .ValidateFileOuputOrThrow(outputPath)
                 .ValidateTimespanOrThrow(timespan, out BarTimespan? barTimespan);
@@ -108,7 +111,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                     timeSpan: barTimespan ?? BarTimespan.Day,
                     fromDate!.Value,
                     toDate!.Value,
-                    limit ?? Program.QueryLimit.End,
+                    limit ?? queryLimit.End,
                     cancellationToken);
             
             if(results.Count == 0) return;

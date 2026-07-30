@@ -93,13 +93,16 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var logger = services.GetServiceOrThrow<ILogger>();
             var config = services.GetServiceOrThrow<IConfiguration>();
-            
+            var queryLimit = config
+                .GetQueryOptionsOrDefault()
+                .QueryLimit();
+
             var validator = new CommandValidator(logger);
             validator
                 .ValidateTickerOrThrow(ticker)
                 .ValidateFormatOrThrow(format)
                 .ValidateFileOuputOrThrow(outputPath)
-                .ValidateLimitOrThrow(limit, Program.QueryLimit);
+                .ValidateLimitOrThrow(limit, queryLimit);
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
 
@@ -115,7 +118,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                             active: active,
                             asc: asc,
                             sort: sort,
-                            limit: limit ?? Program.QueryLimit.End,
+                            limit: limit ?? queryLimit.End,
                             cancellationToken);
                             
             var path = OutputService.CombinePath(

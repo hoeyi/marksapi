@@ -75,7 +75,10 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var logger = services.GetServiceOrThrow<ILogger>();
             var config = services.GetServiceOrThrow<IConfiguration>();
-            
+            var queryLimit = config
+                .GetQueryOptionsOrDefault()
+                .QueryLimit();
+                
             var validator = new CommandValidator(logger);
             validator 
                 .ValidateTickerOrTickersOrThrow(ticker, tickers)
@@ -83,7 +86,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 .ValidateRatioRangeOrThrow(ratioMin, ratioMax)
                 .ValidateFormatOrThrow(format)
                 .ValidateFileOuputOrThrow(outputPath)
-                .ValidateLimitOrThrow(limit, Program.QueryLimit);
+                .ValidateLimitOrThrow(limit, queryLimit);
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
             

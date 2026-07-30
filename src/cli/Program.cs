@@ -6,6 +6,7 @@ using ApiClient.Massive;
 using ApiClient.Services;
 using Ichyd.Extensions.Configuration.Docker;
 using Ichyd.Marksapi.Cli.Massive.Verbs;
+using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -75,17 +76,31 @@ namespace Ichyd.Marksapi.Cli
             {
                 Configuration = InitConfiguration();
                 Logger = InitLogger<Program>(Configuration);
-                MassiveApi = InitApi(Configuration, Logger);
-                QueryLimit = GetQueryOptionsOrDefault(Configuration);
+
+                Logger.LogInfo_Services_Initializing();
+
+                MassiveApi = InitMassiveApi(Configuration, Logger);
+                QueryLimit = Configuration
+                                .GetQueryOptionsOrDefault()
+                                .QueryLimit();
 
                 var provider = new SingletonServiceProvider();
                 provider
                     .RegisterService(Configuration)
-                    .RegisterService(Logger)
-                    .RegisterService(MassiveApi);
+                    .RegisterService(Logger);
+
+                if (Configuration.GetSection("massive").Exists())
+                {
+                    provider
+                        .RegisterService(InitMassiveApi(Configuration, Logger));
+
+                    Logger.LogInfo_Service_Registered(nameof(MassiveApi));
+
+                }
+                
                 Services = provider;
 
-                Logger?.LogInformation("Successful started...");
+                Logger.LogInfo_Services_Initializing_Finished();
             }
             catch(Exception e)
             {
@@ -108,11 +123,12 @@ namespace Ichyd.Marksapi.Cli
             return 0;
         }
 
-        private static MassiveApi InitApi(IConfiguration configuration, ILogger? logger = null)
+        #region Initializers
+        private static MassiveApi InitMassiveApi(IConfiguration configuration, ILogger? logger = null)
         {
             RateOptions options = new();
             var section = configuration
-                .GetSection("massive")?
+                .GetSection("massive")
                 .GetSection(nameof(RateOptions));
             if (section is null)
             {
@@ -130,23 +146,6 @@ namespace Ichyd.Marksapi.Cli
                 logger: logger);
         }
 
-        private static Interval<int> GetQueryOptionsOrDefault(IConfiguration configuration)
-        {   
-            QueryOptions options = new();
-            var section = configuration
-                .GetSection("massive")?
-                .GetSection(nameof(QueryOptions));
-            if (section is null)
-            {
-                options.UpperLimit = 5000;
-                options.LowerLimit = 1;
-            }
-            else
-                section.Bind(options);
-
-            return new Interval<int>(options.LowerLimit, options.UpperLimit, open: false);
-        }
-        
         private static IConfiguration InitConfiguration()
         {
             var configBuilder = new ConfigurationBuilder()
@@ -180,5 +179,6 @@ namespace Ichyd.Marksapi.Cli
 
             return loggerFactory.CreateLogger<T>();
         }
+        #endregion
     }
 }

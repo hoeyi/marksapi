@@ -36,7 +36,7 @@ namespace Ichyd.Marksapi.Cli
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns>A <see cref="QueryOptions"/> instance if found, else default having range (1, 5000).</returns>
-        public static QueryOptions? GetQueryOptionsOrDefault(this IConfiguration configuration)
+        public static QueryOptions GetQueryOptionsOrDefault(this IConfiguration configuration)
         {   
             QueryOptions options = new();
             var section = configuration
