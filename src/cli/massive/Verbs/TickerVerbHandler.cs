@@ -123,7 +123,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                         result.RequestId);            
 
             await OutputService.WriteAsync(
-                    item: result.Results,
+                    data: result,
                     format: format!,
                     path: path,
                     cancellationToken);

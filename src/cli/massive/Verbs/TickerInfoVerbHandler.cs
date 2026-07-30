@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
@@ -74,53 +75,46 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 .ValidateFormatOrThrow(format)
                 .ValidateFileOuputOrThrow(outputPath);
             
-            
+            var tickerArgs = !string.IsNullOrEmpty(ticker) ?
+                ticker.ToValueArray() : 
+                tickers.ToValueArray();
             var handler = services.GetServiceOrThrow<IMassiveApi>();
 
-            if (!string.IsNullOrEmpty(ticker))
-            {
-                var result = await handler.GetTickerOverviewResponseAsync(
-                    mktEnum,
-                    ticker,
-                    date,
-                    cancellationToken);
-
-                if(result.Results is TickerOverview tovw)
-                {
-                    var path = OutputService.CombinePath(
-                        outputPath ?? config["output_path"] ?? "./",
-                        result.RequestId);
-                    var writeResult = await OutputService.WriteAsync(
-                                                item: tovw,
-                                                format: format!,
-                                                path: path,
-                                                cancellationToken);
-                }
-            }
-            else if (!string.IsNullOrEmpty(tickers))
-            {
-                var result = await handler.GetTickerOverviewResponseAsync(
+            var results = await handler.GetTickerOverviewResponseAsync(
                     market: mktEnum,
-                    tickers: tickers.ToValueArray(),
+                    tickers: tickerArgs,
                     date: date,
                     cancellationToken);
 
-                var resultNotNull = result.Where(x => x.Results is not null).ToArray();
+            if(results.Count == 0) return;
 
-                if(resultNotNull.Length > 0)
-                {
-                    foreach(var res in resultNotNull)
+            string path = OutputService.CombinePath(
+                    outputPath ?? config["output_path"] ?? "./",
+                    Guid.NewGuid().ToString());
+
+            if(format.CompareTo("csv", StringComparison.InvariantCultureIgnoreCase) == 0)
+            {
+                results
+                    .ForEach(x =>
                     {
-                        var path = OutputService.CombinePath(
-                        outputPath ?? config["output_path"] ?? "./",
-                        res.RequestId);
-                        var writeResult = await OutputService.WriteAsync(
-                                                    item: res.Results!,
-                                                    format: format!,
-                                                    path: path,
-                                                    cancellationToken);
-                    }
-                }
+                        x.Results?.RequestId = x.RequestId;
+                    });
+
+                var flatresults = results.Select(x => x.Results);
+
+                await OutputService.WriteAsync(
+                            data: flatresults,
+                            format!,
+                            path,
+                            cancellationToken);
+            }
+            else
+            {
+                await OutputService.WriteAsync(
+                            data: results,
+                            format!,
+                            path,
+                            cancellationToken);
             }
         }
     }

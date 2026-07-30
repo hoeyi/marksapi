@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
@@ -23,6 +24,8 @@ namespace Ichyd.Marksapi.Cli.Services
         [ExcludeFromCodeCoverage]
         private static FileStreamOptions FileOptions { get; } = FileStreamOptions();
         
+        public static string CombinePath(params string[] paths) => Path.Combine(paths);
+
         /// <summary>
         /// Writes the given <typeparamref name="T"/> data to disk at the given path and format.
         /// </summary>
@@ -35,7 +38,7 @@ namespace Ichyd.Marksapi.Cli.Services
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="format"/> was not one of allowed values.</exception>
         /// <exception cref="ArgumentException"><paramref name="format"/> or <paramref name="path"/> were null or empty.</exception>
         public static async Task<double> WriteAsync<T>(
-            T[] data,
+            T data,
             string format,
             string path,
             CancellationToken cancellationToken = default)
@@ -62,28 +65,10 @@ namespace Ichyd.Marksapi.Cli.Services
             };
         }
 
-        /// <summary>
-        /// Writes the given <typeparamref name="T"/> data to disk at the given path and format.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="item">The record(s) to write.</param>
-        /// <param name="format">One of (json, csv, console). Case insensitive.</param>
-        /// <param name="path">The file path to write output to.</param>
-        /// <param name="cancellationToken"></param>
-        /// <returns>A <see cref="Task"/> containing a count of bytes written.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="format"/> was not one of allowed values.</exception>
-        /// <exception cref="ArgumentException"><paramref name="format"/> or <paramref name="path"/> were null or empty.</exception>
-        public static async Task<double> WriteAsync<T>(
-            T item,
-            string format,
-            string path,
-            CancellationToken cancellationToken = default)
-                => await WriteAsync<T>(data: [item], format, path, cancellationToken);
-
         [ExcludeFromCodeCoverage]
         private static async Task<double> WriteJsonAsync<T>(
             string path,
-            T[] data,
+            T data,
             CancellationToken cancellationToken)
         {
             string jsonPath = $"{path}.json";
@@ -101,28 +86,27 @@ namespace Ichyd.Marksapi.Cli.Services
             return writer.BaseStream.Length;
         }
 
-        public static string CombinePath(params string[] paths) => Path.Combine(paths);
-
         [ExcludeFromCodeCoverage]
         private static async Task<double> WriteCsvAsync<T>(
             string path,
-            T[] data,
+            T data,
             CancellationToken cancellationToken)
         {
             CheckPathOrThrow(path);
-
             cancellationToken.ThrowIfCancellationRequested();
-            
+
             using var writer = new StreamWriter($"{path}.csv", Encoding.UTF8, options: FileOptions);
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
 
-            await csv.WriteRecordsAsync(data, cancellationToken);
-
-            return writer.BaseStream.Length;
+            if(data is IEnumerable items)
+                await csv.WriteRecordsAsync(items, cancellationToken);
+            else
+                csv.WriteRecord(data);
+                return writer.BaseStream.Length;
         }
 
         [ExcludeFromCodeCoverage]
-        private static double WriteConsole<T>(T[] data)
+        private static double WriteConsole<T>(T data)
         {
             var serialized = JsonSerializer.Serialize(data, _jsonOptions);
             Console.Write(serialized);

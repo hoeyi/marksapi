@@ -72,7 +72,7 @@
                 "massive", 
                 "aggregate-bar", 
                 "stocks", 
-                "--tickers", "AAPL,MSFT",
+                "--tickers", "NVDA,GOOGL,AAPL,MSFT",
                 "--from", "2026-06-20", 
                 "--to", "2026-06-30",
                 "--format", "csv"],
@@ -87,7 +87,7 @@
             "args": [
                 "massive", "aggregate-bar", 
                 "stocks", 
-                "--tickers", "AAPL,MSFT",
+                "--tickers", "NVDA,GOOGL,AAPL,MSFT",
                 "--from", "2026-06-20", 
                 "--to", "2026-06-30", 
                 "--format", "json"

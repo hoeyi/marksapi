@@ -74,8 +74,8 @@ namespace Ichyd.Marksapi.Cli
             try
             {
                 Configuration = InitConfiguration();
-                MassiveApi = InitApi(Configuration);
                 Logger = InitLogger<Program>(Configuration);
+                MassiveApi = InitApi(Configuration, Logger);
                 QueryLimit = GetQueryOptionsOrDefault(Configuration);
 
                 var provider = new SingletonServiceProvider();
@@ -84,6 +84,8 @@ namespace Ichyd.Marksapi.Cli
                     .RegisterService(Logger)
                     .RegisterService(MassiveApi);
                 Services = provider;
+
+                Logger?.LogInformation("Successful started...");
             }
             catch(Exception e)
             {
@@ -106,7 +108,7 @@ namespace Ichyd.Marksapi.Cli
             return 0;
         }
 
-        private static MassiveApi InitApi(IConfiguration configuration)
+        private static MassiveApi InitApi(IConfiguration configuration, ILogger? logger = null)
         {
             RateOptions options = new();
             var section = configuration
@@ -122,7 +124,10 @@ namespace Ichyd.Marksapi.Cli
 
             ArgumentException.ThrowIfNullOrWhiteSpace(configuration[MASSIVE_API_KEYPATH]);
             
-            return new MassiveApi(configuration[MASSIVE_API_KEYPATH]!, rateOptions: options);
+            return new MassiveApi(
+                configuration[MASSIVE_API_KEYPATH]!,
+                rateOptions: options,
+                logger: logger);
         }
 
         private static Interval<int> GetQueryOptionsOrDefault(IConfiguration configuration)
@@ -141,19 +146,16 @@ namespace Ichyd.Marksapi.Cli
 
             return new Interval<int>(options.LowerLimit, options.UpperLimit, open: false);
         }
+        
         private static IConfiguration InitConfiguration()
         {
             var configBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json");
-
-            #if (!DEBUG)
-            configBuilder
-                .AddDockerSecrets();
-            #endif
-
             #if DEBUG
-            configBuilder
-                .AddUserSecrets<Program>();
+                .AddUserSecrets<Program>()
+                .AddJsonFile("appsettings.debug.json");
+            #else
+                .AddDockerSecrets()
+                .AddJsonFile("appsettings.json");
             #endif
 
             return configBuilder.Build();

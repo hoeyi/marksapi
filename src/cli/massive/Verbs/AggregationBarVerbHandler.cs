@@ -111,51 +111,40 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                     limit ?? Program.QueryLimit.End,
                     cancellationToken);
             
-            var writeTasks = new List<Task>();
-            string path = default!;
-            foreach(var result in results)
+            if(results.Count == 0) return;
+
+            string path = OutputService.CombinePath(
+                    outputPath ?? config["output_path"] ?? "./",
+                    Guid.NewGuid().ToString());
+            if(format.CompareTo("csv", StringComparison.InvariantCultureIgnoreCase) == 0)
             {
-                if(string.IsNullOrEmpty(result.RequestId))
-                    continue;
-                else
-                    path = OutputService.CombinePath(
-                        outputPath ?? config["output_path"] ?? "./",
-                        result.RequestId);
-                    
-
-                    // For CSV, we want flattened results for the response.
-                    
-                    if(format.CompareTo("csv", StringComparison.InvariantCultureIgnoreCase) == 0)
+                results
+                    .ForEach(x =>
                     {
-                        result.Results.ForEach(x =>
+                        x.Results.ForEach(y =>
                         {
-                            x.Ticker = result.Ticker;
-                            x.Adjusted = result.Adjusted; 
-                            x.Status = result.Status;
+                            y.RequestId = x.RequestId;
+                            y.Ticker = x.Ticker;
+                            y.Status = x.Status;
+                            y.Adjusted = x.Adjusted;
                         });
-                        writeTasks.Add(
-                            Task.Run(
-                                () => OutputService.WriteAsync(
-                                    data: [.. result.Results],
-                                    format!,
-                                    path,
-                                    cancellationToken)));
-                    }
-                    // For preserving JSON response, write single response result otherwise.
-                    else
-                    {
-                        writeTasks.Add(
-                            Task.Run(
-                                () => OutputService.WriteAsync(
-                                    item: result,
-                                    format!,
-                                    path,
-                                    cancellationToken)));
-                        
-                    }
-            };
+                    });
+                var flatresults = results.SelectMany(x => x.Results);
 
-            await Task.WhenAll(writeTasks);
+                await OutputService.WriteAsync(
+                            data: flatresults,
+                            format!,
+                            path,
+                            cancellationToken);
+            }
+            else
+            {
+                await OutputService.WriteAsync(
+                            data: results,
+                            format!,
+                            path,
+                            cancellationToken);
+            }
         }
     }
 }
