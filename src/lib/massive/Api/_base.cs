@@ -103,8 +103,8 @@ namespace ApiClient.Massive
                 Interval = 60
             };
 
-            _rateTimer = new RateTimer(options.Limit, options.Interval);
             _logger = logger;
+            _rateTimer = new RateTimer(options.Limit, options.Interval, _logger);
         }
 
         /// <inheritdoc/>
@@ -220,32 +220,32 @@ namespace ApiClient.Massive
         static void LogInfo_ResponseRequest_Submitting(ILogger? logger, object request)
         {
             if(logger?.IsEnabled(LogLevel.Information) ?? false)
-                logger.LogInformation("Submitting: {request}...", request);
+                logger.LogInformation(eventId: 10, "Submitting request: {request}...", request);
         }
 
         static void LogInfo_ResponseRequest_Received(ILogger? logger, string id)
         {
             if(logger?.IsEnabled(LogLevel.Information) ?? false)
-                logger.LogInformation("Received request response:{id}", id);
+                logger.LogInformation(eventId: 11, "Received request response: {id}.", id);
         }
 
         static void LogDebug_ResponseHeader_Received(
             ILogger? logger, HttpResponseHeaders headers)
         {
             if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-                logger.LogDebug(eventId: 20, "Response received: {@headers}.", headers);
+                logger.LogDebug(eventId: 20, "Response received with headers:\n{@headers}", headers);
         }
 
         static void LogDebug_ResponseBody_Received(ILogger? logger, string body)
         {
             if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-                logger.LogDebug(eventId: 21, "Response received with {body}.", body);
+                logger.LogDebug(eventId: 21, "Response received with body:\n{body}", body);
         }
 
         static void LogError_HttpRequestException(ILogger? logger, HttpRequestException exception)
         {
             if(logger?.IsEnabled(LogLevel.Error) ?? false)
-                logger.LogError(eventId: 50, "Http request failed.\n{@exception}", exception);
+                logger.LogError(eventId: 50, "HTTP request failed.\n{@exception}", exception);
         }
     }
     #endregion
