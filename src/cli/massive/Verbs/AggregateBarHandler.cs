@@ -85,7 +85,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
             var validator = new CommandValidator(logger);
             validator
-                .ValidateMarketOrThrow(market, out Market mktEnum)
+                .ValidateEnumOrThrow(market!, out Market marketEnum)
                 .ValidateTickerOrTickersOrThrow(ticker, tickers)
                 .ValidateLimitOrThrow(limit, queryLimit)
                 .ValidateDateRangeOrThrow(fromDate, toDate)
@@ -98,7 +98,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 tickers.ToValueArray();
 
             var results = await handler.GetAggregateBarResponseAsync(
-                    market: mktEnum,
+                    market: marketEnum,
                     tickers: tickerArgs,
                     multiplier: multiplier,
                     timeSpan: barTimespan ?? BarTimespan.Day,

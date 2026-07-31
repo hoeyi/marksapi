@@ -2,6 +2,7 @@ using ApiClient.Massive.Parameters;
 using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Ichyd.Marksapi.Cli.Massive.Verbs
 {
@@ -12,6 +13,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var marketArgument = new Argument<string>(name: "MARKET")
             {
+                Description = "Target market for query.",
                 Arity = ArgumentArity.ExactlyOne
             };
             command.Add(marketArgument);
@@ -23,6 +25,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var tickerArgument = new Argument<string>(name: "TICKER")
             {
+                Description = "Target ticker for query. Vary format to match MARKET",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(tickerArgument);
@@ -300,36 +303,20 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return command;
         }
 
-        public static Command AddNumericComparisonOperatorOption(
-            this Command command, string comparisonField)
+        public static Command AddComparisonOption(this Command command)
         {
-            var names = Enum.GetValues<NumericComparisonOperator>();
-
-            void AddNumericComparisonOperatorOption(
-                NumericComparisonOperator numOp, string description)
+            var option = new Option<string>(name: $"--operator" )
             {
-                var option = new Option<string>(name: $"--{numOp.ToString().ToLower()}" )
-                {
-                    Description = description,
-                    Arity = ArgumentArity.ExactlyOne
-                };
+                Description = "Comparison operator.",
+                Arity = ArgumentArity.ExactlyOne
+            };
+            var names = Enum
+                        .GetValues<NumericComparisonOperator>()
+                        .Select(x => x.ToString().ToLowerInvariant())
+                        .ToArray();
+            option.AcceptOnlyFromAmong(names);
 
-                command.Add(option);
-            }
-
-            AddNumericComparisonOperatorOption(
-                NumericComparisonOperator.Gt,
-                $"Greater than {comparisonField}");
-            AddNumericComparisonOperatorOption(
-                NumericComparisonOperator.Gte,
-                $"Greater than or equal to {comparisonField}");
-            AddNumericComparisonOperatorOption(
-                NumericComparisonOperator.Lt,
-                $"Less than {comparisonField}");
-            AddNumericComparisonOperatorOption(
-                NumericComparisonOperator.Lte,
-                $"Less than or equal to{comparisonField}");
-
+            command.Add(option);
             return command;
         }
     }    

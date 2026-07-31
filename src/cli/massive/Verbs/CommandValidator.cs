@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using ApiClient.Massive;
+using ApiClient.Massive.Parameters;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
 
@@ -70,24 +71,30 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return this;
         }
 
-        public CommandValidator ValidateMarketOrThrow(
-            string? market,
-            out Market mktEnum)
+        public CommandValidator ValidateEnumOrThrow<T>(
+            string? enumMember,
+            out T @enum,
+            string? errorMessage = null)
+            where T : struct, Enum
         {
-            ArgumentException.ThrowIfNullOrEmpty(market, nameof(market));
-            ArgumentException.ThrowIfNullOrWhiteSpace(market, nameof(market));
+            ArgumentException.ThrowIfNullOrEmpty(enumMember, nameof(enumMember));
+            ArgumentException.ThrowIfNullOrWhiteSpace(enumMember, nameof(enumMember));
 
             var culture = CultureInfo.InvariantCulture;
-            var marketTitle = culture.TextInfo.ToTitleCase(market!.ToLower());
-            if(!Enum.TryParse(marketTitle, out Market result))
+            var marketTitle = culture.TextInfo.ToTitleCase(enumMember!.ToLower());
+            if(!Enum.TryParse(marketTitle, out T result))
             {
-                _logger?.LogError(
-                    "Argument <{arg}> must be one of: crypto, fx, indices, options, stocks.",
-                    "MARKET");
+                if(_logger?.IsEnabled(LogLevel.Error) ?? false)
+                {
+                    _logger?.LogError(
+                        !string.IsNullOrEmpty(errorMessage) ?  
+                            errorMessage :
+                            "Could not convert {value} to {type} member.", enumMember, typeof(T).Name);
+                }
                 throw new ArgumentException(
-                    $"Invalid parameters: {nameof(market)}.");
+                    $"Invalid parameters: {nameof(enumMember)}.");
             }
-            mktEnum = result;
+            @enum = result;
             return this;
         }
 

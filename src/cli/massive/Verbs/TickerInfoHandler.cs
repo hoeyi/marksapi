@@ -67,7 +67,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
             var validator = new CommandValidator(logger);
             validator
-                .ValidateMarketOrThrow(market, out Market mktEnum)
+                .ValidateEnumOrThrow(market, out Market mktEnum)
                 .ValidateTickerOrTickersOrThrow(ticker, tickers)
                 .ValidateFormatOrThrow(format)
                 .ValidateFileOuputOrThrow(outputPath);

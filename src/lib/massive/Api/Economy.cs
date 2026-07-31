@@ -10,16 +10,6 @@ namespace ApiClient.Massive;
 
 public partial class MassiveApi : IMassiveApi
 {
-    private string ProcessDateQuery(DateTime[] dates, NumericComparisonOperator? numOp)
-    {
-        if(numOp is null)
-            return "date";
-        else
-        {
-            var datesOnly = dates.Select(x => DateOnly.FromDateTime(x).ToString("O"));
-            return string.Join(",", datesOnly);
-        }
-    }
     /// <inheritdoc/>
     public async Task<TreasuryYieldsResponse> GetTreasuryYieldResponseAsync(
         DateTime[] dates,

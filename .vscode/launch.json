@@ -154,6 +154,33 @@
             "args": ["massive", "tickers", "stocks", "--ticker", "AAPL", "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-inflation-dates-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": ["massive", "inflation", "--dates", "2026-04-01", "2026-05-01", "--format", "json"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-inflation-date-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": ["massive", "inflation", "--dates", "2026-03-01", "--format", "json"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-inflation-forecast-date-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": ["massive", "inflation", "--dates", "2026-03-01", "--format", "json"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
         }
     ]
 }
