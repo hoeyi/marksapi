@@ -308,7 +308,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             var option = new Option<string>(name: $"--operator" )
             {
                 Description = "Comparison operator.",
-                Arity = ArgumentArity.ExactlyOne
+                Arity = ArgumentArity.ZeroOrOne
             };
             var names = Enum
                         .GetValues<NumericComparisonOperator>()
