@@ -73,9 +73,8 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
         public CommandValidator ValidateEnumOrThrow<T>(
             string? enumMember,
-            out T @enum,
-            string? errorMessage = null)
-            where T : struct, Enum
+            out T @enum)
+                where T : struct, Enum
         {
             ArgumentException.ThrowIfNullOrEmpty(enumMember, nameof(enumMember));
             ArgumentException.ThrowIfNullOrWhiteSpace(enumMember, nameof(enumMember));
@@ -85,14 +84,13 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             if(!Enum.TryParse(marketTitle, out T result))
             {
                 if(_logger?.IsEnabled(LogLevel.Error) ?? false)
-                {
                     _logger?.LogError(
-                        !string.IsNullOrEmpty(errorMessage) ?  
-                            errorMessage :
-                            "Could not convert {value} to {type} member.", enumMember, typeof(T).Name);
-                }
+                        "Could not convert {value} to {type} member.",
+                        enumMember,
+                        typeof(T).Name);
+
                 throw new ArgumentException(
-                    $"Invalid parameters: {nameof(enumMember)}.");
+                    $"Could not convert {enumMember} to {typeof(T).Name} member.");
             }
             @enum = result;
             return this;

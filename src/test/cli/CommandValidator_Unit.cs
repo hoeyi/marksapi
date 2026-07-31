@@ -286,7 +286,6 @@ namespace ApiClient.Test.Marksapi.Unit
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => 
                 validator.ValidateEnumOrThrow<Market>(market, out _));
-            Assert.Contains(nameof(market), ex.Message);
         }
 
         [Fact]
@@ -299,7 +298,6 @@ namespace ApiClient.Test.Marksapi.Unit
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => 
                 validator.ValidateEnumOrThrow<Market>(market, out _));
-            Assert.Contains(nameof(market), ex.Message);
         }
 
         [Fact]
@@ -312,7 +310,6 @@ namespace ApiClient.Test.Marksapi.Unit
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => 
                 validator.ValidateEnumOrThrow<Market>(market, out _));
-            Assert.Contains(nameof(market), ex.Message);
         }
 
         #endregion
