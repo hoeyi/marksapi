@@ -115,7 +115,7 @@ namespace ApiClient.Massive
             GC.SuppressFinalize(this);
         }
         
-        private void HandleRateLimit(object? sender, RateLimitedArgs args) => LogWarning_RateLimited(_logger, args);
+        private void HandleRateLimit(object? sender, RateLimitedArgs args) => LogDebug_RateLimited(_logger, args);
 
         /// <summary>
         /// Posts a GET request from the given <see cref="QueryBuilder"/> and <see cref="Endpoint"/>. 
@@ -251,11 +251,11 @@ namespace ApiClient.Massive
                 logger.LogError(eventId: 50, "HTTP request failed.\n{@exception}", exception);
         }
 
-        static void LogWarning_RateLimited(
+        static void LogDebug_RateLimited(
             ILogger? logger,
             RateLimitedArgs args)
         {
-            if(logger?.IsEnabled(LogLevel.Warning) ?? false)
+            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
                     logger.LogWarning(
                         "Rate limited for {timeout}s. Estimated reset at {reset}.", 
                         args.TimeOut.TotalSeconds,
