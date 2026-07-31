@@ -91,4 +91,20 @@ public class TreasuryYield
     [JsonPropertyName("yield_30_year")]
     [JsonProperty(PropertyName = "yield_30_year")]
     public double? Yield30Year { get; set; }
+
+    #region Non-json properties
+    /// <summary>
+    /// The status of this request's response.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public string? Status { get; set; }
+
+    /// <summary>
+    /// A request id assigned by the server.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public string? RequestId { get; set; }
+    #endregion      
 }

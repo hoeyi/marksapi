@@ -55,4 +55,20 @@ public class InflationExpectation
     /// </summary>
     [JsonPropertyName("model_5_year")]
     public double? Model5Year { get; set; }
+
+    #region Non-json properties
+    /// <summary>
+    /// The status of this request's response.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public string? Status { get; set; }
+
+    /// <summary>
+    /// A request id assigned by the server.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public string? RequestId { get; set; }
+    #endregion        
 }
