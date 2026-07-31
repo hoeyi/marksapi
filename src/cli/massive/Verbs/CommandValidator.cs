@@ -5,6 +5,7 @@ using System.Linq;
 using ApiClient.Massive;
 using ApiClient.Massive.Parameters;
 using ApiClient.Services;
+using CsvHelper;
 using Microsoft.Extensions.Logging;
 
 namespace Ichyd.Marksapi.Cli.Massive.Verbs
@@ -124,7 +125,23 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
             return this;            
         }
+        public CommandValidator ValidateDateArrayWithComparisonOrThrow(DateTime[] dates, string? numericOperator)
+        {
+            if(string.IsNullOrEmpty(numericOperator) || string.IsNullOrWhiteSpace(numericOperator)) 
+                return this;
 
+            if(dates.Length == 1) return this;
+
+            if(_logger?.IsEnabled(LogLevel.Error) ?? false)
+                _logger?.LogError(
+                    "Expecting <{opt}> to have length 1 when <{opt}> specified",
+                    "--dates",
+                    "--operator"
+                );
+
+            throw new ArgumentException(
+                    $"Invalid --operator parameter for given --dates");
+        }
         public CommandValidator ValidateTickerOrTickersOrThrow(string? ticker, string? tickers)
         {
             if(

@@ -289,20 +289,6 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return command;
         }
 
-        public static Command AddInflationForecastOption(this Command command)
-        {
-            var option = new Option<bool>(name: "--forecast")
-            {
-                Description = "Query inflation expectations",
-                Arity = ArgumentArity.ExactlyOne,
-                DefaultValueFactory = (args) => false
-            };
-
-            command.Add(option);
-
-            return command;
-        }
-
         public static Command AddComparisonOption(this Command command)
         {
             var option = new Option<string>(name: $"--operator" )
