@@ -1,3 +1,4 @@
+using ApiClient.Massive.Parameters;
 using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
@@ -239,8 +240,22 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var dateOption = new Option<DateTime>(name: "--date")
             {
-                Description = "Snapshot date (YYYY-MM-DD)",
+                Description = "Snapshot date (ISO format: YYYY-MM-DD)",
                 Arity = ArgumentArity.ZeroOrOne
+            };
+            command.Add(dateOption);
+
+            return command;
+        }
+        
+        public static Command AddDateArrayOption(
+            this Command command, ArgumentArity? arity = null)
+        {
+            var dateOption = new Option<DateTime[]>(name: "--dates")
+            {
+                Description = "Snapshot date(s) (ISO format: YYYY-MM-DD)",
+                Arity = arity ?? ArgumentArity.OneOrMore,
+                AllowMultipleArgumentsPerToken = true
             };
             command.Add(dateOption);
 
@@ -268,6 +283,53 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             };
             command.Add(toDateOption);        
             
+            return command;
+        }
+
+        public static Command AddInflationForecastOption(this Command command)
+        {
+            var option = new Option<bool>(name: "--forecast")
+            {
+                Description = "Query inflation expectations",
+                Arity = ArgumentArity.ExactlyOne,
+                DefaultValueFactory = (args) => false
+            };
+
+            command.Add(option);
+
+            return command;
+        }
+
+        public static Command AddNumericComparisonOperatorOption(
+            this Command command, string comparisonField)
+        {
+            var names = Enum.GetValues<NumericComparisonOperator>();
+
+            void AddNumericComparisonOperatorOption(
+                NumericComparisonOperator numOp, string description)
+            {
+                var option = new Option<string>(name: $"--{numOp.ToString().ToLower()}" )
+                {
+                    Description = description,
+                    Arity = ArgumentArity.ExactlyOne
+                };
+
+                command.Add(option);
+            }
+
+            AddNumericComparisonOperatorOption(
+                NumericComparisonOperator.Gt,
+                $"Greater than {comparisonField}");
+            AddNumericComparisonOperatorOption(
+                NumericComparisonOperator.Gte,
+                $"Greater than or equal to {comparisonField}");
+            AddNumericComparisonOperatorOption(
+                NumericComparisonOperator.Lt,
+                $"Less than {comparisonField}");
+            AddNumericComparisonOperatorOption(
+                NumericComparisonOperator.Lte,
+                $"Less than or equal to{comparisonField}");
+
             return command;
         }
     }    

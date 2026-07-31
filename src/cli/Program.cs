@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
+using Ichyd.Marksapi.Cli.massive.Verbs;
 using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
@@ -16,11 +17,8 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 namespace Ichyd.Marksapi.Cli
 {
     [ExcludeFromCodeCoverage]
-#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
-    public class Program
-#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
-
+    class Program
     {
         internal const string MASSIVE_API_KEYPATH = "MASSIVE_API_KEY";
 
@@ -59,7 +57,10 @@ namespace Ichyd.Marksapi.Cli
                 TickerHandler.CreateCommand(),
                 TickerInfoHandler.CreateCommand(),
                 AggregateBarHandler.CreateCommand(),
-                ShortVolumeHandler.CreateCommand()
+                ShortVolumeHandler.CreateCommand(),
+                InflationHandler.CreateCommand(),
+                LaborHandler.CreateCommand(),
+                TreasuryHandler.CreateCommand()
             };
 
             rootCommand.Add(massiveCommand);
