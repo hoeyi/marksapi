@@ -425,3 +425,6 @@ src/test/*.log
 
 # Cached files from C# Dev Kit
 dotnet/
+
+# Development project placeholders
+**/development.csproj

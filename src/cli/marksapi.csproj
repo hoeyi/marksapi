@@ -10,8 +10,11 @@
     <RootNamespace>Ichyd.Marksapi.Cli</RootNamespace>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Deterministic>false</Deterministic>
-    <UserSecretsId>ea2dd241-8ca8-4d00-9af8-8d1b5e08df40</UserSecretsId>
   </PropertyGroup>
+
+  <!-- For development -->
+  <Import Project="../dev/development.csproj" Condition="'$(DEV_MODE)' == 'true'">
+  </Import>
   
   <!-- Assembly / build details -->
   <PropertyGroup>
@@ -55,12 +58,7 @@
     <PackageReference Include="Spectre.Console" Version="0.57.2" />
     <PackageReference Include="System.CommandLine" Version="2.0.10" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(Configuration)' == 'Debug'">
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.10" />
-    <None Update="appsettings.debug.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="../lib/massive/ApiClient.massive.csproj" />
   </ItemGroup>

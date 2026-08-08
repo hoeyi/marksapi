@@ -1,8 +1,12 @@
 # Contributing to <em>marksapi</em> #
 
-Use these guide when making contributions to this project.
+Use this guide when making contributions to this project.
 
-## Commit Message Guidelines ##
+## Contents
+- [Commit Messages](#commit-messages)
+- [Development Environment](#development-environment)
+
+## Commit Messages ##
 
 The structure of these guidelines are based on the [Angular convetion](
 https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#commit) and 
@@ -27,6 +31,7 @@ Must be one of the following:
 * **style**: Changes that do not affect the meaning of the code 
 (white-space, formatting, missing semi-colons, etc)
 * **test**: Adding missing tests or correcting existing tests
+* ** repo**: Internal project structure changes
 
 **Example:** Add missing in-code documentation
 ```
@@ -69,3 +74,25 @@ BREAKING CHANGE: Ends support for [NAME] API
 ```
 Resolves #42 (where #42 is the GitHub issue no.)
 ```
+<sub>[Contents](#contents)</sub>
+
+## Development Environment
+
+This project uses a placeholder `.csproj` file to for storing development-related project dependencies that may be omitted in published builds. Use to store things like user secret configuration or debugging settings.
+
+**Example:** Within `src/dev/development.csproj`
+```XML
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <UserSecretsId>2e877461-5e72-4bbb-9f6d-6759ac5fc151</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug'">
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.10" />
+    <None Update="appsettings.debug.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
+```
+<sub>[Contents](#contents)</sub>
