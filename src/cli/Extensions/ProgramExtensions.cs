@@ -1,6 +1,9 @@
 using System;
+using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using ApiClient.Services;
+using Ichyd.Marksapi.Cli.Massive.Verbs;
+using Ichyd.Marksapi.Cli.Verbs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -52,7 +55,44 @@ namespace Ichyd.Marksapi.Cli.Extensions
         /// <param name="options"></param>
         /// <returns>An <see cref="Interval{int}"/>.</returns>
         public static Interval<int> QueryLimit(this QueryOptions options) => 
-            new(options.LowerLimit, options.UpperLimit, open: false);        
+            new(options.LowerLimit, options.UpperLimit, open: false);
+
+        public static Command AddMassiveApiCommand(this Command command)
+        {
+            // Massive service subcommand
+            var massiveCommand = new Command("massive", "Access Massive API endpoints")
+            {
+                TickerHandler.CreateCommand(),
+                TickerInfoHandler.CreateCommand(),
+                AggregateBarHandler.CreateCommand(),
+                ShortVolumeHandler.CreateCommand(),
+                InflationHandler.CreateCommand(),
+                LaborHandler.CreateCommand(),
+                TreasuryHandler.CreateCommand()
+            };
+
+            command.Add(massiveCommand);
+
+            return command;
+        }
+
+        public static RootCommand InitRootCommand(IConfiguration configuration)
+        {
+            var rootCommand = new RootCommand()
+            {
+                FileReaderHandler.CreateLicenseCommand(),
+                FileReaderHandler.CreateNoticeCommand()
+            };
+            rootCommand.Description = "A unified command line interface for querying financial data APIs.";
+
+            for (int i = 0; i < rootCommand.Options.Count; i++)
+            {
+                if (rootCommand.Options[i] is VersionOption)
+                    rootCommand.Options[i].Action = new CustomVersionAction();
+            }
+
+            return rootCommand;
+        }        
     }
 }
 

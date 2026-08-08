@@ -46,16 +46,16 @@ namespace Ichyd.Marksapi.Cli
         /// </summary>
         public static IServiceProvider Services { get; set; } = default!;
 
-        static Task<int> Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
-            RootCommand rootCommand = default!;
+            Command rootCommand = default!;
             try
             {
                 Configuration = InitConfiguration();
                 Logger = InitLogger<Program>(Configuration);
 
 
-                Logger.LogInfo_Services_Initializing();
+                Logger.LogDebug_Services_Initializing();
 
                 MassiveApi = InitMassiveApi(Configuration, Logger);
                 QueryLimit = Configuration
@@ -69,18 +69,18 @@ namespace Ichyd.Marksapi.Cli
 
                 if (Configuration.GetSection("massive").Exists())
                 {
-                    provider
-                        .RegisterService(InitMassiveApi(Configuration, Logger));
+                    provider.RegisterService(InitMassiveApi(Configuration, Logger));
 
-                    Logger.LogInfo_Service_Registered(nameof(MassiveApi));
-
+                    Logger.LogDebug_Service_Registered(nameof(MassiveApi));
                 }
                 
                 Services = provider;
 
-                Logger.LogInfo_Services_Initializing_Finished();
+                Logger.LogDebug_Services_Initializing_Finished();
 
-                rootCommand = InitRootCommand(Configuration);
+                rootCommand = ProgramExtensions
+                                .InitRootCommand(Configuration)
+                                .AddMassiveApiCommand();
 
                 var parse = rootCommand.Parse(args);
                 rootCommand.SetAction(DoRootCommand);
@@ -95,8 +95,8 @@ namespace Ichyd.Marksapi.Cli
             }
 
             if(rootCommand is null)
-                throw new InvalidOperationException("Failed to initial program. No root command parsed.");
-            return rootCommand.Parse(args).InvokeAsync();
+                throw new InvalidOperationException("Failed to initialize program. No root command found.");
+            return await rootCommand.Parse(args).InvokeAsync();
         }
 
         private static int DoRootCommand(ParseResult parseResult)
@@ -163,39 +163,6 @@ namespace Ichyd.Marksapi.Cli
             var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
 
             return loggerFactory.CreateLogger<T>();
-        }
-
-
-        private static RootCommand InitRootCommand(IConfiguration configuration)
-
-        {
-            var rootCommand = new RootCommand()
-            {
-                FileReaderHandler.CreateLicenseCommand(),
-                FileReaderHandler.CreateNoticeCommand()
-            };
-            rootCommand.Description = "A unified command line interface for querying financial data APIs.";
-
-            // Massive service subcommand
-            var massiveCommand = new Command("massive", "Access Massive API endpoints")
-            {
-                TickerHandler.CreateCommand(),
-                TickerInfoHandler.CreateCommand(),
-                AggregateBarHandler.CreateCommand(),
-                ShortVolumeHandler.CreateCommand(),
-                InflationHandler.CreateCommand(),
-                LaborHandler.CreateCommand(),
-                TreasuryHandler.CreateCommand()
-            };
-
-            rootCommand.Add(massiveCommand);
-            for (int i = 0; i < rootCommand.Options.Count; i++)
-            {
-                if (rootCommand.Options[i] is VersionOption)
-                    rootCommand.Options[i].Action = new CustomVersionAction();
-            }
-
-            return rootCommand;
         }
         #endregion
     }

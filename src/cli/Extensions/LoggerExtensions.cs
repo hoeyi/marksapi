@@ -11,22 +11,22 @@ namespace Ichyd.Marksapi.Cli.Extensions
                 logger.LogWarning("{filename} not found or is not a file.", filename);
         }
 
-        public static void LogInfo_Services_Initializing(this ILogger? logger)
+        public static void LogDebug_Services_Initializing(this ILogger? logger)
         {
-            if(logger?.IsEnabled(LogLevel.Information) ?? false)
-                logger.LogInformation("Starting service initialization...");
+            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+                logger.LogDebug("Starting service initialization...");
         }
 
-        public static void LogInfo_Services_Initializing_Finished(this ILogger? logger)
+        public static void LogDebug_Services_Initializing_Finished(this ILogger? logger)
         {
-            if(logger?.IsEnabled(LogLevel.Information) ?? false)
-                logger.LogInformation("Finished service initialization.");
+            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+                logger.LogDebug("Finished service initialization.");
         }
 
-        public static void LogInfo_Service_Registered(this ILogger? logger, string service)
+        public static void LogDebug_Service_Registered(this ILogger? logger, string service)
         {
-            if(logger?.IsEnabled(LogLevel.Information) ?? false)
-                logger.LogInformation("Registered {service}", service);
+            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+                logger.LogDebug("Registered {service}", service);
         }
     }
 }

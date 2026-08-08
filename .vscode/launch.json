@@ -23,6 +23,15 @@
             "console": "internalConsole"
         },
         {
+            "name": "marksapi-license",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": ["--license"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
             "name": "marksapi-notice",
             "type": "coreclr",
             "request": "launch",
