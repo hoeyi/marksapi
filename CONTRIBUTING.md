@@ -1,7 +1,6 @@
-# Contributing to <em>markets-apiclient</em> #
+# Contributing to <em>marksapi</em> #
 
-* [Commit Message Guidelines](#commit-message-guidelines)
-* [Object Naming Conventions](#object-naming-conventions)
+Use these guide when making contributions to this project.
 
 ## Commit Message Guidelines ##
 
@@ -18,7 +17,7 @@ Commit messages should follow the format:
 
 ### Type ###
 Must be one of the following:
-
+* **docs** for changes to internal and external documentation
 * **build**: Changes that affect the build system or external dependencies
 * **feat**: A new feature
 * **fix**: A bug fix
@@ -29,26 +28,22 @@ Must be one of the following:
 (white-space, formatting, missing semi-colons, etc)
 * **test**: Adding missing tests or correcting existing tests
 
+**Example:** Add missing in-code documentation
+```
+docs({library}): add XML documentation for {method}
+```
+
+**Example:** Add a feature to a library
+```
+feat({library}): add coverage for {endpoint} in {library}
+```
+
 ### Scope ###
-Use the `scope` component of the commit subject to descript the endpoint the change applies to.
+Use the `scope` component of the commit subject line to denote the library impacted.
 
-Example: 
+**Example:** Update the version of a package
 ```
-feat(eod): implement methods for /eod enpoint
-```
-
-Scope should also declare which API library it impacts.
-
-Example:
-```
-feat(massive/eod): implement methods for massive/eod endpoint
-```
-
-Use the type **docs** for changes to internal and external documentation.
-
-Example:
-```
-docs(marksapi): add method documentation for '{method}'
+build({library 1}, {library 2}): bump {package} to v2.0
 ```
 
 ### Subject ###
@@ -67,9 +62,10 @@ The body contains the detail of why the change was made:
 The footer contains information on breaking changes. Start with the phrase 
 `BREAKING CHANGE:`. Also use this space to reference closing GitHub issues. 
 
-Example:
+**Example(s):**
 ```
 BREAKING CHANGE: Ends support for [NAME] API
-
+```
+```
 Resolves #42 (where #42 is the GitHub issue no.)
 ```

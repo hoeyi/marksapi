@@ -10,7 +10,7 @@ A unified command line interface for querying financial, economic, and relatedd 
 - [Commands](#commands)
     - [General syntax](#general-syntax)
     - [MASSIVE](#massive)
-    - [Output](#output)
+    - [Output](#output-formats)
 - [Troubleshooting](#troubleshooting)
 - [Attribution / Acknowledgements](#attribution--acknowledgements)
 
@@ -21,8 +21,8 @@ Use the [Dockerfile](./Dockerfile) to build from source:
 
 #### Bash
 ```bash
-git clone https://github.com/hoeyi/markets-apiclient.git
-cd markets-apiclient/src/cli/build
+git clone https://github.com/hoeyi/marksapi.git
+cd marksapi/src/cli/build
 GITHUB_USER="<your user id>"
 GITHUB_PAT="<your github personal token>; Requires read pacakges permission"
 export GITHUB_USER GITHUB_PAT
@@ -59,8 +59,8 @@ services:
 
 #### Bash
 ```bash
-git clone https://github.com/hoeyi/markets-apiclient.git
-cd markets-apiclient/src
+git clone https://github.com/hoeyi/marksapi.git
+cd marksapi/src
 # build the image then run
 docker compose build marksapi
 docker compose run marksapi
@@ -347,6 +347,6 @@ Verify your API key is set correctly and hasn't expired.
 
 ### Attribution / Acknowledgements
 
-See [Third-party notices](./THIRD-PARTY-NOTICES.md).
+See [Third-party notices](./THIRD-PARTY-NOTICES).
 
 <sub>[Contents](#contents)</sub>
