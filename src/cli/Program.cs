@@ -1,12 +1,14 @@
-﻿using System;
+﻿global using Ichyd.Extensions.Configuration.Docker;
+using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
-using Ichyd.Extensions.Configuration.Docker;
+using Ichyd.Marksapi.Cli.Extensions;
 using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Ichyd.Marksapi.Cli.Services;
+using Ichyd.Marksapi.Cli.Verbs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -149,10 +151,10 @@ namespace Ichyd.Marksapi.Cli
         private static IConfiguration InitConfiguration()
         {
             var configBuilder = new ConfigurationBuilder()
-            #if DEBUG
+            #if DEBUG // for Debug, Docker secrets is not expected to work.
                 .AddUserSecrets<Program>()
                 .AddJsonFile("appsettings.debug.json");
-            #else
+            #else // for non-Debug, we expect Docker secrets will be used.
                 .AddDockerSecrets()
                 .AddJsonFile("appsettings.json");
             #endif

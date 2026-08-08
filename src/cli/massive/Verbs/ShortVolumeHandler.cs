@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
 using ApiClient.Services;
+using Ichyd.Marksapi.Cli.Extensions;
 using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

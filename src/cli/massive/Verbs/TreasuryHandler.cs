@@ -1,5 +1,6 @@
 using ApiClient.Massive;
 using ApiClient.Massive.Parameters;
+using Ichyd.Marksapi.Cli.Extensions;
 using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;

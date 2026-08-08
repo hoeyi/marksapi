@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace Ichyd.Marksapi.Cli.Services
+namespace Ichyd.Marksapi.Cli.Extensions
 {
     static class LoggerExtensions
     {

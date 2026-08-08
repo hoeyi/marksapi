@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Ichyd.Marksapi.Cli;
+namespace Ichyd.Marksapi.Cli.Extensions;
 
 [ExcludeFromCodeCoverage]
 static class ParseHelper
