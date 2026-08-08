@@ -15,7 +15,7 @@
   <!-- For development -->
   <Import Project="../dev/development.csproj" Condition="'$(DEV_MODE)' == 'true'">
   </Import>
-  
+
   <!-- Assembly / build details -->
   <PropertyGroup>
     <Version>0.2.0</Version>
@@ -63,10 +63,9 @@
     <ProjectReference Include="../lib/massive/ApiClient.massive.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="appsettings.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="./README.md" />
-    <None Include="./LICENSE" />
+    <None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="./README.md" CopyToOutputDirectory="IfDifferent" />
+    <None Include="./LICENSE" CopyToOutputDirectory="IfDifferent" />
+    <None Include="./NOTICE" CopyToOutputDirectory="IfDifferent" />
   </ItemGroup>
 </Project>

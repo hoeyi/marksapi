@@ -347,6 +347,6 @@ Verify your API key is set correctly and hasn't expired.
 
 ### Attribution / Acknowledgements
 
-See [Third-party notices](./THIRD-PARTY-NOTICES).
+See [Third-party notices](./NOTICE).
 
 <sub>[Contents](#contents)</sub>

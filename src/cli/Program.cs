@@ -1,4 +1,4 @@
-﻿global using Ichyd.Extensions.Configuration.Docker;
+﻿using Ichyd.Extensions.Configuration.Docker;
 using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
@@ -48,36 +48,12 @@ namespace Ichyd.Marksapi.Cli
 
         static Task<int> Main(string[] args)
         {
-            var rootCommand = new RootCommand()
-            {
-                Description = "A unified command line interface for querying financial data APIs."
-            };
-
-            // Massive service subcommand
-            var massiveCommand = new Command("massive", "Access Massive API endpoints")
-            {
-                TickerHandler.CreateCommand(),
-                TickerInfoHandler.CreateCommand(),
-                AggregateBarHandler.CreateCommand(),
-                ShortVolumeHandler.CreateCommand(),
-                InflationHandler.CreateCommand(),
-                LaborHandler.CreateCommand(),
-                TreasuryHandler.CreateCommand()
-            };
-
-            rootCommand.Add(massiveCommand);
-            for (int i = 0; i < rootCommand.Options.Count; i++)
-            {
-                if (rootCommand.Options[i] is VersionOption)
-                    rootCommand.Options[i].Action = new CustomVersionAction();
-            }
-            var parse = rootCommand.Parse(args);
-            rootCommand.SetAction(DoRootCommand);
-
+            RootCommand rootCommand = default!;
             try
             {
                 Configuration = InitConfiguration();
                 Logger = InitLogger<Program>(Configuration);
+
 
                 Logger.LogInfo_Services_Initializing();
 
@@ -103,6 +79,11 @@ namespace Ichyd.Marksapi.Cli
                 Services = provider;
 
                 Logger.LogInfo_Services_Initializing_Finished();
+
+                rootCommand = InitRootCommand(Configuration);
+
+                var parse = rootCommand.Parse(args);
+                rootCommand.SetAction(DoRootCommand);
             }
             catch(Exception e)
             {
@@ -113,6 +94,8 @@ namespace Ichyd.Marksapi.Cli
                 Environment.Exit(1);
             }
 
+            if(rootCommand is null)
+                throw new InvalidOperationException("Failed to initial program. No root command parsed.");
             return rootCommand.Parse(args).InvokeAsync();
         }
 
@@ -180,6 +163,39 @@ namespace Ichyd.Marksapi.Cli
             var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
 
             return loggerFactory.CreateLogger<T>();
+        }
+
+
+        private static RootCommand InitRootCommand(IConfiguration configuration)
+
+        {
+            var rootCommand = new RootCommand()
+            {
+                FileReaderHandler.CreateLicenseCommand(),
+                FileReaderHandler.CreateNoticeCommand()
+            };
+            rootCommand.Description = "A unified command line interface for querying financial data APIs.";
+
+            // Massive service subcommand
+            var massiveCommand = new Command("massive", "Access Massive API endpoints")
+            {
+                TickerHandler.CreateCommand(),
+                TickerInfoHandler.CreateCommand(),
+                AggregateBarHandler.CreateCommand(),
+                ShortVolumeHandler.CreateCommand(),
+                InflationHandler.CreateCommand(),
+                LaborHandler.CreateCommand(),
+                TreasuryHandler.CreateCommand()
+            };
+
+            rootCommand.Add(massiveCommand);
+            for (int i = 0; i < rootCommand.Options.Count; i++)
+            {
+                if (rootCommand.Options[i] is VersionOption)
+                    rootCommand.Options[i].Action = new CustomVersionAction();
+            }
+
+            return rootCommand;
         }
         #endregion
     }
