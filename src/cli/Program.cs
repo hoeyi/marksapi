@@ -15,6 +15,7 @@ using Serilog;
 using Serilog.Formatting.Compact;
 using Spectre.Console;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using System.Threading.Tasks.Dataflow;
 
 namespace Ichyd.Marksapi.Cli
 {
@@ -51,6 +52,10 @@ namespace Ichyd.Marksapi.Cli
             Command rootCommand = default!;
             try
             {
+                AppDomain currentDomain = AppDomain.CurrentDomain;
+                currentDomain.UnhandledException += 
+                    new UnhandledExceptionEventHandler(UnhandledExceptionHandler);
+
                 Configuration = InitConfiguration();
                 Logger = InitLogger<Program>(Configuration);
 
@@ -87,10 +92,8 @@ namespace Ichyd.Marksapi.Cli
             }
             catch(Exception e)
             {
-                Console.Error.Write($"Error during startup.\n\n{e.Message}\n");
-                #if DEBUG
-                Console.Error.Write($"\n{e.StackTrace}");
-                #endif
+                Logger.LogFatal_ErrorDuringStartup(e);
+
                 Environment.Exit(1);
             }
 
@@ -109,7 +112,11 @@ namespace Ichyd.Marksapi.Cli
         }
 
         #region Initializers
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+
         private static IMassiveApi InitMassiveApi(IConfiguration configuration, ILogger? logger = null)
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
         {
             RateOptions options = new();
             var section = configuration
@@ -165,5 +172,14 @@ namespace Ichyd.Marksapi.Cli
             return loggerFactory.CreateLogger<T>();
         }
         #endregion
+
+        static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs args)
+        {   
+            Exception e = (Exception)args.ExceptionObject;
+            Logger.LogFatal_UnhandledException(e, args.IsTerminating);
+            Console.WriteLine("An unexpected error occured. Additional details may be found in the logs.");
+
+            Environment.Exit(1);
+        }
     }
 }
