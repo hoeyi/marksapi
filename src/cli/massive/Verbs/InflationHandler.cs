@@ -20,7 +20,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var command = new Command(
                 "inflation",
-                "Retreive US historial or forecasted inflation");
+                "Retreive US historical or forecasted inflation");
 
             command
                 .AddDateArrayOption()
