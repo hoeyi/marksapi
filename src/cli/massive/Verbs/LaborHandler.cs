@@ -18,7 +18,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
     {
         public static Command CreateCommand()
         {
-            var command = new Command("labor");
+            var command = new Command("labor", "Retrieve US unemployment data");
 
             command
                 .AddDateArrayOption()

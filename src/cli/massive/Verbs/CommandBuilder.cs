@@ -1,7 +1,9 @@
+using ApiClient.Massive;
 using ApiClient.Massive.Parameters;
 using System;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 
 namespace Ichyd.Marksapi.Cli.Massive.Verbs
@@ -11,11 +13,17 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
     {
         public static Command AddMarketArgument(this Command command)
         {
+            var allowedValues = typeof(Market)
+                                .GetEnumNames()
+                                .Select(x => x.ToLower(CultureInfo.InvariantCulture))
+                                .ToArray();
+
             var marketArgument = new Argument<string>(name: "MARKET")
             {
-                Description = "Target market for query.",
-                Arity = ArgumentArity.ExactlyOne
+                Description = $"Target market for query",
+                Arity = ArgumentArity.ExactlyOne,
             };
+            marketArgument.AcceptOnlyFromAmong(allowedValues);
             command.Add(marketArgument);
             
             return command;
@@ -110,10 +118,11 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var formatOption = new Option<string>(name: "--format")
             {
-                Description = "Output format (json, csv, console)",
+                Description = "Output format",
                 Arity = ArgumentArity.ZeroOrOne,
                 DefaultValueFactory = new((args) => "console")
             };
+            formatOption.AcceptOnlyFromAmong("csv", "json", "console");
             command.Add(formatOption);
 
             return command;
@@ -126,6 +135,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 Description = "Directory to write results to",
                 Arity = ArgumentArity.ZeroOrOne
             };
+            formatOption.AcceptLegalFilePathsOnly();
             command.Add(formatOption);
 
             return command;
@@ -230,7 +240,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var timespanOption = new Option<string>(name: "--timespan")
             {
-                Description = "Time window size (second, minute, hour, day, week, month, quarter, year).\nDefault is 'day'.",
+                Description = "Time window size. Default is 'day'.",
                 Arity = ArgumentArity.ExactlyOne,
                 DefaultValueFactory = (args) => "day"
             };

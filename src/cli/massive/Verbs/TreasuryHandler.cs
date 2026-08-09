@@ -18,7 +18,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
     {
         public static Command CreateCommand()
         {
-            var command = new Command("treasury");
+            var command = new Command("treasury", "Retreive US treasury yield quotes");
 
             command
                 .AddFormatOption()
