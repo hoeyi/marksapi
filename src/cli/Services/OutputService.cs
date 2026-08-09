@@ -108,7 +108,7 @@ namespace Ichyd.Marksapi.Cli.Services
         private static double WriteConsole<T>(T data)
         {
             var serialized = JsonSerializer.Serialize(data, _jsonOptions);
-            Console.Write(serialized);
+            Console.WriteLine(serialized);
 
             return Encoding.UTF8.GetByteCount(serialized);
         }
