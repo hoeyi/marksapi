@@ -1,8 +1,6 @@
 # marksapi
 A CLI application covering access to financial market and economic APIs.
 
-- Unified application: Central point for interacting with an array of APIs
-
 ## Getting started
 
 Generally, the [marksapi cli tool](./src/cli/README.md) is used. See the [installation](./src/cli/README.md#installation) section for build details.
