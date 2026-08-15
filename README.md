@@ -1,8 +1,7 @@
 # marksapi
-A CLI application covering access to 
+A CLI application covering access to financial market and economic APIs.
 
-- Unified application: Central point for interacting with an array of API
-- Configurable: Configurable logging provider via **Serilog**
+- Unified application: Central point for interacting with an array of APIs
 
 ## Getting started
 
