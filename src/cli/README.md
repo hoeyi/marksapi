@@ -43,7 +43,7 @@ marksapi --version
 The container will start as `root@<container_tag>` in the working directory `/app` by default. The working directory is added to `$PATH` during the Docker build.
 
 ### Using <em>docker compose</em>
-You can also use `src/cli/marksapi//build/docker-compose.yml`. The volume mount provides an output location. Application logs are ephemeral unless copy to a mount location during the session.
+You can also use `src/cli/build/docker-compose.yml`. The volume mount provides an output location. Application logs are ephemeral unless copy to a mount location during the session.
 
 #### docker-compose.yml
 ```yaml <>
@@ -51,7 +51,7 @@ services:
   marksapi:
     build:
       context: ../../../. # context: {project-root}/src/. 
-      dockerfile: ./cli/marksapi/build/Dockerfile
+      dockerfile: ./cli/build/Dockerfile
     image: ghcr.io/hoeyi/marksapi:latest
     volumes:
     - ${HOME}/marksapi:/data
