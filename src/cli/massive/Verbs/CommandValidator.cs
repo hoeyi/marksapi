@@ -1,0 +1,199 @@
+using System;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using ApiClient.Massive;
+using ApiClient.Massive.Parameters;
+using ApiClient.Services;
+using CsvHelper;
+using Microsoft.Extensions.Logging;
+
+namespace Ichyd.Marksapi.Cli.Massive.Verbs
+{
+    /// <summary>
+    /// Handles argument validation for common command arguments and options.
+    /// </summary>
+    class CommandValidator
+    {
+        private readonly ILogger? _logger;
+        public CommandValidator(ILogger? logger = null) => _logger = logger;
+        
+        public CommandValidator ValidateDateRangeOrThrow(DateTime? fromDate, DateTime? toDate)
+        {
+            if(!(fromDate.HasValue && toDate.HasValue))
+            {
+                _logger?.LogError(
+                    "Both options <{opt1}> and <{opt2}> must be specified.", "--from", "--to");
+                throw new ArgumentException(
+                    $"Parameters: {nameof(fromDate)}, {nameof(toDate)}.");
+            }
+            
+            return this;
+        }
+
+        public CommandValidator ValidateFormatOrThrow(string? format)
+        {
+            string[] supported = ["csv", "json", "console"];
+
+            bool matcher(string? x) => x.CompareTo(format, StringComparison.InvariantCultureIgnoreCase) == 0;
+
+            if (string.IsNullOrEmpty(format) || !supported.Any(matcher))
+            {
+                _logger?.LogError(
+                    "Option <{opt}> must be one of: {supported}.", 
+                    "--format", 
+                    string.Join(", ", supported));
+                throw new ArgumentException($"Parameters: {nameof(format)}.");
+            }
+
+            return this;            
+        }
+
+        public CommandValidator ValidateLimitOrThrow<T>(
+            T? limit,
+            Interval<T> interval
+        )
+            where T : struct, IEquatable<T>, IComparable<T>
+        {
+            if(limit.HasValue)
+            {
+                if (!interval.Contains(limit.Value))
+                {
+                    _logger?.LogError(
+                        "Option <{opt}> must be between {lower} and {upper}.", 
+                        "--limit", 
+                        Program.QueryLimit.Start,
+                        Program.QueryLimit.End);
+                    throw new ArgumentException(
+                        $"Parameter '{nameof(limit)}' out of range.");
+                }
+            }
+
+            return this;
+        }
+
+        public CommandValidator ValidateEnumOrThrow<T>(
+            string? enumMember,
+            out T @enum)
+                where T : struct, Enum
+        {
+            ArgumentException.ThrowIfNullOrEmpty(enumMember, nameof(enumMember));
+            ArgumentException.ThrowIfNullOrWhiteSpace(enumMember, nameof(enumMember));
+
+            var culture = CultureInfo.InvariantCulture;
+            var marketTitle = culture.TextInfo.ToTitleCase(enumMember!.ToLower());
+            if(!Enum.TryParse(marketTitle, out T result))
+            {
+                if(_logger?.IsEnabled(LogLevel.Error) ?? false)
+                    _logger?.LogError(
+                        "Could not convert {value} to {type} member.",
+                        enumMember,
+                        typeof(T).Name);
+
+                throw new ArgumentException(
+                    $"Could not convert {enumMember} to {typeof(T).Name} member.");
+            }
+            @enum = result;
+            return this;
+        }
+
+        public CommandValidator ValidateRatioRangeOrThrow(float? ratioMin, float? ratioMax)
+        {
+            if (ratioMin.HasValue && ratioMax.HasValue && ratioMin > ratioMax)
+            {
+                _logger?.LogError(
+                    "Option <{opt1}> must be less than <{opt2}>.",
+                    "--ratio-min",
+                    "--ratio-max");
+                throw new ArgumentException(
+                    $"Invalid parameters: {nameof(ratioMin)}, {nameof(ratioMax)}.");
+            }
+
+            return this;
+        }
+
+        public CommandValidator ValidateTickerOrThrow(string? ticker)
+        {
+            if(string.IsNullOrEmpty(ticker) || string.IsNullOrWhiteSpace(ticker))
+            {
+                _logger?.LogError(
+                    "Argument <{arg}> must be specified.", 
+                    "TICKER");
+                throw new ArgumentException(
+                    $"Parameters: {nameof(ticker)}.");
+            }
+
+            return this;            
+        }
+        public CommandValidator ValidateDateArrayWithComparisonOrThrow(DateTime[] dates, string? numericOperator)
+        {
+            if(string.IsNullOrEmpty(numericOperator) || string.IsNullOrWhiteSpace(numericOperator)) 
+                return this;
+
+            if(dates.Length == 1) return this;
+
+            if(_logger?.IsEnabled(LogLevel.Error) ?? false)
+                _logger?.LogError(
+                    "Expecting <{opt}> to have length 1 when <{opt}> specified",
+                    "--dates",
+                    "--operator"
+                );
+
+            throw new ArgumentException(
+                    $"Invalid --operator parameter for given --dates");
+        }
+        public CommandValidator ValidateTickerOrTickersOrThrow(string? ticker, string? tickers)
+        {
+            if(
+                (string.IsNullOrEmpty(ticker) & string.IsNullOrEmpty(tickers)) ||
+                (string.IsNullOrWhiteSpace(ticker) & string.IsNullOrWhiteSpace(tickers)))
+            {
+                _logger?.LogError(
+                    "Either argument <{arg}> or option <{opt}> must be specified.", 
+                    "TICKER", 
+                    "--ticker");
+                throw new ArgumentException(
+                    $"Either argument {nameof(ticker)} or {nameof(tickers)} must be specified.");
+            }
+
+            return this;            
+        }
+
+        public CommandValidator ValidateTimespanOrThrow(
+            string? timespan,
+            out BarTimespan? barTimespan)
+        {
+            if (!string.IsNullOrEmpty(timespan))
+            {
+                var culture = CultureInfo.InvariantCulture;
+                string? timespanTitle = culture.TextInfo.ToTitleCase(timespan.ToLower());
+                if(!Enum.TryParse(timespanTitle, out BarTimespan result))
+                {
+                    _logger?.LogError(
+                        "Option <{opt}> must be one of: second, minute, hour, day, week, month, quarter, year.",
+                        "--timespan");
+                    throw new ArgumentException(
+                        $"Invalid parameters: {nameof(timespan)}.");
+                }
+                barTimespan = result;
+                return this;
+            }
+            barTimespan = null;
+            return this;
+        }
+
+        public CommandValidator ValidateFileOuputOrThrow(
+            string? directoryPath)
+        {
+            if(string.IsNullOrEmpty(directoryPath))
+                return this;
+
+            var directory = Path.GetDirectoryName(directoryPath);
+            if(string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+                throw new DirectoryNotFoundException($"Could not find part of the path: {directoryPath}");
+
+            return this;
+        }
+    }
+}
+

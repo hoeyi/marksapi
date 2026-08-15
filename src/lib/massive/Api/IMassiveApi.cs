@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
+using ApiClient.Massive.Parameters;
 using ApiClient.Massive.Response;
+using ApiClient.Massive.Response.Economy;
 using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 
@@ -14,6 +15,7 @@ namespace ApiClient.Massive;
 /// </summary>
 public interface IMassiveApi
 {
+    #region aggregate-bar
     /// <summary>
     /// Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for a 
     /// specified market/ticker over a custom date range and time interval in Eastern Time (ET).
@@ -50,7 +52,7 @@ public interface IMassiveApi
     /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
     /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
     /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
-    Task<AggregateBarResponse> GetAggregateBarResponseAsync(
+    Task<List<AggregateBarResponse>> GetAggregateBarResponseAsync(
         Market market,
         string[] tickers,
         int multiplier,
@@ -59,7 +61,9 @@ public interface IMassiveApi
         DateTime to,
         int limit = 100,
         CancellationToken? cancellationToken = null);
-            
+    #endregion
+
+    #region stocks/short-volume    
     /// <summary>
     /// Retrieve daily aggregated short sale volume data reported to FINRA from off-exchange trading 
     /// venues and alternative trading systems (ATS) for a specified stock ticker.
@@ -97,7 +101,9 @@ public interface IMassiveApi
         Interval<float>? shortVolumeRatio = null,
         int? limit = 10,
         CancellationToken? cancellationToken = null);
+    #endregion
 
+    #region /tickers
     /// <summary>
     /// Submits queries to the endpoint <em>/v3/reference/tickers</em>.
     /// </summary>
@@ -135,9 +141,9 @@ public interface IMassiveApi
     /// Retrieve comprehensive details for a single ticker supported by Massive that is active as-of a given date.
     /// </summary>
     /// <param name="market">FIlter by applicable market.</param>
-    /// <param name="ticker">Filter by a ticker symbol(s).</param>
+    /// <param name="tickers">Filter by a ticker symbol(s).</param>
     /// <param name="date">Specify a point in time to retrieve tickers available on that date. Defaults to the most recent available date.</param>
-    /// <param name="cancellationTokenSource">Provide a token source for synchronizing cancels.</param>
+    /// <param name="cancellationToken">Provide a token source for synchronizing cancels.</param>
     /// <returns>A <see cref="Task"/> containing a <see cref="TickerOverviewResponse"/>.</returns>
     Task<List<TickerOverviewResponse>> GetTickerOverviewResponseAsync(
         Market market,
@@ -158,7 +164,71 @@ public interface IMassiveApi
         string ticker,
         DateTime? date = null,
         CancellationToken? cancellationToken = null);
+    #endregion
 
+    #region economy
+    /// <summary>
+    /// Retrieve treasury yield rates for the given dates.
+    /// </summary>
+    /// <param name="dates"></param>
+    /// <param name="numOp"><see cref="NumericComparisonOperator"/> controlling comparison to <paramref name="dates"/>.
+    /// If provided, <paramref name="dates"/> should be of length 1.</param>
+    /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
+    /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
+    /// <returns>A <see cref="Task"/> containing a <see cref="TreasuryYieldsResponse"/>.</returns>
+    Task<TreasuryYieldsResponse> GetTreasuryYieldResponseAsync(
+        DateTime[] dates,
+        NumericComparisonOperator? numOp = null, 
+        int? limit = 100,
+        CancellationToken? cancellationToken = null);
+
+    /// <summary>
+    /// Retrieve inflation for the given dates.
+    /// </summary>
+    /// <param name="dates"></param>
+    /// <param name="numOp"><see cref="NumericComparisonOperator"/> controlling comparison to <paramref name="dates"/>.
+    /// If provided, <paramref name="dates"/> should be of length 1.</param>
+    /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
+    /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
+    /// <returns>A <see cref="Task"/> containing a <see cref="TreasuryYieldsResponse"/>.</returns>
+    Task<InflationResponse> GetInflationResponseAsync(
+        DateTime[] dates,
+        NumericComparisonOperator? numOp = null, 
+        int? limit = 100,
+        CancellationToken? cancellationToken = null);
+
+    /// <summary>
+    /// Retrieve inflation expectation for the given dates.
+    /// </summary>
+    /// <param name="dates"></param>
+    /// <param name="numOp"><see cref="NumericComparisonOperator"/> controlling comparison to <paramref name="dates"/>.
+    /// If provided, <paramref name="dates"/> should be of length 1.</param>
+    /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
+    /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
+    /// <returns>A <see cref="Task"/> containing a <see cref="TreasuryYieldsResponse"/>.</returns>
+    Task<InflationExpectationResponse> GetInflationExpectationResponseAsync(
+        DateTime[] dates,
+        NumericComparisonOperator? numOp = null, 
+        int? limit = 100,
+        CancellationToken? cancellationToken = null);
+
+    /// <summary>
+    /// Retrieve labor market statistics for the given dates.
+    /// </summary>
+    /// <param name="dates"></param>
+    /// <param name="numOp"><see cref="NumericComparisonOperator"/> controlling comparison to <paramref name="dates"/>.
+    /// If provided, <paramref name="dates"/> should be of length 1.</param>
+    /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
+    /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
+    /// <returns>A <see cref="Task"/> containing a <see cref="TreasuryYieldsResponse"/>.</returns>
+    Task<LaborMarketResponse> GetLaborMarketResponseAsync(
+        DateTime[] dates,
+        NumericComparisonOperator? numOp = null, 
+        int? limit = 100,
+        CancellationToken? cancellationToken = null);        
+    #endregion
+
+    #region validators
     /// <summary>
     /// Converts the given string to matching member of <typeparamref name="T"/>.
     /// </summary>
@@ -167,24 +237,17 @@ public interface IMassiveApi
     /// <returns>The <typeparamref name="T"/> member matching <paramref name="strValue"/>, 
     /// else <see cref="ArgumentException"/> is thrown.</returns>
     /// <exception cref="ArgumentException"></exception>
-    public static T? ParseEnumOrThrow<T>(string strValue)
-        where T : struct
-    {
-        if(Enum.TryParse(strValue, out T result))
-        {
-            return result;
-        }
-        else
-            throw new ArgumentException($"Parameter '{strValue}' is not a valid {typeof(T).Name}.");
-    }
+    public static T? ParseEnumOrThrow<T>(string? strValue)
+        where T : struct =>
+        ParseEnum<T>(strValue) ?? throw new ArgumentException($"Parameter '{strValue}' is not a valid {typeof(T).Name}.");
 
     /// <summary>
     /// Converts the given string to matching member of <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">The desired output <see cref="Enum"/> type.</typeparam>
     /// <param name="strValue">The string to parse.</param>
-    /// <returns>The <typeparamref name="T"/> member matching <paramref name="strValue"/>, else null.
-    public static T? ParseEnum<T>(string strValue)
+    /// <returns>The <typeparamref name="T"/> member matching <paramref name="strValue"/>, else null.</returns>
+    public static T? ParseEnum<T>(string? strValue)
         where T : struct
     {
         if(Enum.TryParse(strValue, out T result))
@@ -194,4 +257,5 @@ public interface IMassiveApi
         else
             return null;
     }
+    #endregion
 }

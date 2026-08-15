@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace ApiClient.Services;
 
@@ -139,8 +137,6 @@ public class RateTimer : IDisposable
         var dt = windowRequests.Min().AddSeconds(ApiCallInterval.TotalSeconds);
         timeout = dt.Subtract(timestamp);
 
-        LogInformation_RateLimited(_logger, windowRequests.Count(), dt);
-
         RateLimited?.Invoke(this, new(){ NextReset = dt});
         return true;
     }
@@ -168,12 +164,12 @@ public class RateTimer : IDisposable
                         .ToArray();
         
         if(expired.Length > 0)
-            LogDebug_ExpiredRecords(_logger, expired.Length, expired);
+            LogDebug_RecordsFoundForDequeue(_logger, expired.Length, expired);
 
         foreach (var e in expired)
         {
             if(_requestBuffer.TryDequeue(out DateTime result))
-                LogDebug_Decrement(_logger, result);
+                LogDebug_RecordDequeue_Success(_logger, result);
         }
     }
 
@@ -184,37 +180,32 @@ public class RateTimer : IDisposable
     /// <param name="e"></param>
     private void TimerElapsed(object? sender, ElapsedEventArgs e) => Decrement(e.SignalTime);
 
-#region Logger methods
-    private static void LogDebug_Decrement(
+    #region Logger methods
+    private static void LogDebug_RecordDequeue_Success(
             ILogger? logger, 
             DateTime dateTime)
     {
         if(logger?.IsEnabled(LogLevel.Information) ?? false)
-            logger?.LogInformation("{dateTime} successfully dequeued.", dateTime);
+            logger?.LogInformation("Request '{dateTime}' successfully dequeued.", dateTime);
     }
 
-    private static void LogDebug_ExpiredRecords(
+    private static void LogDebug_RecordsFoundForDequeue(
             ILogger? logger, 
             int count,
             DateTime[] expired)
     {
-        if(logger?.IsEnabled(LogLevel.Information) ?? false)
-            logger?.LogInformation("Found {count} records to dequeue.\n{@expired}", count, expired);
+        if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+            logger?.LogDebug("Found {count} records to dequeue.\n{@expired}", count, expired);
     }
-
-    private static void LogInformation_RateLimited(
-            ILogger? logger, 
-            int count,
-            DateTime timeOut)
-    {
-        if(logger?.IsEnabled(LogLevel.Information) ?? false)
-            logger?.LogInformation("Rate limited at {count}. Next reset at {timeOut}", count, timeOut);
-    }
-
     #endregion Logger methods
 
     public class RateLimitedArgs : EventArgs
     {
+        /// <summary>
+        /// Gets or sets the timeout used to estimate the <see cref="NextReset"/>.
+        /// </summary>
+        public TimeSpan TimeOut { get; init; }
+
         /// <summary>
         /// Gets or sets the <see cref="DateTime"/> upon which the next estimated reset will occur.
         /// </summary>

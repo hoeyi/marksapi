@@ -1,8 +1,8 @@
 using ApiClient.Massive;
+using ApiClient.Massive.Parameters;
 using ApiClient.Massive.Response;
+using ApiClient.Massive.Response.Economy;
 using ApiClient.Massive.Response.Stocks;
-using ApiClient.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Test.Massive.Integration
@@ -29,6 +29,7 @@ namespace ApiClient.Test.Massive.Integration
             Assert.True(true);
         }
         
+        #region aggregate-bar
         [Theory]
         [InlineData("Stocks", "AAPL", 1, "Day", "2025-11-25", "2025-11-28", 5, 3)]
         [InlineData("Options", "SPY260821C00640000", 1, "Day", "2026-06-08", "2026-06-11", 5, 4)]
@@ -66,7 +67,9 @@ namespace ApiClient.Test.Massive.Integration
                 nameof(GetAggregateBarResponseAsync_ReturnSuccessResponse), 
                 responseResult);
         }
-
+        #endregion
+        
+        #region stocks / tickers
         [Theory]
         [InlineData("AAPL")]
         public async Task GetStocksAllTickerAsync_SingleParameter_Ticker_ReturnSuccessResponse(
@@ -149,7 +152,9 @@ namespace ApiClient.Test.Massive.Integration
                 nameof(GetTickerOverviewResponseAsync_ComplexResponse_ReturnSuccessResponse), 
                 responseResult);
         }
+        #endregion
 
+        #region short-volume
         [Theory]
         [InlineData("AAPL", "2026-05-13", "2026-05-15")]
         public async Task GetShortVolumeResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse(
@@ -204,5 +209,208 @@ namespace ApiClient.Test.Massive.Integration
                 nameof(GetShortVolumeResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);
         }
+        #endregion 
+
+        #region economy
+        [Theory]
+        [InlineData("2026-06-09")]
+        public async Task GetTreasuryYieldResponseAsync_SingleDate_ReturnSuccessResponse(
+            string dateStr)
+        {
+            // Arrange
+            var dates = new[] { DateTime.Parse(dateStr) };
+
+            // Act
+            var responseResult = await ApiClient.GetTreasuryYieldResponseAsync(dates);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<TreasuryYieldsResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}",
+                nameof(GetTreasuryYieldResponseAsync_SingleDate_ReturnSuccessResponse),
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("2026-06-09")]
+        public async Task GetTreasuryYieldResponseAsync_MultiDate_ReturnSuccessResponse(
+            string datePipeDelim)
+        {
+            // Arrange
+            var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+
+            // Act
+            var responseResult = await ApiClient.GetTreasuryYieldResponseAsync(dates);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<TreasuryYieldsResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}",
+                nameof(GetTreasuryYieldResponseAsync_SingleDate_ReturnSuccessResponse),
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("2026-06-01")]
+        public async Task GetInflationResponseAsync_SingleDate_ReturnSuccessResponse(
+            string dateStr)
+        {
+            // Arrange
+            var dates = new[] { DateTime.Parse(dateStr) };
+
+            // Act
+            var responseResult = await ApiClient.GetInflationResponseAsync(dates);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<InflationResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}",
+                nameof(GetInflationResponseAsync_SingleDate_ReturnSuccessResponse),
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("2026-04-01|2026-05-01")]
+        public async Task GetInflationResponseAsync_MultiDate_ReturnSuccessResponse(
+            string datePipeDelim)
+        {
+            // Arrange
+            var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+
+            // Act
+            var responseResult = await ApiClient.GetInflationResponseAsync(dates);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<InflationResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}",
+                nameof(GetInflationResponseAsync_MultiDate_ReturnSuccessResponse),
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("2026-06-01")]
+        public async Task GetInflationExpectationResponseAsync_SingleDate_ReturnSuccessResponse(
+            string dateStr)
+        {
+            // Arrange
+            var dates = new[] { DateTime.Parse(dateStr) };
+
+            // Act
+            var responseResult =
+                await ApiClient.GetInflationExpectationResponseAsync(dates);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<InflationExpectationResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}",
+                nameof(GetInflationExpectationResponseAsync_SingleDate_ReturnSuccessResponse),
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("2026-05-01|2026-06-01")]
+        public async Task GetInflationExpectationResponseAsync_MultiDate_ReturnSuccessResponse(
+            string datePipeDelim)
+        {
+            // Arrange
+            var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+
+            // Act
+            var responseResult =
+                await ApiClient.GetInflationExpectationResponseAsync(dates);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<InflationExpectationResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}",
+                nameof(GetInflationExpectationResponseAsync_MultiDate_ReturnSuccessResponse),
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("2026-06-01")]
+        public async Task GetLaborMarketResponseAsync_SingleDate_ReturnSuccessResponse(
+            string dateStr)
+        {
+            // Arrange
+            var dates = new[] { DateTime.Parse(dateStr) };
+
+            // Act
+            var responseResult = await ApiClient.GetLaborMarketResponseAsync(dates);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<LaborMarketResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}",
+                nameof(GetLaborMarketResponseAsync_SingleDate_ReturnSuccessResponse),
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("2026-06-05|2026-05-01")]
+        public async Task GetLaborMarketResponseAsync_MultiDate_ReturnSuccessResponse(
+            string datePipeDelim)
+        {
+            // Arrange
+            var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+
+            // Act
+            var responseResult = await ApiClient.GetLaborMarketResponseAsync(dates);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<LaborMarketResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}",
+                nameof(GetLaborMarketResponseAsync_MultiDate_ReturnSuccessResponse),
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("2026-06-08|2026-06-09")]
+        public async Task GetTreasuryYieldResponseAsync_NumOpWithMultipleDates_Throws(
+            string datePipeDelim)
+        {
+            // Arrange
+            var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+            var numOp = NumericComparisonOperator.Gt;
+
+            // Act & Assert
+            await Assert.ThrowsAsync<ArgumentException>(() =>
+                ApiClient.GetTreasuryYieldResponseAsync(dates, numOp: numOp));
+        }
     }
+    #endregion
 }

@@ -7,6 +7,7 @@ using ApiClient.Massive.Response.Stocks;
 using ApiClient.Massive.Response;
 using System.Threading;
 using System.Net.Http.Headers;
+using static ApiClient.Services.RateTimer;
 
 namespace ApiClient.Massive
 {
@@ -20,6 +21,14 @@ namespace ApiClient.Massive
         /// </summary>
         private readonly struct Endpoint
         {
+            public const string TreasuryYields = "/fed/v1/treasury-yields";
+            
+            public const string Inflation = "/fed/v1/inflation";
+
+            public const string InflationExpectations = "/fed/v1/inflation-expectations";
+
+            public const string LaborMarket = "/fed/v1/labor-market";
+
             /// <summary>
             /// Handles stocks, options, indices.
             /// </summary>
@@ -60,6 +69,12 @@ namespace ApiClient.Massive
         private readonly ILogger? _logger;
         private readonly RateTimer? _rateTimer;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="MassiveApi"/>.
+        /// </summary>
+        /// <param name="apiKey">API key for Massive authentication.</param>
+        /// <param name="rateOptions">The <see cref="RateOptions"/> instance for this client.</param>
+        /// <param name="logger">The <see cref="ILogger"/> instance for this client.</param>
         public MassiveApi(string apiKey, RateOptions? rateOptions = null, ILogger? logger = null)
             : this(new HttpClient(), apiKey, rateOptions, logger)
         {
@@ -87,25 +102,32 @@ namespace ApiClient.Massive
                 Interval = 60
             };
 
-            _rateTimer = new RateTimer(options.Limit, options.Interval);
             _logger = logger;
+            _rateTimer = new RateTimer(options.Limit, options.Interval, _logger);
+            _rateTimer.RateLimited += HandleRateLimit;
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
+            _rateTimer?.RateLimited -= HandleRateLimit;
             _rateTimer?.Dispose();
             GC.SuppressFinalize(this);
         }
         
+        private void HandleRateLimit(object? sender, RateLimitedArgs args) => LogDebug_RateLimited(_logger, args);
+
         /// <summary>
         /// Posts a GET request from the given <see cref="QueryBuilder"/> and <see cref="Endpoint"/>. 
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="queryBuilder"></param>
-        /// <param name="endPoint"></param>
-        /// <returns></returns>
+        /// <param name="queryBuilder">The <see cref="QueryBuilder"/> instance from which query parameters
+        ///  are taken.</param>
+        /// <param name="endPoint">The endpoin to query.</param>
+        /// <param name="token">The cancellation token for communication cancel events.</param>
+        /// <returns>A <see cref="Task"/> containing a <typeparamref name="T"/> response.</returns>
         /// <exception cref="InvalidOperationException">The response body was empty.</exception>
-        internal async Task<T> GetResponseAsync<T>(
+        private async Task<T> GetResponseAsync<T>(
             QueryBuilder queryBuilder, string endPoint, CancellationToken? token = null)
         {
             CancellationToken GetToken()
@@ -141,8 +163,8 @@ namespace ApiClient.Massive
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
-                LogHeaderDebug(_logger, response.Headers);
-                    LogBodyDebug(_logger, responseBody);
+                LogDebug_ResponseHeader_Received(_logger, response.Headers);
+                LogDebug_ResponseBody_Received(_logger, responseBody);
 
                 // Parse the JSON response. If the response is null thow invalid operation
                 T genericResponse = JsonConvert
@@ -153,7 +175,7 @@ namespace ApiClient.Massive
             }
             catch (HttpRequestException e)
             {
-                LogHttpError(_logger, e);
+                LogError_HttpRequestException(_logger, e);
                 throw;
             }
         }
@@ -163,20 +185,20 @@ namespace ApiClient.Massive
         /// </summary>
         /// <param name="dateFrom">Start date of the range tested.</param>
         /// <param name="dateTo">End date of the range tested.</param>
-        /// <returns>Return <see cref="True"/> if the range is acceptable, else throw <see cref="ArgumentException"/>.</returns>
+        /// <returns>Returns <see langword="true"/> if the range is acceptable, else throw <see cref="ArgumentException"/>.</returns>
         /// <exception cref="ArgumentException"><paramref name="dateFrom"/> is greater than <paramref name="dateTo"/> or the 
         /// range measured in days is too long.</exception>
-        internal bool ValidateDateRangeOrThrow(DateTime dateFrom, DateTime dateTo)
+        private bool ValidateDateRangeOrThrow(DateTime dateFrom, DateTime dateTo)
         {
             if (dateFrom > dateTo)
             {
                 throw new ArgumentException(
-                    $"Range invalid: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");
+                    $"Range invalid: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}]");
             }
             if (dateTo.Subtract(dateFrom).Days > _maximumDateRangeInDays)
             {
                 throw new ArgumentException(
-                    $"Range too long: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}");
+                    $"Range too long: [{nameof(dateFrom)} = {dateFrom:d}, {nameof(dateTo)} = {dateTo:d}]");
             }
             return true;
         }
@@ -198,23 +220,46 @@ namespace ApiClient.Massive
     #region Logger methods
     public partial class MassiveApi
     {
-        static void LogHeaderDebug(
+        static void LogInfo_ResponseRequest_Submitting(ILogger? logger, object request)
+        {
+            if(logger?.IsEnabled(LogLevel.Information) ?? false)
+                logger.LogInformation(eventId: 10, "Submitting request: {request}...", request);
+        }
+
+        static void LogInfo_ResponseRequest_Received(ILogger? logger, string id)
+        {
+            if(logger?.IsEnabled(LogLevel.Information) ?? false)
+                logger.LogInformation(eventId: 11, "Received request response: {id}.", id);
+        }
+
+        static void LogDebug_ResponseHeader_Received(
             ILogger? logger, HttpResponseHeaders headers)
         {
             if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-                logger?.LogError(eventId: 1, "Response received: {@headers}.", headers);
+                logger.LogDebug(eventId: 20, "Response received with headers:\n{@headers}", headers);
         }
 
-        static void LogBodyDebug(ILogger? logger, string body)
+        static void LogDebug_ResponseBody_Received(ILogger? logger, string body)
         {
             if(logger?.IsEnabled(LogLevel.Debug) ?? false)
-                logger?.LogError(eventId: 2, "Response received with {body}.", body);
+                logger.LogDebug(eventId: 21, "Response received with body:\n{body}", body);
         }
 
-        static void LogHttpError(ILogger? logger, HttpRequestException exception)
+        static void LogError_HttpRequestException(ILogger? logger, HttpRequestException exception)
         {
             if(logger?.IsEnabled(LogLevel.Error) ?? false)
-                logger?.LogError(eventId: 4, "Http request failed. {@exception}", exception);
+                logger.LogError(eventId: 50, "HTTP request failed.\n{@exception}", exception);
+        }
+
+        static void LogDebug_RateLimited(
+            ILogger? logger,
+            RateLimitedArgs args)
+        {
+            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+                    logger.LogWarning(
+                        "Rate limited for {timeout}s. Estimated reset at {reset}.", 
+                        args.TimeOut.TotalSeconds,
+                        args.NextReset);
         }
     }
     #endregion
@@ -282,6 +327,7 @@ namespace ApiClient.Massive
         /// <summary>
         /// Retrieve comprehensive details for a single ticker supported by Massive that is active as-of a given date.
         /// </summary>
+        /// <param name="market">The <see cref="Market"/> to query.</param>
         /// <param name="ticker">Filter by a ticker symbol.Use patterns 
         /// <list><item>O:{ticker}, for options</item>
         /// <item>I:{ticker}, for indices</item>

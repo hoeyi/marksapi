@@ -1,6 +1,3 @@
-using System;
-using System.Timers;
-
 namespace ApiClient.Services
 {
     /// <summary>

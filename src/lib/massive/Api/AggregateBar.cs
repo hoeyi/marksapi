@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
@@ -23,19 +19,36 @@ public partial class MassiveApi
         DateTime from,
         DateTime to,
         int limit = 100,
-        CancellationToken? cancellationToken = null) => 
-            await GetGenericAggregateBarResponseAsync(
-                market,
-                ticker,
-                multiplier,
-                timeSpan,
-                from,
-                to,
-                limit,
-                cancellationToken);
+        CancellationToken? cancellationToken = null)
+    {
+        var guid = Guid.NewGuid();
+        LogInfo_ResponseRequest_Submitting(_logger, new
+        {
+            id = guid.ToString("N"),
+            market,
+            ticker,
+            from,
+            to,
+            multiplier,
+            timeSpan
+        });
+        var result = await GetGenericAggregateBarResponseAsync(
+            market,
+            ticker,
+            multiplier,
+            timeSpan,
+            from,
+            to,
+            limit,
+            cancellationToken);
+
+        LogInfo_ResponseRequest_Received(_logger, guid.ToString("N"));
+
+        return result;
+    } 
 
     /// <inheritdoc/>
-    public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
+    public async Task<List<AggregateBarResponse>> GetAggregateBarResponseAsync(
         Market market,
         string[] tickers,
         int multiplier,
@@ -53,7 +66,7 @@ public partial class MassiveApi
 
         foreach(var ticker in tickers)
         {
-            await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: null);
+            await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: cancellationToken);
             var response = await GetAggregateBarResponseAsync(
                             market,
                             ticker,
@@ -72,13 +85,6 @@ public partial class MassiveApi
             
         }
         
-        var compositeResponse = new AggregateBarResponse()
-        {
-            RequestId = string.Join(",", responses.Select(x => x.RequestId)),
-            Ticker = string.Join(",", responses.Select(x =>x.Ticker)),
-            Status = string.Join(",", responses.Select(x => x.Status)),
-            Results = responses.SelectMany(x => x.Results).ToList()
-        };
-        return compositeResponse;
+        return responses;
     }
 }

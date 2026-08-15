@@ -1,9 +1,12 @@
-# Contributing to <em>markets-apiclient</em> #
+# Contributing to <em>marksapi</em> #
 
-* [Commit Message Guidelines](#commit-message-guidelines)
-* [Object Naming Conventions](#object-naming-conventions)
+Use this guide when making contributions to this project.
 
-## Commit Message Guidelines ##
+## Contents
+- [Commit Messages](#commit-messages)
+- [Development Environment](#development-environment)
+
+## Commit Messages ##
 
 The structure of these guidelines are based on the [Angular convetion](
 https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#commit) and 
@@ -18,7 +21,7 @@ Commit messages should follow the format:
 
 ### Type ###
 Must be one of the following:
-
+* **docs** for changes to internal and external documentation
 * **build**: Changes that affect the build system or external dependencies
 * **feat**: A new feature
 * **fix**: A bug fix
@@ -28,27 +31,24 @@ Must be one of the following:
 * **style**: Changes that do not affect the meaning of the code 
 (white-space, formatting, missing semi-colons, etc)
 * **test**: Adding missing tests or correcting existing tests
+* ** repo**: Internal project structure changes
+
+**Example:** Add missing in-code documentation
+```
+docs({library}): add XML documentation for {method}
+```
+
+**Example:** Add a feature to a library
+```
+feat({library}): add coverage for {endpoint} in {library}
+```
 
 ### Scope ###
-Use the `scope` component of the commit subject to descript the endpoint the change applies to.
+Use the `scope` component of the commit subject line to denote the library impacted.
 
-Example: 
+**Example:** Update the version of a package
 ```
-feat(eod): implement methods for /eod enpoint
-```
-
-Scope should also declare which API library it impacts.
-
-Example:
-```
-feat(massive/eod): implement methods for massive/eod endpoint
-```
-
-Use the type **docs** for changes to internal and external documentation.
-
-Example:
-```
-docs(marksapi): add method documentation for '{method}'
+build({library 1}, {library 2}): bump {package} to v2.0
 ```
 
 ### Subject ###
@@ -67,9 +67,32 @@ The body contains the detail of why the change was made:
 The footer contains information on breaking changes. Start with the phrase 
 `BREAKING CHANGE:`. Also use this space to reference closing GitHub issues. 
 
-Example:
+**Example(s):**
 ```
 BREAKING CHANGE: Ends support for [NAME] API
-
+```
+```
 Resolves #42 (where #42 is the GitHub issue no.)
 ```
+<sub>[Contents](#contents)</sub>
+
+## Development Environment
+
+This project uses a placeholder `.csproj` file to for storing development-related project dependencies that may be omitted in published builds. Use to store things like user secret configuration or debugging settings.
+
+**Example:** Within `src/dev/development.csproj`
+```XML
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <UserSecretsId>2e877461-5e72-4bbb-9f6d-6759ac5fc151</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug'">
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.10" />
+    <None Update="appsettings.debug.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
+```
+<sub>[Contents](#contents)</sub>

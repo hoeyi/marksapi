@@ -1,0 +1,26 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Ichyd.Marksapi.Cli.Extensions;
+
+[ExcludeFromCodeCoverage]
+static class ParseHelper
+{
+    public static string[] ToValueArray(this string? delimitedString)
+    {
+        if (!string.IsNullOrEmpty(delimitedString))
+        {
+            var strArray = delimitedString
+                            .Split(
+                                separator: ',', 
+                                options: 
+                                    StringSplitOptions.RemoveEmptyEntries | 
+                                    StringSplitOptions.TrimEntries
+                            );
+
+            return strArray;
+        }
+
+        return [delimitedString ?? string.Empty];
+    }
+}

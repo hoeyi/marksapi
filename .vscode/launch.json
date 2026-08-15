@@ -8,9 +8,8 @@
             "name": "marksapi-no-args",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -18,9 +17,26 @@
             "name": "marksapi-version",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["--version"],
-            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-license",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": ["--license"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-notice",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": ["--notice"],
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -28,9 +44,8 @@
             "name": "marksapi-help",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["--help"],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -38,25 +53,63 @@
             "name": "marksapi-aggregate-bar",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "aggregate-bar", "stocks", "AAPL", "--from", "2026-06-30", "--to", "2026-06-30"],
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": [
+                "massive", 
+                "aggregate-bar", 
+                "stocks", 
+                "AAPL,MSFT", 
+                "--from", "2026-06-30", 
+                "--to", "2026-06-30"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-aggregate-bar-csv",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": [
+                "massive", 
+                "aggregate-bar", 
+                "stocks", 
+                "AAPL", 
+                "--from", "2026-06-20", 
+                "--to", "2026-06-30",
+                "--format", "csv"],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
         {
-            "name": "marksapi-aggregate-bar-json",
+            "name": "marksapi-aggregate-bar-tickers-csv",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": [
+                "massive", 
+                "aggregate-bar", 
+                "stocks", 
+                "--tickers", "NVDA,GOOGL,AAPL,MSFT",
+                "--from", "2026-06-20", 
+                "--to", "2026-06-30",
+                "--format", "csv"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },           
+        {
+            "name": "marksapi-aggregate-bar-tickers-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": [
                 "massive", "aggregate-bar", 
-                "stocks", "AAPL", 
-                "--from", "2026-06-30", 
+                "stocks", 
+                "--tickers", "NVDA,GOOGL,AAPL,MSFT",
+                "--from", "2026-06-20", 
                 "--to", "2026-06-30", 
                 "--format", "json"
             ],
-            "cwd": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -64,9 +117,8 @@
             "name": "marksapi-short-volume",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "short-volume", "AAPL"],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -74,7 +126,7 @@
             "name": "marksapi-short-volume-json",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": [
                 "massive", "short-volume", 
                 "AAPL",
@@ -82,7 +134,6 @@
                 "--to", "2026-06-30", 
                 "--format", "json"
             ],
-            "cwd": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -90,9 +141,8 @@
             "name": "marksapi-ticker-info",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "ticker-info"],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -100,9 +150,8 @@
             "name": "marksapi-ticker-info-json",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "ticker-info", "stocks", "AAPL", "--format", "json"],
-            "cwd": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -110,9 +159,8 @@
             "name": "marksapi-tickers",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "tickers"],
-            "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -120,9 +168,35 @@
             "name": "marksapi-tickers-json",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/marksapi.dll",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": ["massive", "tickers", "stocks", "--ticker", "AAPL", "--format", "json"],
-            "cwd": "${workspaceFolder}/src/cli/marksapi/bin/Debug/net10.0/",
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-inflation-dates-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": ["massive", "inflation", "--dates", "2026-04-01", "2026-05-01", "--format", "json"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-inflation-date-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": ["massive", "inflation", "--dates", "2026-03-01", "--format", "json"],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-inflation-forecast-date-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": ["massive", "inflation", "--dates", "2026-03-01", "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         }

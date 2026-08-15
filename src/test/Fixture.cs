@@ -1,7 +1,7 @@
 
 using ApiClient.Massive;
 using ApiClient.Services;
-using Marksapi.Cli;
+using Ichyd.Marksapi.Cli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;

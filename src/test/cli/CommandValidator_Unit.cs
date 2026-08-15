@@ -1,10 +1,8 @@
-using System;
 using ApiClient.Massive;
+using ApiClient.Massive.Parameters;
 using ApiClient.Services;
-using Marksapi.Cli;
-using Marksapi.Cli.Massive.Verbs;
+using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Microsoft.Extensions.Configuration;
-using Xunit;
 
 namespace ApiClient.Test.Marksapi.Unit
 {
@@ -230,17 +228,40 @@ namespace ApiClient.Test.Marksapi.Unit
         [InlineData("options", Market.Options)]
         [InlineData("stocks", Market.Stocks)]
         [InlineData("CRYPTO", Market.Crypto)]
-        public void ValidateMarketOrThrow_ValidMarket_ReturnsSameInstanceAndSetsOutputEnum(string market, Market expectedEnum)
+        public void ValidateMarketOrThrow_ValidMarket_ReturnsSameInstanceAndSetsOutputEnum(string market, Market expEnum)
         {
             // Arrange
             var validator = new CommandValidator();
 
             // Act
-            var result = validator.ValidateMarketOrThrow(market, out var mktEnum);
+            var result = validator.ValidateEnumOrThrow(market, out Market obsEnum);
 
             // Assert
             Assert.Same(validator, result);
-            Assert.Equal(expectedEnum, mktEnum);
+            Assert.Equal(expEnum, obsEnum);
+        }
+
+        [Theory]
+        [InlineData("gt", NumericComparisonOperator.Gt)]
+        [InlineData("gte", NumericComparisonOperator.Gte)]
+        [InlineData("lt", NumericComparisonOperator.Lt)]
+        [InlineData("lte", NumericComparisonOperator.Lte)]
+        [InlineData("Gt", NumericComparisonOperator.Gt)]
+        [InlineData("GT", NumericComparisonOperator.Gt)]
+        public void ValidateMarketOrThrow_ValidNumericComparisonOperator_ReturnsSameInstanceAndSetsOutputEnum(
+
+            string market,
+            NumericComparisonOperator expEnum)
+        {
+            // Arrange
+            var validator = new CommandValidator();
+
+            // Act
+            var result = validator.ValidateEnumOrThrow(market, out NumericComparisonOperator obsEnum);
+
+            // Assert
+            Assert.Same(validator, result);
+            Assert.Equal(expEnum, obsEnum);
         }
 
         [Fact]
@@ -252,7 +273,7 @@ namespace ApiClient.Test.Marksapi.Unit
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentNullException>(() => 
-                validator.ValidateMarketOrThrow(market, out _));
+                validator.ValidateEnumOrThrow<Market>(market, out _));
         }
 
         [Fact]
@@ -264,8 +285,7 @@ namespace ApiClient.Test.Marksapi.Unit
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => 
-                validator.ValidateMarketOrThrow(market, out _));
-            Assert.Contains(nameof(market), ex.Message);
+                validator.ValidateEnumOrThrow<Market>(market, out _));
         }
 
         [Fact]
@@ -277,8 +297,7 @@ namespace ApiClient.Test.Marksapi.Unit
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => 
-                validator.ValidateMarketOrThrow(market, out _));
-            Assert.Contains(nameof(market), ex.Message);
+                validator.ValidateEnumOrThrow<Market>(market, out _));
         }
 
         [Fact]
@@ -290,8 +309,7 @@ namespace ApiClient.Test.Marksapi.Unit
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => 
-                validator.ValidateMarketOrThrow(market, out _));
-            Assert.Contains(nameof(market), ex.Message);
+                validator.ValidateEnumOrThrow<Market>(market, out _));
         }
 
         #endregion
