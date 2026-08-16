@@ -31,7 +31,7 @@ Must be one of the following:
 * **style**: Changes that do not affect the meaning of the code 
 (white-space, formatting, missing semi-colons, etc)
 * **test**: Adding missing tests or correcting existing tests
-* ** repo**: Internal project structure changes
+* **repo**: Internal project structure changes
 
 **Example:** Add missing in-code documentation
 ```
