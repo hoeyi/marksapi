@@ -6,91 +6,93 @@ using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
 
-namespace ApiClient.Massive;
-
-public partial class MassiveApi
+namespace ApiClient.Massive
 {
-    /// <inheritdoc/>
-    public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
-        Market market,
-        string ticker,
-        int multiplier,
-        BarTimespan timeSpan,
-        DateTime from,
-        DateTime to,
-        bool adjusted = true,
-        int limit = 100,
-        CancellationToken? cancellationToken = null)
+    public partial class MassiveApi
     {
-        var guid = Guid.NewGuid();
-        LogInfo_ResponseRequest_Submitting(_logger, new
+        /// <inheritdoc/>
+        public async Task<AggregateBarResponse> GetAggregateBarResponseAsync(
+            Market market,
+            string ticker,
+            int multiplier,
+            BarTimespan timeSpan,
+            DateTime from,
+            DateTime to,
+            bool adjusted = true,
+            int limit = 100,
+            CancellationToken? cancellationToken = null)
         {
-            id = guid.ToString("N"),
-            market,
-            ticker,
-            from,
-            to,
-            multiplier,
-            timeSpan,
-            adjusted,
-            limit
-        });
-        var result = await GetGenericAggregateBarResponseAsync(
-            market,
-            ticker,
-            multiplier,
-            timeSpan,
-            from,
-            to,
-            adjusted,
-            limit,
-            cancellationToken);
+            var guid = Guid.NewGuid();
+            LogInfo_ResponseRequest_Submitting(_logger, new
+            {
+                id = guid.ToString("N"),
+                market,
+                ticker,
+                from,
+                to,
+                multiplier,
+                timeSpan,
+                adjusted,
+                limit
+            });
+            var result = await GetGenericAggregateBarResponseAsync(
+                market,
+                ticker,
+                multiplier,
+                timeSpan,
+                from,
+                to,
+                adjusted,
+                limit,
+                cancellationToken);
 
-        LogInfo_ResponseRequest_Received(_logger, guid.ToString("N"));
+            LogInfo_ResponseRequest_Received(_logger, guid.ToString("N"));
 
-        return result;
-    } 
+            return result;
+        } 
 
-    /// <inheritdoc/>
-    public async Task<List<AggregateBarResponse>> GetAggregateBarResponseAsync(
-        Market market,
-        string[] tickers,
-        int multiplier,
-        BarTimespan timeSpan,
-        DateTime from,
-        DateTime to,
-        bool adjusted = true,
-        int limit = 100,
-        CancellationToken? cancellationToken = null)
-    {
-        List<AggregateBarResponse> responses = [];
-
-        if(_rateTimer is null)
-                throw new InvalidOperationException(
-                    $"{nameof(GetTickerOverviewResponseAsync)} requires instance of '{nameof(RateTimer)}.");
-
-        foreach(var ticker in tickers)
+        /// <inheritdoc/>
+        public async Task<List<AggregateBarResponse>> GetAggregateBarResponseAsync(
+            Market market,
+            string[] tickers,
+            int multiplier,
+            BarTimespan timeSpan,
+            DateTime from,
+            DateTime to,
+            bool adjusted = true,
+            int limit = 100,
+            CancellationToken? cancellationToken = null)
         {
-            await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: cancellationToken);
-            var response = await GetAggregateBarResponseAsync(
-                            market,
-                            ticker,
-                            multiplier,
-                            timeSpan,
-                            from,
-                            to,
-                            adjusted,
-                            limit,
-                            cancellationToken);
-            _rateTimer.Increment();
+            List<AggregateBarResponse> responses = [];
 
-            if(response is null)
-                _logger?.LogWarning("Received empty resonse.");
-            else
-                responses.Add(response);
+            if(_rateTimer is null)
+                    throw new InvalidOperationException(
+                        $"{nameof(GetTickerOverviewResponseAsync)} requires instance of '{nameof(RateTimer)}.");
+
+            foreach(var ticker in tickers)
+            {
+                await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: cancellationToken);
+                var response = await GetAggregateBarResponseAsync(
+                                market,
+                                ticker,
+                                multiplier,
+                                timeSpan,
+                                from,
+                                to,
+                                adjusted,
+                                limit,
+                                cancellationToken);
+                _rateTimer.Increment();
+
+                if(response is null)
+                    _logger?.LogWarning("Received empty resonse.");
+                else
+                    responses.Add(response);
             
-        }
+            }
         
-        return responses;
+            return responses;
+        }
     }
 }
+
