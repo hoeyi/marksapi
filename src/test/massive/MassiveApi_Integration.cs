@@ -53,7 +53,7 @@ namespace ApiClient.Test.Massive.Integration
 
             // Act
             var responseResult = await ApiClient.GetAggregateBarResponseAsync(
-                marketResult, ticker, multiplier, barTimeResult, fromDate, toDate, limit);
+                marketResult, ticker, multiplier, barTimeResult, fromDate, toDate, true, limit);
 
             // Assert
             Assert.Multiple(

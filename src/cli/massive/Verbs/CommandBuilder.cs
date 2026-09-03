@@ -89,6 +89,18 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return command;
         }
 
+        public static Command AddUnadjustedOption(this Command command)
+        {
+            var unadjustedOption = new Option<bool>("--unadjusted")
+            {
+                Description = "Return unadjusted quotes.",
+                DefaultValueFactory = (args) => false
+            };
+            command.Add(unadjustedOption);
+
+            return command;
+        }
+
         public static Command AddLimitOption(this Command command)
         {
             var limitOption = new Option<int>(name: "--limit")

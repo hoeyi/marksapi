@@ -279,6 +279,7 @@ namespace ApiClient.Massive
         /// <param name="timeSpan">Size of the time window.</param>
         /// <param name="from">Start of the time window.</param>
         /// <param name="to">End of the time window.</param>
+        /// <param name="adjusted">Whether to return split-adjusted results. Default is <see langword="true"/>.
         /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
         /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
@@ -289,6 +290,7 @@ namespace ApiClient.Massive
             BarTimespan timeSpan,
             DateTime from,
             DateTime to,
+            bool adjusted = true,
             int limit = 100,
             CancellationToken? cancellationToken = null)
         {

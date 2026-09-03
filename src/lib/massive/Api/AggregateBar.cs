@@ -18,6 +18,7 @@ public partial class MassiveApi
         BarTimespan timeSpan,
         DateTime from,
         DateTime to,
+        bool adjusted = true,
         int limit = 100,
         CancellationToken? cancellationToken = null)
     {
@@ -30,7 +31,9 @@ public partial class MassiveApi
             from,
             to,
             multiplier,
-            timeSpan
+            timeSpan,
+            adjusted,
+            limit
         });
         var result = await GetGenericAggregateBarResponseAsync(
             market,
@@ -39,6 +42,7 @@ public partial class MassiveApi
             timeSpan,
             from,
             to,
+            adjusted,
             limit,
             cancellationToken);
 
@@ -55,6 +59,7 @@ public partial class MassiveApi
         BarTimespan timeSpan,
         DateTime from,
         DateTime to,
+        bool adjusted = true,
         int limit = 100,
         CancellationToken? cancellationToken = null)
     {
@@ -74,6 +79,7 @@ public partial class MassiveApi
                             timeSpan,
                             from,
                             to,
+                            adjusted,
                             limit,
                             cancellationToken);
             _rateTimer.Increment();

@@ -29,7 +29,8 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 .AddLimitOption()
                 .AddTickersOption()
                 .AddFormatOption()
-                .AddFileOutputOption();
+                .AddFileOutputOption()
+                .AddUnadjustedOption();
 
             
             // TODO: Register action.
@@ -42,6 +43,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 string? timespan = pr.GetValue<string>("--timespan");
                 DateTime? fromDate = pr.GetValue<DateTime?>("--from");
                 DateTime? toDate = pr.GetValue<DateTime?>("--to");
+                bool unadjusted = pr.GetValue<bool>("--unadjusted");
                 string? format = pr.GetValue<string>("--format");
                 int? limit = pr.GetValue<int?>("--limit");
                 string? outputPath = pr.GetValue<string>("--to-file");
@@ -55,6 +57,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                     timespan,
                     fromDate,
                     toDate,
+                    !unadjusted,
                     format,
                     limit,
                     outputPath,
@@ -73,6 +76,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             string? timespan,
             DateTime? fromDate,
             DateTime? toDate,
+            bool adjusted,
             string? format,
             int? limit,
             string? outputPath,
@@ -105,6 +109,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                     timeSpan: barTimespan ?? BarTimespan.Day,
                     fromDate!.Value,
                     toDate!.Value,
+                    adjusted,
                     limit ?? queryLimit.End,
                     cancellationToken);
             
