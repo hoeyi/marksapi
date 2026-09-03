@@ -6,7 +6,7 @@ namespace ApiClient.Massive.Response.Stocks;
 /// <summary>
 /// Represents a single short volume data point for a ticker on a specific date.
 /// </summary>
-public class ShortVolumeResult
+public class ShortVolumeDetail
 {
     /// <summary>
     /// Short volume reported via the Alternative Display Facility (ADF), excluding exempt volume.
