@@ -1,5 +1,6 @@
 using ApiClient.Massive.Parameters;
 using ApiClient.Massive.Response.Economy;
+using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 using System;
 using System.Linq;
@@ -109,7 +110,7 @@ namespace ApiClient.Massive
                 cancellationToken);
 
             return response;
-        }    
+        }
     }
 }
 
