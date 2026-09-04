@@ -68,6 +68,7 @@ namespace Ichyd.Marksapi.Cli.Extensions
                 ShortInterestHandler.CreateCommand(),
                 ShortVolumeHandler.CreateCommand(),
                 InflationHandler.CreateCommand(),
+                InflationForecastHandler.CreateCommand(),
                 LaborHandler.CreateCommand(),
                 TreasuryHandler.CreateCommand()
             };
