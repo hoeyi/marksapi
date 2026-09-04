@@ -20,8 +20,8 @@
 
   <!-- Assembly / build details -->
   <PropertyGroup>
-    <Version>0.2.0</Version>
-    <FileVersion>0.2.0.*</FileVersion>
+    <Version>0.3.0</Version>
+    <FileVersion>0.3.0.*</FileVersion>
     <Authors>hoeyi</Authors>
     <Copyright>hoeyi</Copyright>
     <Company>ichyd</Company>
