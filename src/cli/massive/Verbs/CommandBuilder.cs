@@ -20,7 +20,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
             var marketArgument = new Argument<string>(name: "MARKET")
             {
-                Description = $"Target market for query",
+                Description = $"Target market for query.",
                 Arity = ArgumentArity.ExactlyOne,
             };
             marketArgument.AcceptOnlyFromAmong(allowedValues);
@@ -33,7 +33,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var tickerArgument = new Argument<string>(name: "TICKER")
             {
-                Description = "Target ticker for query. Vary format to match MARKET",
+                Description = "Target ticker for query. Vary format to match MARKET.",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(tickerArgument);
@@ -45,7 +45,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var cikOption = new Option<string>("--cik")
             {
-                Description = "Central Index Key filter",
+                Description = "Central Index Key filter.",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(cikOption);
@@ -57,7 +57,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var cusipOption = new Option<string>("--cusip")
             {
-                Description = "CUSIP code filter",
+                Description = "CUSIP code filter.",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(cusipOption);
@@ -69,7 +69,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var exchangeOption = new Option<string>(name: "--exchange")
             {
-                Description = "Primary exchange MIC (ISO 10383)",
+                Description = "Primary exchange MIC (ISO 10383).",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(exchangeOption);
@@ -81,7 +81,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var inactiveOption = new Option<bool>("--active-only")
             {
-                Description = "Exclude inactive tickers. Default is true.",
+                Description = "Exclude inactive tickers.",
                 DefaultValueFactory = (args) => true
             };
             command.Add(inactiveOption);
@@ -105,7 +105,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var limitOption = new Option<int>(name: "--limit")
             {
-                Description = "Maximum records to return. Default is 100.",
+                Description = "Maximum records to return.",
                 DefaultValueFactory = (args) => 100
             };
             command.Add(limitOption);
@@ -117,7 +117,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var multiplierOption = new Option<int>(name: "--multiplier")
             {
-                Description = "Timespan multiplier (e.g., 1 for 1 day, 5 for 5 days). Default is 1.",
+                Description = "Timespan multiplier (e.g., 1 for 1 day, 5 for 5 days).",
                 Arity = ArgumentArity.ExactlyOne,
                 DefaultValueFactory = (args) => 1
             };
@@ -130,7 +130,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var formatOption = new Option<string>(name: "--format")
             {
-                Description = "Output format",
+                Description = "Output format.",
                 Arity = ArgumentArity.ZeroOrOne,
                 DefaultValueFactory = new((args) => "console")
             };
@@ -144,7 +144,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var formatOption = new Option<string>(name: "--to-file")
             {
-                Description = "Directory to write results to",
+                Description = "Directory to write results to.",
                 Arity = ArgumentArity.ZeroOrOne
             };
             formatOption.AcceptLegalFilePathsOnly();
@@ -157,7 +157,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var ratioMinOption = new Option<float>(name: "--ratio-min")
             {
-                Description = "Minimum short volume ratio filter",
+                Description = "Minimum short volume ratio filter.",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(ratioMinOption);
@@ -169,7 +169,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var ratioMaxOption = new Option<float>(name: "--ratio-max")
             {
-                Description = "Maximum short volume ratio filter",
+                Description = "Maximum short volume ratio filter.",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(ratioMaxOption);
@@ -181,7 +181,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var searchOption = new Option<string>("--search")
             {
-                Description = "Search within ticker/company name",
+                Description = "Search within ticker/company name.",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(searchOption);
@@ -193,7 +193,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var sortOption = new Option<bool>(name: "--desc")
                 {
-                    Description = "Sort descending",
+                    Description = "Sort descending.",
                     Arity = ArgumentArity.ZeroOrOne,
                     DefaultValueFactory = new((args) => false)
                 };
@@ -206,7 +206,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var sortOption = new Option<string>(name: "--sort")
                 {
-                    Description = "Field to sort results by",
+                    Description = "Field to sort results by.",
                     Arity = ArgumentArity.ZeroOrOne
                 };
                 command.Add(sortOption);
@@ -230,7 +230,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             var tickerOption = new Option<string>(name: "--tickers")
             {
                 Arity = ArgumentArity.ZeroOrOne,
-                Description = "Multiple comma-separated ticker symbols"
+                Description = "Multiple comma-separated ticker symbols."
             };
             command.Add(tickerOption);
 
@@ -241,7 +241,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var typeOption = new Option<string>(name: "--type")
             {
-                Description = "Filter by ticker type"
+                Description = "Filter by ticker type."
             };
             command.Add(typeOption);
 
@@ -265,7 +265,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var dateOption = new Option<DateTime>(name: "--date")
             {
-                Description = "Snapshot date (ISO format: YYYY-MM-DD)",
+                Description = "Snapshot date (ISO format: YYYY-MM-DD).",
                 Arity = ArgumentArity.ZeroOrOne
             };
             command.Add(dateOption);
@@ -278,7 +278,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var dateOption = new Option<DateTime[]>(name: "--dates")
             {
-                Description = "Snapshot date(s) (ISO format: YYYY-MM-DD)",
+                Description = "Snapshot date(s) (ISO format: YYYY-MM-DD).",
                 Arity = arity ?? ArgumentArity.OneOrMore,
                 AllowMultipleArgumentsPerToken = true
             };
@@ -291,7 +291,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var fromDateOption = new Option<DateTime>(name: "--from" )
             {
-                Description = "Start date of time window (ISO format: YYYY-MM-DD)",
+                Description = "Start date of time window (ISO format: YYYY-MM-DD).",
                 Arity = ArgumentArity.ExactlyOne
             };
             command.Add(fromDateOption);
@@ -303,7 +303,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var toDateOption = new Option<DateTime>(name: "--to" )
             {
-                Description = "End date of time window (ISO format: YYYY-MM-DD)",
+                Description = "End date of time window (ISO format: YYYY-MM-DD).",
                 Arity = ArgumentArity.ExactlyOne
             };
             command.Add(toDateOption);        
@@ -325,6 +325,63 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             option.AcceptOnlyFromAmong(names);
 
             command.Add(option);
+            return command;
+        }
+
+        public static Command AddComparisonOptions(this Command command)
+        {
+            var option = new Option<string>(name: $"--operator" )
+            {
+                Description = "Comparison operator.",
+                Arity = ArgumentArity.ZeroOrMore
+            };
+            var names = Enum
+                        .GetValues<NumericComparisonOperator>()
+                        .Select(x => x.ToString().ToLowerInvariant())
+                        .ToArray();
+            option.AcceptOnlyFromAmong(names);
+
+            command.Add(option);
+
+            return command;
+        }
+
+        public static Command AddDaysToCoverOptions(this Command command)
+        {
+            var option = new Option<float>(name: "--days-to-cover")
+            {
+                Description = "Days to cover ratio to limit results. Pair with --operator.",
+                Arity = ArgumentArity.ZeroOrMore
+            };
+
+            command.Add(option);
+
+            return command;
+        }
+
+        public static Command AddAverageDailyVolumeOptions(this Command command)
+        {
+            var option = new Option<float>(name: "--avg-volume")
+            {
+                Description = "Average daily volume to limit results. Pair with --operator.",
+                Arity = ArgumentArity.ZeroOrMore
+            };
+
+            command.Add(option);
+
+            return command;
+        }
+
+        public static Command AddSettlementDateOption(this Command command)
+        {
+            var option = new Option<DateTime>(name: "--settlement")
+            {
+                Description = "Date as of which data is settled (ISO format: YYYY-MM-DD).",
+                Arity = ArgumentArity.ZeroOrOne
+            };
+            
+            command.Add(option);
+
             return command;
         }
     }    

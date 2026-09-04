@@ -138,6 +138,24 @@
             "console": "internalConsole"
         },
         {
+            "name": "marksapi-short-interest-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": [
+                "massive", "short-interest", 
+                "AAPL",
+                "--days-to-cover", "5",
+                "--days-to-cover", "1",
+                "--operator", "lte",
+                "--operator", "gte",
+                "--settlement", "2026-06-30", 
+                "--format", "json"
+            ],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
             "name": "marksapi-ticker-info",
             "type": "coreclr",
             "request": "launch",
