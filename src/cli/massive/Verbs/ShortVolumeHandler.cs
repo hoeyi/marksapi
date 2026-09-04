@@ -17,10 +17,11 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
     {
         public static Command CreateCommand()
         {
-            var command = new Command("short-volume", "Retrieve daily aggregated short sale volume data reported to FINRA");
+            var command = new Command(
+                "short-volume",
+                "Retrieve daily aggregated short sale volume data reported to FINRA");
 
             command
-                .AddTickerArgument()
                 .AddTickersOption()
                 .AddFromDateOption()
                 .AddToDateOption()
@@ -33,7 +34,6 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             // TODO: Register action.
             command.SetAction((pr, ct) =>
             {
-                string? ticker = pr.GetValue<string>("TICKER");
                 string? tickers = pr.GetValue<string>("--tickers");
                 DateTime? fromDate = pr.GetValue<DateTime?>("--from");
                 DateTime? toDate = pr.GetValue<DateTime?>("--to");
@@ -45,7 +45,6 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
                 return Handle(
                     Program.Services,
-                    ticker,
                     tickers,
                     fromDate,
                     toDate,
@@ -63,7 +62,6 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
         private static async Task Handle(
             IServiceProvider services,
-            string? ticker,
             string? tickers,
             DateTime? fromDate,
             DateTime? toDate,
@@ -82,9 +80,8 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 
             var validator = new CommandValidator(logger);
             validator 
-                .ValidateTickerOrTickersOrThrow(ticker, tickers)
                 .ValidateDateRangeOrThrow(fromDate, toDate)
-                .ValidateRatioRangeOrThrow(ratioMin, ratioMax)
+                .ValidateNumericRangeOrThrow(ratioMin, ratioMax)
                 .ValidateFormatOrThrow(format)
                 .ValidateFileOuputOrThrow(outputPath)
                 .ValidateLimitOrThrow(limit, queryLimit);
@@ -94,44 +91,22 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             Interval<float>? interval = ratioMin.HasValue && ratioMax.HasValue ? 
                 new Interval<float>(ratioMin.Value, ratioMax.Value, open: true) : null;
 
-            if (!string.IsNullOrEmpty(ticker))
-            {
-                var result = await handler.GetShortVolumeResponseAsync(
-                    ticker,
-                    fromDate!.Value.Date,
-                    toDate!.Value.Date,
-                    interval,
-                    limit,
-                    cancellationToken);
+            var result = await handler.GetShortVolumeResponseAsync(
+                tickers.ToValueArray(),
+                fromDate!.Value.Date,
+                toDate!.Value.Date,
+                interval,
+                limit,
+                cancellationToken);
 
-                var path = OutputService.CombinePath(
-                        outputPath ?? config["output_path"] ?? "./",
-                        result.RequestId);
-                await OutputService.WriteAsync(
-                    result.Results,
-                    format!,
-                    path,
-                    cancellationToken);
-            }
-            else if (!string.IsNullOrEmpty(tickers))
-            {
-                var result = await handler.GetShortVolumeResponseAsync(
-                    tickers.ToValueArray(),
-                    fromDate!.Value.Date,
-                    toDate!.Value.Date,
-                    interval,
-                    limit,
-                    cancellationToken);
-
-                var path = OutputService.CombinePath(
-                        outputPath ?? config["output_path"] ?? "./",
-                        result.RequestId);
-                await OutputService.WriteAsync(
-                    result.Results,
-                    format!,
-                    path,
-                    cancellationToken);
-            }
+            var path = OutputService.CombinePath(
+                    outputPath ?? config["output_path"] ?? "./",
+                    result.RequestId);
+            await OutputService.WriteAsync(
+                result.Results,
+                format!,
+                path,
+                cancellationToken);
         }
     }
 }

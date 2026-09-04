@@ -97,7 +97,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return this;
         }
 
-        public CommandValidator ValidateRatioRangeOrThrow(float? ratioMin, float? ratioMax)
+        public CommandValidator ValidateNumericRangeOrThrow(float? ratioMin, float? ratioMax)
         {
             if (ratioMin.HasValue && ratioMax.HasValue && ratioMin > ratioMax)
             {
