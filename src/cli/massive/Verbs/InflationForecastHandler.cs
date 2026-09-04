@@ -18,7 +18,9 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
     {
         public static Command CreateCommand()
         {
-            var command = new Command("inflation-forecast");
+            var command = new Command(
+                "inflation-forecast",
+                "Retrieve US forecasted inflation");
 
             command
                 .AddDateArrayOption()

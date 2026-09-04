@@ -252,7 +252,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var timespanOption = new Option<string>(name: "--timespan")
             {
-                Description = "Time window size. Default is 'day'.",
+                Description = "Time window size.",
                 Arity = ArgumentArity.ExactlyOne,
                 DefaultValueFactory = (args) => "day"
             };
