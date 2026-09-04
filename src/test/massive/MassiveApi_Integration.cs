@@ -154,7 +154,7 @@ namespace ApiClient.Test.Massive.Integration
         }
         #endregion
 
-        #region short-volume
+        #region short-volume / short-interest
         [Theory]
         [InlineData("AAPL", "2026-05-13", "2026-05-15")]
         public async Task GetShortVolumeResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse(
@@ -165,7 +165,10 @@ namespace ApiClient.Test.Massive.Integration
             var toDate = DateTime.Parse(toStr);
             
             // Act
-            var responseResult = await ApiClient.GetShortVolumeResponseAsync(ticker, fromDate, toDate);
+            var responseResult = await ApiClient.GetShortVolumeResponseAsync(
+                [ticker],
+                fromDate,
+                toDate);
             
             // Assert
             Assert.Multiple(
@@ -209,6 +212,97 @@ namespace ApiClient.Test.Massive.Integration
                 nameof(GetShortVolumeResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);
         }
+
+        [Theory]
+        [InlineData("AAPL,MSFT", "2026-05-13")]
+        public async Task GetShortInterestResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse(
+            string ticker, string dateStr)
+        {
+            // Arrange
+            var settleDate = DateTime.Parse(dateStr);
+            var tickers = ticker.Split(",");
+
+            // Act
+            var responseResult = 
+                await ApiClient.GetShortInterestResponseAsync(
+                    tickers: tickers,
+                    settlementDate: settleDate);
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<ShortInterestResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result            
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetShortInterestResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse), 
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("Gte", "5", "2026-05-13")]
+        [InlineData("Lte", "5", "2026-05-13")]
+        public async Task GetShortInterestResponseAsync_DaysToCover_SingleParameter_ReturnSuccessResponse(
+            string numericOperator, string daysToCover, string dateStr)
+        {
+            // Arrange
+            var settleDate = DateTime.Parse(dateStr);
+            var dtcRatio = float.Parse(daysToCover);
+            var numOperator = Enum.Parse<NumericComparisonOperator>(numericOperator);
+
+            // Act
+            var responseResult = 
+                await ApiClient.GetShortInterestResponseAsync(
+                        settlementDate: settleDate,
+                        daysToCover: new(){{ numOperator, dtcRatio }});
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<ShortInterestResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result            
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetShortInterestResponseAsync_DaysToCover_SingleParameter_ReturnSuccessResponse), 
+                responseResult);
+        }
+        
+        [Theory]
+        [InlineData("Gte,Lte", "1,5", "2026-05-13")]
+        public async Task GetShortInterestResponseAsync_DaysToCover_MultiParameter_ReturnSuccessResponse(
+            string numericOperator, string daysToCover, string dateStr)
+        {
+            // Arrange
+            var settleDate = DateTime.Parse(dateStr);
+            var ratios = daysToCover.Split(",");
+            var dtcRatios = ratios.Select(x => float.Parse(x)).ToArray();
+            var operators = numericOperator.Split(",");
+            var numOperators = operators.Select(x => 
+                                    Enum.Parse<NumericComparisonOperator>(x))
+                                .ToArray();
+
+            // Act
+            var responseResult = 
+                await ApiClient.GetShortInterestResponseAsync(
+                        settlementDate: settleDate,
+                        daysToCover: new(){
+                            { numOperators[0], dtcRatios[0] },
+                            { numOperators[1], dtcRatios[1]}});
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<ShortInterestResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result            
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetShortInterestResponseAsync_DaysToCover_SingleParameter_ReturnSuccessResponse), 
+                responseResult);
+        }
+
         #endregion 
 
         #region economy

@@ -73,7 +73,7 @@ namespace ApiClient.Massive
         /// Retrieve daily aggregated short sale volume data reported to FINRA from off-exchange trading 
         /// venues and alternative trading systems (ATS) for a specified stock ticker.
         /// </summary>
-        /// <param name="tickers">The primary ticker symbol for the stock(s).</param>
+        /// <param name="tickers">The array of tickers to limit results.</param>
         /// <param name="fromDate">The start date of trade activity.</param>
         /// <param name="toDate">The end date of trade activity.</param>
         /// <param name="shortVolumeRatio">Interval for filtering results.</param>
@@ -81,29 +81,31 @@ namespace ApiClient.Massive
         /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="ShortVolumeResponse"/>.</returns>
         Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
-            string[] tickers,
+            string[]? tickers,
             DateTime fromDate,
             DateTime toDate,
             Interval<float>? shortVolumeRatio = null,
             int? limit = 10,
             CancellationToken? cancellationToken = null);
+        #endregion
 
+        #region stocks/short-interest
         /// <summary>
-        /// Retrieve daily aggregated short sale volume data reported to FINRA from off-exchange trading 
-        /// venues and alternative trading systems (ATS) for a specified stock ticker.
+        /// Retrieve short interest data for an array of tickers and optional parameters.
         /// </summary>
-        /// <param name="ticker">The primary ticker symbol for the stock.</param>
-        /// <param name="fromDate">The start date of trade activity.</param>
-        /// <param name="toDate">The end date of trade activity.</param>
-        /// <param name="shortVolumeRatio">Interval for filtering results.</param>
+        /// <param name="tickers">The tickers to restrict results to. Default is <see langword="null"/> (ignore).</param>
+        /// <param name="settlementDate">The date for which short interest is considered settled. Default is <see langword="null"/> (ignore).</param>
+        /// <param name="daysToCover">Days to cover, measured as short interest divided by average daily volume (est. number of days to cover shorts). 
+        /// Collection represents logical AND clauses.</param>
+        /// <param name="averageDailyVolume">Average daily volume to limit results to. Collection represents logical AND clauses.</param>
         /// <param name="limit">Maximum number of records to return (Min = 1, Max = 50000, Default = 10).</param>
         /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
-        /// <returns>A <see cref="Task"/> containing an <see cref="ShortVolumeResponse"/>.</returns>
-        Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
-            string ticker,
-            DateTime fromDate,
-            DateTime toDate,
-            Interval<float>? shortVolumeRatio = null,
+        /// <returns>A <see cref="Task"/> containing an <see cref="ShortInterestResponse"/>.</returns>
+        Task<ShortInterestResponse> GetShortInterestResponseAsync(
+            string[]? tickers = null,
+            DateTime? settlementDate = null,
+            Dictionary<NumericComparisonOperator, float>? daysToCover = null,
+            Dictionary<NumericComparisonOperator, float>? averageDailyVolume = null,
             int? limit = 10,
             CancellationToken? cancellationToken = null);
         #endregion
@@ -171,7 +173,7 @@ namespace ApiClient.Massive
             CancellationToken? cancellationToken = null);
         #endregion
 
-        #region economy
+        #region /economy
         /// <summary>
         /// Retrieve treasury yield rates for the given dates.
         /// </summary>

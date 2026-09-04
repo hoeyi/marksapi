@@ -56,6 +56,8 @@ namespace ApiClient.Massive
 
             public const string StocksFundamentalsShortVolume = "/stocks/v1/short-volume";
 
+            public const string StocksFundamentalsShortInterest = "/stocks/v1/short-interest";
+            
             // TODO: Impement endpoint
             // public const string StocksTickerSummary = "/v1/open-close/{stocksTicker}/{date}";
 

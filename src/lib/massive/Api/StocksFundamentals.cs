@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ApiClient.Massive.Parameters;
 using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
@@ -11,37 +13,45 @@ namespace ApiClient.Massive
     public partial class MassiveApi
     {
         /// <inheritdoc/>
-        public async Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
-            string ticker,
-            DateTime fromDate,
-            DateTime toDate,
-            Interval<float>? shortVolumeRatio = null,
+        public async Task<ShortInterestResponse> GetShortInterestResponseAsync(
+            string[]? tickers = null,
+            DateTime? settlementDate = null,
+            Dictionary<NumericComparisonOperator, float>? daysToCover = null,
+            Dictionary<NumericComparisonOperator, float>? averageDailyVolume = null,
             int? limit = 10,
             CancellationToken? cancellationToken = null)
         {
-            ArgumentException.ThrowIfNullOrEmpty(ticker);
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(fromDate, toDate);
+            // Entries will be dropped, but log a warning if possible.
+            string[] nonEmptyTickers = tickers?.Where(x => string.IsNullOrEmpty(x)).ToArray() ?? [];
+            if(nonEmptyTickers.Length == 0)
+                _logger?.LogWarning("Ignoring empty entries in '{parameter}'.", nameof(tickers));
 
             var queryBuilder = GetQueryBuilder();
-            queryBuilder.AddParameter("ticker", ticker);
-            queryBuilder.AddParameter("date.gte", $"{fromDate:yyyy-MM-dd}");
-            queryBuilder.AddParameter("date.lte", $"{toDate:yyyy-MM-dd}");
-
-            if (shortVolumeRatio.HasValue)
+            if(nonEmptyTickers.Length > 0)
             {
+                var tickersDelimited = string.Join(",", nonEmptyTickers);
+                queryBuilder.AddParameter("ticker.any_of", string.Join(",", tickersDelimited));
+            }
+
+            if(daysToCover?.Count > 0)
+            {
+                foreach(var kv in daysToCover)
                 queryBuilder.AddParameter(
-                    shortVolumeRatio.Value.OpenLeft ? "short_volume_ratio.gt" : "short_volume_ratio.gte",
-                    $"{shortVolumeRatio.Value.Start}");
+                    $"days_to_cover.{kv.Key.ToString().ToLower()}", $"{kv.Value}");
+            }
+
+            if(averageDailyVolume?.Count > 0)
+            {
+                foreach(var kv in averageDailyVolume)
                 queryBuilder.AddParameter(
-                    shortVolumeRatio.Value.OpenRight ? "short_volume_ratio.lt" : "short_volume_ratio.lte",
-                    $"{shortVolumeRatio.Value.End}");
+                    $"avg_daily_volume.{kv.Key.ToString().ToLower()}", $"{kv.Value}");
             }
 
             queryBuilder.AddParameter("limit", $"{limit}");
 
-            var response = await GetResponseAsync<ShortVolumeResponse>(
+            var response = await GetResponseAsync<ShortInterestResponse>(
                                     queryBuilder, 
-                                    Endpoint.StocksFundamentalsShortVolume,
+                                    Endpoint.StocksFundamentalsShortInterest,
                                     cancellationToken);
 
             return response;
@@ -49,25 +59,28 @@ namespace ApiClient.Massive
 
         /// <inheritdoc/>
         public async Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
-            string[] tickers,
+            string[]? tickers,
             DateTime fromDate,
             DateTime toDate,
             Interval<float>? shortVolumeRatio = null,
             int? limit = 10,
             CancellationToken? cancellationToken = null)
         {
-            if(tickers.Length == 0)
-                throw new ArgumentException($"Parameter '{tickers} must be non-empty.");
-        
             // Entries will be dropped, but log a warning if possible.
-            if(tickers.Any(x => string.IsNullOrEmpty(x)))
+            string[] nonEmptyTickers = tickers?.Where(x => string.IsNullOrEmpty(x)).ToArray() ?? [];
+            if(nonEmptyTickers.Length == 0)
                 _logger?.LogWarning("Ignoring empty entries in '{parameter}'.", nameof(tickers));
 
             ArgumentOutOfRangeException.ThrowIfGreaterThan(fromDate, toDate);
 
             var queryBuilder = GetQueryBuilder();
-            var tickersDelimited = string.Join(",", tickers.Where(x => !string.IsNullOrEmpty(x)));
-            queryBuilder.AddParameter("ticker.any_of", string.Join(",", tickersDelimited));
+
+            if(nonEmptyTickers.Length > 0)
+            {
+                var tickersDelimited = string.Join(",", nonEmptyTickers);
+                queryBuilder.AddParameter("ticker.any_of", string.Join(",", tickersDelimited));
+            }
+
             queryBuilder.AddParameter("date.gte", $"{fromDate:yyyy-MM-dd}");
             queryBuilder.AddParameter("date.lte", $"{toDate:yyyy-MM-dd}");
 
