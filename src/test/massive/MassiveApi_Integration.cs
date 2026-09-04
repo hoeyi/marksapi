@@ -96,7 +96,7 @@ namespace ApiClient.Test.Massive.Integration
         [Theory]
         [InlineData("Stocks", "AAPL")]
         [InlineData("Indices", "COMP")]
-        [InlineData("Options", "SPY260821C00640000")]
+        [InlineData("Options", "SPY280121C00750000")]
         [InlineData("Crypto", "BTCUSD")]
         [InlineData("Fx", "USDEUR")]
         public async Task GetTickerOverviewResponseAsync_ReturnSuccessResponse(
