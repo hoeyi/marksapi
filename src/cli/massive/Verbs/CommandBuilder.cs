@@ -330,7 +330,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
         public static Command AddComparisonOptions(this Command command)
         {
-            var option = new Option<string>(name: $"--operator" )
+            var option = new Option<string[]>(name: $"--operator" )
             {
                 Description = "Comparison operator.",
                 Arity = ArgumentArity.ZeroOrMore
@@ -348,7 +348,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
         public static Command AddDaysToCoverOptions(this Command command)
         {
-            var option = new Option<float>(name: "--days-to-cover")
+            var option = new Option<float[]>(name: "--days-to-cover")
             {
                 Description = "Days to cover ratio to limit results. Pair with --operator.",
                 Arity = ArgumentArity.ZeroOrMore
@@ -361,7 +361,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
         public static Command AddAverageDailyVolumeOptions(this Command command)
         {
-            var option = new Option<float>(name: "--avg-volume")
+            var option = new Option<float[]>(name: "--avg-volume")
             {
                 Description = "Average daily volume to limit results. Pair with --operator.",
                 Arity = ArgumentArity.ZeroOrMore
