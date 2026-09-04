@@ -15,7 +15,7 @@
   <!-- For development -->
   <!-- <Import Project="../dev/development.csproj" Condition="'$(DEV_MODE)' == 'true'">
   </Import> -->
-  <Import Project="../dev/development.csproj">
+  <Import Project="../dev/development.csproj" Condition="'$(Configuration)' == 'Debug'">
   </Import>
 
   <!-- Assembly / build details -->
