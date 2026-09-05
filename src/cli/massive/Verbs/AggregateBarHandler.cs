@@ -21,23 +21,21 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             
             command
                 .AddMarketArgument()
-                .AddTickerArgument()
-                .AddMultiplierOption()
-                .AddTimespanOption()
+                .AddTickersOptionRequired()
                 .AddFromDateOption()
                 .AddToDateOption()
+                .AddTimespanOption()
+                .AddMultiplierOption()
+                .AddUnadjustedOption()
                 .AddLimitOption()
-                .AddTickersOption()
                 .AddFormatOption()
-                .AddFileOutputOption()
-                .AddUnadjustedOption();
+                .AddFileOutputOption();
 
             
             // TODO: Register action.
             command.SetAction((pr, ct) =>
             {
                 string? market = pr.GetValue<string>("MARKET");
-                string? ticker = pr.GetValue<string>("TICKER");
                 string? tickers = pr.GetValue<string>("--tickers");
                 int multiplier = pr.GetValue<int>("--multiplier");
                 string? timespan = pr.GetValue<string>("--timespan");
@@ -51,7 +49,6 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 return Handle(
                     Program.Services,
                     market,
-                    ticker,
                     tickers,
                     multiplier,
                     timespan,
@@ -70,7 +67,6 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         private static async Task Handle(
             IServiceProvider services,
             string? market,
-            string? ticker,
             string? tickers,
             int multiplier,
             string? timespan,
@@ -91,16 +87,14 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             var validator = new CommandValidator(logger);
             validator
                 .ValidateEnumOrThrow(market!, out Market marketEnum)
-                .ValidateTickerOrTickersOrThrow(ticker, tickers)
+                .ValidateTickerOrTickersOrThrow(null, tickers)
                 .ValidateLimitOrThrow(limit, queryLimit)
                 .ValidateDateRangeOrThrow(fromDate, toDate)
                 .ValidateFileOuputOrThrow(outputPath)
                 .ValidateTimespanOrThrow(timespan, out BarTimespan? barTimespan);
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
-            var tickerArgs = !string.IsNullOrEmpty(ticker) ?
-                ticker.ToValueArray() : 
-                tickers.ToValueArray();
+            var tickerArgs = tickers.ToValueArray();
 
             var results = await handler.GetAggregateBarResponseAsync(
                     market: marketEnum,

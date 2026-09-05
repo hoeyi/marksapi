@@ -225,6 +225,18 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return command;
         }
 
+        public static Command AddTickersOptionRequired(this Command command)
+        {
+            var tickerOption = new Option<string>(name: "--tickers")
+            {
+                Arity = ArgumentArity.ExactlyOne,
+                Description = "Multiple comma-separated ticker symbols."
+            };
+            command.Add(tickerOption);
+
+            return command;
+        }
+
         public static Command AddTickersOption(this Command command)
         {
             var tickerOption = new Option<string>(name: "--tickers")
