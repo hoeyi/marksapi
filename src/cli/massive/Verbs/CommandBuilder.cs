@@ -1,6 +1,7 @@
 using ApiClient.Massive;
 using ApiClient.Massive.Parameters;
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -323,12 +324,31 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return command;
         }
 
-        public static Command AddComparisonOption(this Command command)
+        public static Command AddComparisonArrayOption(this Command command)
         {
-            var option = new Option<string>(name: $"--operator" )
+            static NumericComparisonOperator ConvertOrThrow(string s)
+            {
+                var culture = CultureInfo.InvariantCulture;
+                var strMember = culture.TextInfo.ToTitleCase(s.ToLower());
+
+                if(Enum.TryParse(strMember, out NumericComparisonOperator enumMember))
+                    return enumMember;
+                else
+                    throw new ArgumentException(
+                        $"Could not convert '{s}' to {typeof(NumericComparisonOperator).Name} member.");
+            }
+
+            var option = new Option<NumericComparisonOperator[]>(name: $"--operator" )
             {
                 Description = "Comparison operator.",
-                Arity = ArgumentArity.ZeroOrOne
+                Arity = ArgumentArity.ZeroOrMore,
+                CustomParser = result =>
+                {
+                    if(result.Tokens.Count > 0)
+                        return result.Tokens.Select(x => ConvertOrThrow(x.Value)).ToArray();
+                    else
+                        return null;
+                }
             };
             var names = Enum
                         .GetValues<NumericComparisonOperator>()
@@ -362,7 +382,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var option = new Option<float[]>(name: "--days-to-cover")
             {
-                Description = "Days to cover ratio to limit results. Pair with --operator.",
+                Description = "Days to cover ratio to limit results (pair with --operator).",
                 Arity = ArgumentArity.ZeroOrMore
             };
 
@@ -375,7 +395,20 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var option = new Option<float[]>(name: "--avg-volume")
             {
-                Description = "Average daily volume to limit results. Pair with --operator.",
+                Description = "Average daily volume to limit results (pair with --operator).",
+                Arity = ArgumentArity.ZeroOrMore
+            };
+
+            command.Add(option);
+
+            return command;
+        }
+
+        public static Command AddShortDailyVolumeOptions(this Command command)
+        {
+            var option = new Option<float[]>(name: "--short-volume-ratio")
+            {
+                Description = "Short daily volume to limit results (pair with --operator)",
                 Arity = ArgumentArity.ZeroOrMore
             };
 
@@ -388,7 +421,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var option = new Option<DateTime>(name: "--settlement")
             {
-                Description = "Date as of which data is settled (ISO format: YYYY-MM-DD).",
+                Description = "Date as of which data is settled (ISO format: YYYY-MM-DD)",
                 Arity = ArgumentArity.ZeroOrOne
             };
             
@@ -396,6 +429,56 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
             return command;
         }
+
+        public static Dictionary<string, float>? ConvertNumericArguments(
+            float[] @values,
+            string[] @operators,
+            int offset = 0
+        )
+        {
+            var validator = new CommandValidator(logger: null);
+            // If all input arrays are zero, there are no numeric arguments to append.
+            if(@values.Length == @operators.Length - offset & @operators.Length - offset == 0)
+                return null;
+                
+            if(values.Length > operators.Length - offset)
+                throw new InvalidOperationException(
+                    $"Unexpected argument lengths. Parameter '{nameof(@values)}' must " +
+                    $"must have equal or lesser length than '{nameof(@operators)}'.");
+
+            var dict = new Dictionary<string, float>();
+            for(int i = 0; i < values.Length; i++)
+            {
+                dict.Add(@operators[i+offset], values[i]);
+            }
+            return dict;
+        }
+
+        public static Dictionary<NumericComparisonOperator, T>? ConvertNumericArguments<T>(
+            T[]? @values,
+            NumericComparisonOperator[]? @operators,
+            int offset = 0
+        )
+        {
+            if(@values is null || @operators is null)
+                return null;
+                
+            // If all input arrays are zero, there are no numeric arguments to append.
+            if(@values.Length == @operators.Length - offset & @operators.Length - offset == 0)
+                return null;
+                
+            if(values.Length > operators.Length - offset)
+                throw new InvalidOperationException(
+                    $"Unexpected argument lengths. Parameter '{nameof(@values)}' must " +
+                    $"must have equal or lesser length than '{nameof(@operators)}'.");
+
+            var dict = new Dictionary<NumericComparisonOperator, T>();
+            for(int i = 0; i < values.Length; i++)
+            {
+                dict.Add(@operators[i+offset], values[i]);
+            }
+            return dict;
+        }        
     }    
 }
 

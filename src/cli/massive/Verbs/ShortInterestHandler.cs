@@ -40,16 +40,18 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 string? tickers = pr.GetValue<string>("--tickers");
                 DateTime? settlementDate = pr.GetValue<DateTime?>("--settlement");
                 float[]? daysToCover = pr.GetValue<float[]>("--days-to-cover");
-                string[]? ops = pr.GetValue<string[]>("--operator");
+                var ops = pr.GetValue<NumericComparisonOperator[]>("--operator");
                 float[]? avgVolumes = pr.GetValue<float[]>("--avg-volume");
                 string? format = pr.GetValue<string>("--format");
                 int? limit = pr.GetValue<int?>("--limit");
                 string? outputPath = pr.GetValue<string>("--to-file");
 
-                var dtcArgs = ConvertNumericArguments(
-                                daysToCover ?? [], ops ?? []);
-                var volArgs = ConvertNumericArguments(
-                                avgVolumes ?? [], ops ?? [], offset: dtcArgs?.Count ?? 0);
+                var dtcArgs = CommandBuilder.ConvertNumericArguments(
+                                daysToCover, ops);
+                var volArgs = CommandBuilder.ConvertNumericArguments(
+                                avgVolumes,
+                                ops,
+                                offset: dtcArgs?.Count ?? 0);
                 return Handle(
                     Program.Services,
                     tickers,
@@ -66,36 +68,12 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return command;
         }
 
-        private static Dictionary<string, float>? ConvertNumericArguments(
-            float[] @values,
-            string[] @operators,
-            int offset = 0
-        )
-        {
-            var validator = new CommandValidator(logger: null);
-            // If all input arrays are zero, there are no numeric arguments to append.
-            if(@values.Length == @operators.Length - offset & @operators.Length - offset == 0)
-                return null;
-                
-            if(values.Length > operators.Length - offset)
-                throw new InvalidOperationException(
-                    $"Unexpected argument lengths. Parameter '{nameof(@values)}' must " +
-                    $"must have equal or lesser length than '{nameof(@operators)}'.");
-
-            var dict = new Dictionary<string, float>();
-            for(int i = 0; i < values.Length; i++)
-            {
-                dict.Add(@operators[i+offset], values[i]);
-            }
-            return dict;
-        }
-
         private static async Task Handle(
             IServiceProvider services,
             string? tickers,
             DateTime? settlementDate,
-            Dictionary<string, float>? daysToCover,
-            Dictionary<string, float>? averageDailyVolume,
+            Dictionary<NumericComparisonOperator, float>? dtcFilter,
+            Dictionary<NumericComparisonOperator, float>? advFilter,
             string? format,
             int? limit,
             string? outputPath,
@@ -113,28 +91,28 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 .ValidateFileOuputOrThrow(outputPath)
                 .ValidateLimitOrThrow(limit, queryLimit);
 
-            var dtcArgs = daysToCover?.ToDictionary(kv =>
-                {
-                    validator.ValidateEnumOrThrow(
-                        kv.Key, out NumericComparisonOperator numOp);
-                    return numOp;
-                },
-                kv => kv.Value);
-            var volArgs = averageDailyVolume?.ToDictionary(kv =>
-                {
-                    validator.ValidateEnumOrThrow(
-                        kv.Key, out NumericComparisonOperator numOp);
-                    return numOp;
-                },
-                kv => kv.Value);
+            // var dtcArgs = daysToCover?.ToDictionary(kv =>
+            //     {
+            //         validator.ValidateEnumOrThrow(
+            //             kv.Key, out NumericComparisonOperator numOp);
+            //         return numOp;
+            //     },
+            //     kv => kv.Value);
+            // var volArgs = averageDailyVolume?.ToDictionary(kv =>
+            //     {
+            //         validator.ValidateEnumOrThrow(
+            //             kv.Key, out NumericComparisonOperator numOp);
+            //         return numOp;
+            //     },
+            //     kv => kv.Value);
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
             
             var result = await handler.GetShortInterestResponseAsync(
                 tickers.ToValueArray(),
                 settlementDate,
-                dtcArgs,
-                volArgs,
+                dtcFilter,
+                advFilter,
                 limit,
                 cancellationToken);
 

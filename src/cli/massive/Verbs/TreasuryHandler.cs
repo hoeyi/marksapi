@@ -6,6 +6,7 @@ using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -30,14 +31,15 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             {
                 DateTime[] dates = pr.GetValue<DateTime[]>("--date") ?? [];
                 string? format = pr.GetValue<string>("--format");
-                string? numOperator = pr.GetValue<string>("--operator");
+                var ops = pr.GetValue<NumericComparisonOperator[]>("--operator");
                 int? limit = pr.GetValue<int?>("--limit");
                 string? outputPath = pr.GetValue<string>("--to-file");
 
+                var dateArgs = CommandBuilder.ConvertNumericArguments(dates, ops);
+
                 return Handle(
                     Program.Services,
-                    dates,
-                    numOperator,
+                    dateArgs,
                     format,
                     limit,
                     outputPath,
@@ -49,8 +51,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
         private static async Task Handle(
                 IServiceProvider services,
-                DateTime[] dates,
-                string? numOperator,
+                Dictionary<NumericComparisonOperator, DateTime>? dateFilters,
                 string? format,
                 int? limit,
                 string? outputPath,
@@ -66,23 +67,12 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             validator
                 .ValidateFormatOrThrow(format)
                 .ValidateLimitOrThrow(limit, queryLimit)
-                .ValidateFileOuputOrThrow(outputPath)
-                .ValidateDateArrayWithComparisonOrThrow(dates, numOperator);
+                .ValidateFileOuputOrThrow(outputPath);
             
-            NumericComparisonOperator? numOp = null;
-            if (!string.IsNullOrEmpty(numOperator))
-            {
-                validator.ValidateEnumOrThrow(
-                    numOperator,
-                    out NumericComparisonOperator numOpEnum);
-                numOp = numOpEnum;
-            }
-
             var handler = services.GetServiceOrThrow<IMassiveApi>();
 
             var results = await handler.GetTreasuryYieldResponseAsync(
-                                    dates,
-                                    numOp,
+                                    dateFilters,
                                     limit,
                                     cancellationToken);
 

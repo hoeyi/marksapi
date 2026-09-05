@@ -130,8 +130,9 @@
             "args": [
                 "massive", "short-volume", 
                 "--tickers", "AAPL",
-                "--from", "2026-06-30",
-                "--to", "2026-06-30", 
+                "--date", "2026-06-30", "2026-06-30",
+                "--operator", "gte",
+                "--operator", "lte",
                 "--format", "json"
             ],
             "stopAtEntry": false,
@@ -218,7 +219,12 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "inflation", "--date", "2026-04-01", "2026-05-01", "--format", "json"],
+            "args": [
+                "massive", "inflation", 
+                "--date", "2026-04-01", "2026-05-01",
+                "--operator", "gt", 
+                "--operator", "lt",
+                "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -227,7 +233,11 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "inflation", "--date", "2026-03-01", "--format", "json"],
+            "args": [
+                "massive", "inflation", 
+                "--date", "2026-03-01", 
+                "--operator", "any",
+                "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -236,7 +246,11 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "inflation", "--date", "2026-03-01", "--format", "json"],
+            "args": [
+                "massive", "inflation", 
+                "--date", "2026-03-01", 
+                "--operator", "any",
+                "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         }
