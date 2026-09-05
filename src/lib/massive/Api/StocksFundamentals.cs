@@ -27,25 +27,10 @@ namespace ApiClient.Massive
                 _logger?.LogWarning("Ignoring empty entries in '{parameter}'.", nameof(tickers));
 
             var queryBuilder = GetQueryBuilder();
-            if(nonEmptyTickers.Length > 0)
-            {
-                var tickersDelimited = string.Join(",", nonEmptyTickers);
-                queryBuilder.AddParameter("ticker.any_of", string.Join(",", tickersDelimited));
-            }
 
-            if(daysToCover?.Count > 0)
-            {
-                foreach(var kv in daysToCover)
-                queryBuilder.AddParameter(
-                    $"days_to_cover.{kv.Key.ToString().ToLower()}", $"{kv.Value}");
-            }
-
-            if(averageDailyVolume?.Count > 0)
-            {
-                foreach(var kv in averageDailyVolume)
-                queryBuilder.AddParameter(
-                    $"avg_daily_volume.{kv.Key.ToString().ToLower()}", $"{kv.Value}");
-            }
+            queryBuilder.AddAnyParameter("ticker", nonEmptyTickers);
+            queryBuilder.AddComparisonFilterParameters("days_to_cover", daysToCover);
+            queryBuilder.AddComparisonFilterParameters("avg_daily_volume", averageDailyVolume);
 
             queryBuilder.AddParameter("limit", $"{limit}");
 
@@ -60,9 +45,8 @@ namespace ApiClient.Massive
         /// <inheritdoc/>
         public async Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
             string[]? tickers,
-            DateTime fromDate,
-            DateTime toDate,
-            Interval<float>? shortVolumeRatio = null,
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
+            Dictionary<NumericComparisonOperator, float>? shortVolumeRatio = null,
             int? limit = 10,
             CancellationToken? cancellationToken = null)
         {
@@ -71,28 +55,14 @@ namespace ApiClient.Massive
             if(nonEmptyTickers.Length == 0)
                 _logger?.LogWarning("Ignoring empty entries in '{parameter}'.", nameof(tickers));
 
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(fromDate, toDate);
-
             var queryBuilder = GetQueryBuilder();
 
-            if(nonEmptyTickers.Length > 0)
-            {
-                var tickersDelimited = string.Join(",", nonEmptyTickers);
-                queryBuilder.AddParameter("ticker.any_of", string.Join(",", tickersDelimited));
-            }
-
-            queryBuilder.AddParameter("date.gte", $"{fromDate:yyyy-MM-dd}");
-            queryBuilder.AddParameter("date.lte", $"{toDate:yyyy-MM-dd}");
-
-            if (shortVolumeRatio.HasValue)
-            {
-                queryBuilder.AddParameter(
-                    shortVolumeRatio.Value.OpenLeft ? "short_volume_ratio.gt" : "short_volume_ratio.gte",
-                    $"{shortVolumeRatio.Value.Start}");
-                queryBuilder.AddParameter(
-                    shortVolumeRatio.Value.OpenRight ? "short_volume_ratio.lt" : "short_volume_ratio.lte",
-                    $"{shortVolumeRatio.Value.End}");
-            }
+            queryBuilder.AddAnyParameter("ticker", nonEmptyTickers);
+            queryBuilder.AddComparisonFilterParameters(
+                            "date",
+                            dateFilter,
+                            customFormat: QueryBuilderExtensions.DateFormat);
+            queryBuilder.AddComparisonFilterParameters("short_volume_ratio", shortVolumeRatio);
 
             queryBuilder.AddParameter("limit", $"{limit}");
 

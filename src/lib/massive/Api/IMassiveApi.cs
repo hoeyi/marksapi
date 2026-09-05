@@ -74,17 +74,15 @@ namespace ApiClient.Massive
         /// venues and alternative trading systems (ATS) for a specified stock ticker.
         /// </summary>
         /// <param name="tickers">The array of tickers to limit results.</param>
-        /// <param name="fromDate">The start date of trade activity.</param>
-        /// <param name="toDate">The end date of trade activity.</param>
-        /// <param name="shortVolumeRatio">Interval for filtering results.</param>
+        /// <param name="dateFilter">Collection of date filters to apply.</param>
+        /// <param name="shortVolumeRatio">Collecting of short volume filters to apply.</param>
         /// <param name="limit">Maximum number of records to return (Min = 1, Max = 50000, Default = 10).</param>
         /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="ShortVolumeResponse"/>.</returns>
         Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
             string[]? tickers,
-            DateTime fromDate,
-            DateTime toDate,
-            Interval<float>? shortVolumeRatio = null,
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
+            Dictionary<NumericComparisonOperator, float>? shortVolumeRatio = null,
             int? limit = 10,
             CancellationToken? cancellationToken = null);
         #endregion
@@ -177,60 +175,48 @@ namespace ApiClient.Massive
         /// <summary>
         /// Retrieve treasury yield rates for the given dates.
         /// </summary>
-        /// <param name="dates"></param>
-        /// <param name="numOp"><see cref="NumericComparisonOperator"/> controlling comparison to <paramref name="dates"/>.
-        /// If provided, <paramref name="dates"/> should be of length 1.</param>
+        /// <param name="dateFilter">Collection of date filters to apply.</param>
         /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
         /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing a <see cref="TreasuryYieldsResponse"/>.</returns>
         Task<TreasuryYieldsResponse> GetTreasuryYieldResponseAsync(
-            DateTime[] dates,
-            NumericComparisonOperator? numOp = null, 
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
             int? limit = 100,
             CancellationToken? cancellationToken = null);
 
         /// <summary>
         /// Retrieve inflation for the given dates.
         /// </summary>
-        /// <param name="dates"></param>
-        /// <param name="numOp"><see cref="NumericComparisonOperator"/> controlling comparison to <paramref name="dates"/>.
-        /// If provided, <paramref name="dates"/> should be of length 1.</param>
+        /// <param name="dateFilter">Collection of date filters to apply.</param>
         /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
         /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing a <see cref="TreasuryYieldsResponse"/>.</returns>
         Task<InflationResponse> GetInflationResponseAsync(
-            DateTime[] dates,
-            NumericComparisonOperator? numOp = null, 
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
             int? limit = 100,
             CancellationToken? cancellationToken = null);
 
         /// <summary>
         /// Retrieve inflation expectation for the given dates.
         /// </summary>
-        /// <param name="dates"></param>
-        /// <param name="numOp"><see cref="NumericComparisonOperator"/> controlling comparison to <paramref name="dates"/>.
-        /// If provided, <paramref name="dates"/> should be of length 1.</param>
+        /// <param name="dateFilter">Collection of date filters to apply.</param>
         /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
         /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing a <see cref="TreasuryYieldsResponse"/>.</returns>
         Task<InflationExpectationResponse> GetInflationExpectationResponseAsync(
-            DateTime[] dates,
-            NumericComparisonOperator? numOp = null, 
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
             int? limit = 100,
             CancellationToken? cancellationToken = null);
 
         /// <summary>
         /// Retrieve labor market statistics for the given dates.
         /// </summary>
-        /// <param name="dates"></param>
-        /// <param name="numOp"><see cref="NumericComparisonOperator"/> controlling comparison to <paramref name="dates"/>.
-        /// If provided, <paramref name="dates"/> should be of length 1.</param>
+        /// <param name="dateFilter">Collection of date filters to apply.</param>
         /// <param name="limit">Limit the number of results returned, default is 100 and max is 1000.</param>
         /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing a <see cref="TreasuryYieldsResponse"/>.</returns>
         Task<LaborMarketResponse> GetLaborMarketResponseAsync(
-            DateTime[] dates,
-            NumericComparisonOperator? numOp = null, 
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
             int? limit = 100,
             CancellationToken? cancellationToken = null);        
         #endregion

@@ -67,10 +67,14 @@ namespace ApiClient.Test
                     section.Bind(options);
 
             ArgumentException.ThrowIfNullOrWhiteSpace(Configuration?[Program.MASSIVE_API_KEYPATH]);
-            MassiveApi = new MassiveApi(Configuration[Program.MASSIVE_API_KEYPATH]!, rateOptions: options);
         
             Logger = CreateLogger<T>(Configuration);
             LogInitialize(Logger, typeof(T).FullName!);
+
+            MassiveApi = new MassiveApi(
+                apiKey: Configuration[Program.MASSIVE_API_KEYPATH]!,
+                rateOptions: options,
+                logger: Logger);
         }
     
         public MassiveApi MassiveApi { get; init; }

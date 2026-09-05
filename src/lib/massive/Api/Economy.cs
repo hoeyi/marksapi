@@ -3,6 +3,7 @@ using ApiClient.Massive.Response.Economy;
 using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,35 +12,10 @@ namespace ApiClient.Massive
 {
     public partial class MassiveApi : IMassiveApi
     {
-        /// <inheritdoc/>
-        public async Task<TreasuryYieldsResponse> GetTreasuryYieldResponseAsync(
-            DateTime[] dates,
-            NumericComparisonOperator? numOp = null,
-            int? limit = 100,
-            CancellationToken? cancellationToken = null)
-        {
-            if(_rateTimer is null)
-                    throw new InvalidOperationException(
-                        $"{nameof(GetTreasuryYieldResponseAsync)} requires instance of '{nameof(RateTimer)}.");
-            await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cancellationToken);
-
-            var queryBuilder = GetQueryBuilder();
-
-            queryBuilder.AddDateParameterWithComparison(dates, numOp);
-            queryBuilder.AddParameter("limit", $"{limit}");
-
-            var response = await GetResponseAsync<TreasuryYieldsResponse>(
-                queryBuilder,
-                Endpoint.TreasuryYields,
-                cancellationToken);
-
-            return response;
-        }
-
+        
         /// <inheritdoc/>
         public async Task<InflationResponse> GetInflationResponseAsync(
-            DateTime[] dates,
-            NumericComparisonOperator? numOp = null,
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
             int? limit = 100,
             CancellationToken? cancellationToken = null)
         {
@@ -50,7 +26,10 @@ namespace ApiClient.Massive
         
             var queryBuilder = GetQueryBuilder();
 
-            queryBuilder.AddDateParameterWithComparison(dates, numOp);
+            queryBuilder.AddComparisonFilterParameters(
+                            "date",
+                            dateFilter,
+                            customFormat: QueryBuilderExtensions.DateFormat);
             queryBuilder.AddParameter("limit", $"{limit}");
 
             var response = await GetResponseAsync<InflationResponse>(
@@ -63,8 +42,7 @@ namespace ApiClient.Massive
 
         /// <inheritdoc/>
         public async Task<InflationExpectationResponse> GetInflationExpectationResponseAsync(
-            DateTime[] dates,
-            NumericComparisonOperator? numOp = null,
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
             int? limit = 100,
             CancellationToken? cancellationToken = null)
         {
@@ -75,7 +53,11 @@ namespace ApiClient.Massive
         
             var queryBuilder = GetQueryBuilder();
 
-            queryBuilder.AddDateParameterWithComparison(dates, numOp);
+            queryBuilder.AddComparisonFilterParameters(
+                            "date",
+                            dateFilter,
+                            customFormat: QueryBuilderExtensions.DateFormat);
+
             queryBuilder.AddParameter("limit", $"{limit}");
 
             var response = await GetResponseAsync<InflationExpectationResponse>(
@@ -88,8 +70,7 @@ namespace ApiClient.Massive
 
         /// <inheritdoc/>
         public async Task<LaborMarketResponse> GetLaborMarketResponseAsync(
-            DateTime[] dates,
-            NumericComparisonOperator? numOp = null,
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
             int? limit = 100,
             CancellationToken? cancellationToken = null)
         {
@@ -101,12 +82,43 @@ namespace ApiClient.Massive
 
             var queryBuilder = GetQueryBuilder();
 
-            queryBuilder.AddDateParameterWithComparison(dates, numOp);
+            queryBuilder.AddComparisonFilterParameters(
+                            "date",
+                            dateFilter,
+                            customFormat: QueryBuilderExtensions.DateFormat);
+
             queryBuilder.AddParameter("limit", $"{limit}");
 
             var response = await GetResponseAsync<LaborMarketResponse>(
                 queryBuilder,
                 Endpoint.LaborMarket,
+                cancellationToken);
+
+            return response;
+        }
+
+        /// <inheritdoc/>
+        public async Task<TreasuryYieldsResponse> GetTreasuryYieldResponseAsync(
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
+            int? limit = 100,
+            CancellationToken? cancellationToken = null)
+        {
+            if(_rateTimer is null)
+                    throw new InvalidOperationException(
+                        $"{nameof(GetTreasuryYieldResponseAsync)} requires instance of '{nameof(RateTimer)}.");
+            await _rateTimer.CheckLimitOrAwaitIntervalResetAsync(cancellationToken);
+
+            var queryBuilder = GetQueryBuilder();
+
+            queryBuilder.AddComparisonFilterParameters(
+                            "date",
+                            dateFilter,
+                            customFormat: QueryBuilderExtensions.DateFormat);
+            queryBuilder.AddParameter("limit", $"{limit}");
+
+            var response = await GetResponseAsync<TreasuryYieldsResponse>(
+                queryBuilder,
+                Endpoint.TreasuryYields,
                 cancellationToken);
 
             return response;

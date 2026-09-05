@@ -156,6 +156,8 @@ namespace ApiClient.Massive
             };
             var requestUrl = uriBuilder.Uri.AbsoluteUri;
 
+            LogInfo_ResponseRequest(_logger, requestUrl);
+            
             try
             {
                 // increment counter
@@ -222,6 +224,11 @@ namespace ApiClient.Massive
     #region Logger methods
     public partial class MassiveApi
     {
+        static void LogInfo_ResponseRequest(ILogger? logger, string uri)
+        {
+            if(logger?.IsEnabled(LogLevel.Information) ?? false)
+                logger.LogInformation(eventId: 1, "Sent request via {uri}/", uri);
+        }
         static void LogInfo_ResponseRequest_Submitting(ILogger? logger, object request)
         {
             if(logger?.IsEnabled(LogLevel.Information) ?? false)

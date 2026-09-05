@@ -5,6 +5,12 @@ namespace ApiClient.Massive.Parameters
     /// </summary>
     public enum NumericComparisonOperator
     {
+
+        /// <summary>
+        /// Any of a given collection (typically used for strict equality).
+        /// </summary>
+        Any,
+
         /// <summary>
         /// Greater than.
         /// </summary>
