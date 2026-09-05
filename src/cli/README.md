@@ -134,7 +134,7 @@ docker compose run marksapi
 ### General Syntax
 
 ```bash
-$ marksapi <service> <verb> [arguments] [options]
+marksapi <service> <verb> [arguments] [options]
 ```
 
 | Parameter | Description | Required | Default |
@@ -165,7 +165,7 @@ Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for
 
 **Usage:**
 ```bash
-$ marksapi massive aggregate-bar <MARKET> --tickers 'ticker1,ticker2' \
+marksapi massive aggregate-bar <MARKET> --tickers 'ticker1,ticker2' \
   --from <DATE> --to <DATE> [--timespan <ENUM>] [--multiplier <INT>] \
   [--unadjusted] [--limit <INT>]
 ```
@@ -185,17 +185,17 @@ $ marksapi massive aggregate-bar <MARKET> --tickers 'ticker1,ticker2' \
 
 **Daily candles for AAPL in 2024**
 ```bash
-$ marksapi massive aggregate-bar stocks AAPL --multiplier 1 --timespan day --from 2024-01-01 --to 2024-12-31
+marksapi massive aggregate-bar stocks AAPL --multiplier 1 --timespan day --from 2024-01-01 --to 2024-12-31
 ```
 
 **Weekly candles for multiple tickers**
 ```bash
-$ marksapi massive aggregate-bar stocks --tickers AAPL,MSFT,GOOGL --multiplier 1 --timespan week --from 2024-01-01 --to 2024-12-31 --limit 500
+marksapi massive aggregate-bar stocks --tickers AAPL,MSFT,GOOGL --multiplier 1 --timespan week --from 2024-01-01 --to 2024-12-31 --limit 500
 ```
 
 **Hourly candles for Microsoft**
 ```bash
-$ marksapi massive aggregate-bar stocks MSFT --multiplier 1 --timespan hour --from 2024-06-01 --to 2024-06-30 --limit 200
+marksapi massive aggregate-bar stocks MSFT --multiplier 1 --timespan hour --from 2024-06-01 --to 2024-06-30 --limit 200
 ```
 
 <sub>[Massive - Contents](#contents-1)</sub>
@@ -205,7 +205,7 @@ Retreive US historical inflation.
 
 **Usage:**
 ```bash
-$ marksapi massive inflation --dates $DATE1 $DATE2 [--operator <ENUM>]
+marksapi massive inflation --dates $DATE1 $DATE2 [--operator <ENUM>]
 ```
 
 | Argument | Description | Required | Default |
@@ -273,6 +273,42 @@ marksapi massive labor --dates '2026-06-01' '2026-07-01'
 #### short-interest
 Retrieve daily short interest data reported to FINRA.
 
+**Usage**
+```bash
+marksapi massive short-interest [--tickers] [--settlement] [--days-to-cover <FLOAT>] [--avg-volume <FLOAT>] [--limit <INT>]
+```
+
+| Argument | Description | Required | Default |
+|---|---|---:|---|
+| tickers | Comma-delimited ticker symbols | No |  |
+| settlement | Date as of which data is settled (ISO format: YYYY-MM-DD) | No |  |
+| days-to-cover | Days to cover ratio to limit results | No |  |
+| avg-volume | Average daily volume to limit results | No |  |
+
+**Examples:**
+
+**Get short interest for a single ticker**
+```bash
+marksapi massive short-interest --tickers AAPL
+```
+
+**Get short interest for multiple tickers**
+```bash
+marksapi massive short-interest --tickers AAPL,MSFT
+```
+
+**Get short interest where days to cover is less then 5**
+```bash
+marksapi massive short-interest --days-to-cover 5 --operator lt 
+```
+
+**Get short interest where days to cover is less then 5 and greater than 1**
+```bash
+marksapi massive short-interest --days-to-cover 5 --operator lt --days-to-cover 1 --operator gt
+```
+
+**Note:** this also works for `avg-volume`.
+
 <sub>[Massive - Contents](#contents-1)</sub>
 
 #### short-volume
@@ -281,14 +317,14 @@ Retrieve daily aggregated short sale volume data reported to FINRA from off-exch
 
 **Usage:**
 ```bash
-$ marksapi massive short-volume <TICKER> --from-date <DATE> --to-date <DATE> [--ratio-min <FLOAT>] [--ratio-max <FLOAT>] [--limit <INT>]
+marksapi massive short-volume <TICKER> --from-date <DATE> --to-date <DATE> [--ratio-min <FLOAT>] [--ratio-max <FLOAT>] [--limit <INT>]
 ```
 
 | Argument | Description | Required | Default |
 |---|---|---:|---|
-| TICKER | Primary ticker symbol | Yes |  |
-| from-date | Start date of trade activity (YYYY-MM-DD) | Yes |  |
-| to-date | End date of trade activity (YYYY-MM-DD) | Yes |  |
+| tickers | Comma-delimited ticker symbols | No |  |
+| from | Start date of trade activity (YYYY-MM-DD) | No |  |
+| to | End date of trade activity (YYYY-MM-DD) | No |  |
 | ratio-min | Minimum short volume ratio filter | No |  |
 | ratio-max | Maximum short volume ratio filter | No |  |
 | limit | Maximum records to return | No | 10 |
@@ -299,19 +335,19 @@ $ marksapi massive short-volume <TICKER> --from-date <DATE> --to-date <DATE> [--
 
 **Examples:**
 
-**Get short volume for AAPL**
+**Get short volume for a single ticker**
 ```bash
-$ marksapi massive short-volume AAPL --from-date 2024-01-01 --to-date 2024-01-31
+marksapi massive short-volume --tickers AAPL --from-date 2024-01-01 --to-date 2024-01-31
 ```
 
 **Filter by ratio range for multiple tickers**
 ```bash
-$ marksapi massive short-volume GME,AMC --from-date 2024-01-01 --to-date 2024-03-31 --ratio-min 0.3 --ratio-max 1.0 --limit 1000
+marksapi massive short-volume GME,AMC --from-date 2024-01-01 --to-date 2024-03-31 --ratio-min 0.3 --ratio-max 1.0 --limit 1000
 ```
 
 **Bulk query with higher limit**
 ```bash
-$ marksapi massive short-volume TSLA,NVDA,AMD --from-date 2024-06-01 --to-date 2024-06-30 --limit 5000
+marksapi massive short-volume TSLA,NVDA,AMD --from-date 2024-06-01 --to-date 2024-06-30 --limit 5000
 ```
 <sub>[Massive - Contents](#contents-1)</sub>
 
@@ -321,7 +357,7 @@ Query for tickers matching given conditions.
 
 **Usage:**
 ```bash
-$ marksapi massive tickers [--ticker <STRING>] [--type <TYPE>] [--market <STRING>] [--exchange <MIC>] \
+marksapi massive tickers [--ticker <STRING>] [--type <TYPE>] [--market <STRING>] [--exchange <MIC>] \
                            [--cusip <CODE>] [--cik <KEY>] [--date <DATE>] [--search <TERM>] \
                            [--inactive] [--desc] [--sort <FIELD>] [--limit <INT>]
 ```
@@ -349,27 +385,27 @@ $ marksapi massive tickers [--ticker <STRING>] [--type <TYPE>] [--market <STRING
 
 **List all active tickers (paginated)**
 ```bash
-$ marksapi massive tickers --limit 500
+marksapi massive tickers --limit 500
 ```
 
 **Search for specific company**
 ```bash
-$ marksapi massive tickers --search "Apple Inc" --limit 50
+marksapi massive tickers --search "Apple Inc" --limit 50
 ```
 
 **Find ticker by CIK**
 ```bash
-$ marksapi massive tickers --cik 0000320193 --limit 10
+marksapi massive tickers --cik 0000320193 --limit 10
 ```
 
 **Historical snapshot**
 ```bash
-$ marksapi massive tickers --date 2023-06-15 --limit 200
+marksapi massive tickers --date 2023-06-15 --limit 200
 ```
 
 **Filter by exchange and market**
 ```bash
-$ marksapi massive tickers --exchange XNYS --market stocks --limit 100
+marksapi massive tickers --exchange XNYS --market stocks --limit 100
 ```
 <sub>[Massive - Contents](#contents-1)</sub>
 
@@ -379,7 +415,7 @@ Retrieve comprehensive details for a single ticker supported by Massive.
 
 **Usage:**
 ```bash
-$ marksapi massive ticker-info <MARKET> <TICKER> [--date <DATE>]
+marksapi massive ticker-info <MARKET> <TICKER> [--date <DATE>]
 ```
 
 | Argument | Description | Required | Default |
@@ -392,17 +428,17 @@ $ marksapi massive ticker-info <MARKET> <TICKER> [--date <DATE>]
 
 **Single ticker overview**
 ```bash
-$ marksapi massive ticker-info stocks AAPL
+marksapi massive ticker-info stocks AAPL
 ```
 
 **Specific date snapshot**
 ```bash
-$ marksapi massive ticker-info stocks MSFT --date 2024-01-01
+marksapi massive ticker-info stocks MSFT --date 2024-01-01
 ```
 
 **Multiple tickers**
 ```bash
-$ marksapi massive ticker-info stocks GOOGL,NASDAQ:AAPL,ARCA:TSLA
+marksapi massive ticker-info stocks GOOGL,NASDAQ:AAPL,ARCA:TSLA
 ```
 
 <sub>[Massive - Contents](#contents-1)</sub>
@@ -415,7 +451,7 @@ Retreive US treasury yield quotes.
 ### Common options
 
 #### Formatting output
-All commands support output formatting via `--format` flag:
+All commands support output formatting using the `--format` option.
 
 | Format | Description |
 |---|---|
@@ -423,7 +459,7 @@ All commands support output formatting via `--format` flag:
 | csv | CSV table export |
 
 ```bash
-$ marksapi massive aggregate-bar stocks AAPL --from 2024-01-01 --to 2024-01-31 --timespan day --format csv
+marksapi massive aggregate-bar stocks AAPL --from 2024-01-01 --to 2024-01-31 --timespan day --format csv
 ```
 
 All output is written as **utf-8**-encoded text.
@@ -432,7 +468,7 @@ All output is written as **utf-8**-encoded text.
 API limits vary by endpoints and service. All commands support user supplied limits using the `--limit` option.
 
 ```bash
-$ marksapi massive tickers --exchange XNYS --market stocks --limit 100
+marksapi massive tickers --exchange XNYS --market stocks --limit 100
 ```
 
 <sub>[Contents](#contents)</sub>
