@@ -288,7 +288,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         public static Command AddDateArrayOption(
             this Command command, ArgumentArity? arity = null)
         {
-            var dateOption = new Option<DateTime[]>(name: "--dates")
+            var dateOption = new Option<DateTime[]>(name: "--date")
             {
                 Description = "Snapshot date(s) (ISO format: YYYY-MM-DD).",
                 Arity = arity ?? ArgumentArity.OneOrMore,

@@ -28,7 +28,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         
             command.SetAction((pr, ct) =>
             {
-                DateTime[] dates = pr.GetValue<DateTime[]>("--dates") ?? [];
+                DateTime[] dates = pr.GetValue<DateTime[]>("--date") ?? [];
                 string? format = pr.GetValue<string>("--format");
                 string? numOperator = pr.GetValue<string>("--operator");
                 int? limit = pr.GetValue<int?>("--limit");

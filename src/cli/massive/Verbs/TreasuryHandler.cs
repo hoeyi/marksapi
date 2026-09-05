@@ -21,13 +21,14 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             var command = new Command("treasury", "Retreive US treasury yield quotes");
 
             command
+                .AddDateArrayOption(arity: ArgumentArity.ZeroOrMore)
                 .AddFormatOption()
                 .AddLimitOption()
                 .AddFileOutputOption();
         
             command.SetAction((pr, ct) =>
             {
-                DateTime[] dates = pr.GetValue<DateTime[]>("--dates") ?? [];
+                DateTime[] dates = pr.GetValue<DateTime[]>("--date") ?? [];
                 string? format = pr.GetValue<string>("--format");
                 string? numOperator = pr.GetValue<string>("--operator");
                 int? limit = pr.GetValue<int?>("--limit");

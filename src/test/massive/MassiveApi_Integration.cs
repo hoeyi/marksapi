@@ -505,6 +505,23 @@ namespace ApiClient.Test.Massive.Integration
             await Assert.ThrowsAsync<ArgumentException>(() =>
                 ApiClient.GetTreasuryYieldResponseAsync(dates, numOp: numOp));
         }
+
+        [Theory]
+        [InlineData("2026-06-01|2026-07-01")]
+        public async Task GetTreasuryYieldResponseAsync_MultiDate_ReturnsSuccessResponse(
+            string datePipeDelim)
+        {
+            // Arrange
+            var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+
+            // Act
+            var responseResult = await ApiClient.GetTreasuryYieldResponseAsync(dates);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<LaborMarketResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+        }
     }
     #endregion
 }

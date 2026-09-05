@@ -135,12 +135,12 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             if(_logger?.IsEnabled(LogLevel.Error) ?? false)
                 _logger?.LogError(
                     "Expecting <{opt}> to have length 1 when <{opt}> specified",
-                    "--dates",
+                    "--date",
                     "--operator"
                 );
 
             throw new ArgumentException(
-                    $"Invalid --operator parameter for given --dates");
+                    $"Invalid --operator parameter for given --date");
         }
         public CommandValidator ValidateTickerOrTickersOrThrow(string? ticker, string? tickers)
         {

@@ -218,7 +218,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "inflation", "--dates", "2026-04-01", "2026-05-01", "--format", "json"],
+            "args": ["massive", "inflation", "--date", "2026-04-01", "2026-05-01", "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -227,7 +227,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "inflation", "--dates", "2026-03-01", "--format", "json"],
+            "args": ["massive", "inflation", "--date", "2026-03-01", "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -236,7 +236,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "inflation", "--dates", "2026-03-01", "--format", "json"],
+            "args": ["massive", "inflation", "--date", "2026-03-01", "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         }

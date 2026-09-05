@@ -165,9 +165,7 @@ Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for
 
 **Usage:**
 ```bash
-marksapi massive aggregate-bar <MARKET> --tickers 'ticker1,ticker2' \
-  --from <DATE> --to <DATE> [--timespan <ENUM>] [--multiplier <INT>] \
-  [--unadjusted] [--limit <INT>]
+marksapi massive aggregate-bar <MARKET> [options]
 ```
 
 | Argument | Description | Required | Default |
@@ -205,24 +203,24 @@ Retreive US historical inflation.
 
 **Usage:**
 ```bash
-marksapi massive inflation --dates $DATE1 $DATE2 [--operator <ENUM>]
+marksapi massive inflation [options]
 ```
 
 | Argument | Description | Required | Default |
 |---|---|---:|---|
 | dates | Dates for which results are queried | Yes | |
-| operator | Comparison operator to pair with 1 dates parameter | No | |
+| operator | Comparison operator <gt, gte, lt, lte> to pair with dates parameter  | No | |
 
 **Examples:**
 
 **June - July inflation**
 ```bash
-marksapi massive inflation --dates '2026-06-01' '2026-07-01'
+marksapi massive inflation --date '2026-06-01' '2026-07-01'
 ```
 
 **Measurements since December 2025**
 ```bash
-marksapi massive inflation --dates '2025-12-31' --operator gt
+marksapi massive inflation --date '2025-12-31' --operator gt
 ```
 
 <sub>[Massive - Contents](#contents-1)</sub>
@@ -232,7 +230,7 @@ Retrieve US forecasted inflation
 
 **Usage:**
 ```bash
-marksapi massive inflation-forecast --dates $DATE1 $DATE2 [--operator <ENUM>]
+marksapi massive inflation-forecast [options]
 ```
 
 | Argument | Description | Required | Default |
@@ -246,7 +244,7 @@ marksapi massive inflation-forecast --dates $DATE1 $DATE2 [--operator <ENUM>]
 
 **September 2026 inflation forecast**
 ```bash
-marksapi massive inflation --dates '2026-09-01'
+marksapi massive inflation --date '2026-09-01'
 ```
 
 #### labor
@@ -254,7 +252,7 @@ Retrieve US unemployment data.
 
 **Usage:**
 ```bash
-marksapi massive labor --dates $DATE1 $DATE2
+marksapi massive labor --date $DATE1 $DATE2
 ```
 
 | Argument | Description | Required | Default |
@@ -265,7 +263,7 @@ marksapi massive labor --dates $DATE1 $DATE2
 
 **June and July 2026 unemployment figures**
 ```bash
-marksapi massive labor --dates '2026-06-01' '2026-07-01'
+marksapi massive labor --date '2026-06-01' '2026-07-01'
 ```
 
 <sub>[Massive - Contents](#contents-1)</sub>
@@ -275,7 +273,7 @@ Retrieve daily short interest data reported to FINRA.
 
 **Usage**
 ```bash
-marksapi massive short-interest [--tickers] [--settlement] [--days-to-cover <FLOAT>] [--avg-volume <FLOAT>] [--limit <INT>]
+marksapi massive short-interest [options]
 ```
 
 | Argument | Description | Required | Default |
@@ -317,7 +315,7 @@ Retrieve daily aggregated short sale volume data reported to FINRA from off-exch
 
 **Usage:**
 ```bash
-marksapi massive short-volume <TICKER> --from-date <DATE> --to-date <DATE> [--ratio-min <FLOAT>] [--ratio-max <FLOAT>] [--limit <INT>]
+marksapi massive short-volume [options]
 ```
 
 | Argument | Description | Required | Default |
@@ -357,9 +355,7 @@ Query for tickers matching given conditions.
 
 **Usage:**
 ```bash
-marksapi massive tickers [--ticker <STRING>] [--type <TYPE>] [--market <STRING>] [--exchange <MIC>] \
-                           [--cusip <CODE>] [--cik <KEY>] [--date <DATE>] [--search <TERM>] \
-                           [--inactive] [--desc] [--sort <FIELD>] [--limit <INT>]
+marksapi massive tickers [options]
 ```
 
 | Argument | Description | Required | Default |
@@ -415,7 +411,7 @@ Retrieve comprehensive details for a single ticker supported by Massive.
 
 **Usage:**
 ```bash
-marksapi massive ticker-info <MARKET> <TICKER> [--date <DATE>]
+marksapi massive ticker-info [options]
 ```
 
 | Argument | Description | Required | Default |
@@ -445,6 +441,11 @@ marksapi massive ticker-info stocks GOOGL,NASDAQ:AAPL,ARCA:TSLA
 
 #### treasury
 Retreive US treasury yield quotes.
+
+**Usage:**
+```bash
+marksapi massive treasury [options]
+```
 
 <sub>[Massive - Contents](#contents-1)</sub>
 
