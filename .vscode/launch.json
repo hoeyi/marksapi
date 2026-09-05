@@ -118,7 +118,7 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "short-volume", "AAPL"],
+            "args": ["massive", "short-volume", "--tickers", "AAPL"],
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -129,9 +129,50 @@
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
             "args": [
                 "massive", "short-volume", 
-                "AAPL",
-                "--from", "2026-06-30",
-                "--to", "2026-06-30", 
+                "--tickers", "AAPL",
+                "--date", "2026-06-30", "2026-06-30",
+                "--operator", "gte",
+                "--operator", "lte",
+                "--format", "json"
+            ],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-short-interest-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": [
+                "massive", "short-interest", 
+                "--tickers", "AAPL",
+                "--days-to-cover", "5",
+                "--days-to-cover", "1",
+                "--operator", "lte",
+                "--operator", "gte",
+                "--settlement", "2026-06-30", 
+                "--format", "json"
+            ],
+            "stopAtEntry": false,
+            "console": "internalConsole"
+        },
+        {
+            "name": "marksapi-short-interest-w-dtc+vol-json",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
+            "args": [
+                "massive", "short-interest", 
+                "--tickers", "AAPL",
+                "--days-to-cover", "5",
+                "--days-to-cover", "1",
+                "--operator", "lte",
+                "--operator", "gte",
+                "--avg-volume", "50000",
+                "--avg-volume", "10000",
+                "--operator", "lte",
+                "--operator", "gte",
+                "--settlement", "2026-06-30", 
                 "--format", "json"
             ],
             "stopAtEntry": false,
@@ -178,7 +219,12 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "inflation", "--dates", "2026-04-01", "2026-05-01", "--format", "json"],
+            "args": [
+                "massive", "inflation", 
+                "--date", "2026-04-01", "2026-05-01",
+                "--operator", "gt", 
+                "--operator", "lt",
+                "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -187,7 +233,11 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "inflation", "--dates", "2026-03-01", "--format", "json"],
+            "args": [
+                "massive", "inflation", 
+                "--date", "2026-03-01", 
+                "--operator", "any",
+                "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         },
@@ -196,7 +246,11 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/src/cli/bin/Debug/net10.0/marksapi.dll",
-            "args": ["massive", "inflation", "--dates", "2026-03-01", "--format", "json"],
+            "args": [
+                "massive", "inflation", 
+                "--date", "2026-03-01", 
+                "--operator", "any",
+                "--format", "json"],
             "stopAtEntry": false,
             "console": "internalConsole"
         }

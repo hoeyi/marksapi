@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
@@ -15,19 +16,20 @@ using Microsoft.Extensions.Logging;
 namespace Ichyd.Marksapi.Cli.Massive.Verbs
 {
     [ExcludeFromCodeCoverage]
-    static class ShortVolumeHandler
+    static class ShortInterestHandler
     {
         public static Command CreateCommand()
         {
             var command = new Command(
-                "short-volume",
-                "Retrieve daily aggregated short sale volume data reported to FINRA");
+                "short-interest",
+                "Retrieve daily short interest data reported to FINRA");
 
             command
                 .AddTickersOption()
-                .AddDateArrayOption()
-                .AddShortDailyVolumeOptions()
-                .AddComparisonArrayOption()
+                .AddSettlementDateOption()
+                .AddDaysToCoverOptions()
+                .AddAverageDailyVolumeOptions()
+                .AddComparisonOptions()
                 .AddLimitOption()
                 .AddFormatOption()
                 .AddFileOutputOption();
@@ -36,25 +38,26 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             command.SetAction((pr, ct) =>
             {
                 string? tickers = pr.GetValue<string>("--tickers");
-                DateTime[]? dateFilters = pr.GetValue<DateTime[]>("--date");
-                float[]? ratioFilters = pr.GetValue<float[]>("--short-volume-ratio");
+                DateTime? settlementDate = pr.GetValue<DateTime?>("--settlement");
+                float[]? daysToCover = pr.GetValue<float[]>("--days-to-cover");
                 var ops = pr.GetValue<NumericComparisonOperator[]>("--operator");
+                float[]? avgVolumes = pr.GetValue<float[]>("--avg-volume");
                 string? format = pr.GetValue<string>("--format");
                 int? limit = pr.GetValue<int?>("--limit");
                 string? outputPath = pr.GetValue<string>("--to-file");
 
-                var dateArgs = CommandBuilder
-                                .ConvertNumericArguments(dateFilters, ops);
-                var ratioArgs = CommandBuilder.ConvertNumericArguments(
-                                    ratioFilters,
-                                    ops,
-                                    offset: dateArgs?.Count ?? 0);
-
+                var dtcArgs = CommandBuilder.ConvertNumericArguments(
+                                daysToCover, ops);
+                var volArgs = CommandBuilder.ConvertNumericArguments(
+                                avgVolumes,
+                                ops,
+                                offset: dtcArgs?.Count ?? 0);
                 return Handle(
                     Program.Services,
                     tickers,
-                    dateArgs,
-                    ratioArgs,
+                    settlementDate,
+                    dtcArgs,
+                    volArgs,
                     format,
                     limit,
                     outputPath,
@@ -68,8 +71,9 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         private static async Task Handle(
             IServiceProvider services,
             string? tickers,
-            Dictionary<NumericComparisonOperator, DateTime>? dateFilters,
-            Dictionary<NumericComparisonOperator, float>? ratioFilters,
+            DateTime? settlementDate,
+            Dictionary<NumericComparisonOperator, float>? dtcFilter,
+            Dictionary<NumericComparisonOperator, float>? advFilter,
             string? format,
             int? limit,
             string? outputPath,
@@ -87,12 +91,28 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 .ValidateFileOuputOrThrow(outputPath)
                 .ValidateLimitOrThrow(limit, queryLimit);
 
+            // var dtcArgs = daysToCover?.ToDictionary(kv =>
+            //     {
+            //         validator.ValidateEnumOrThrow(
+            //             kv.Key, out NumericComparisonOperator numOp);
+            //         return numOp;
+            //     },
+            //     kv => kv.Value);
+            // var volArgs = averageDailyVolume?.ToDictionary(kv =>
+            //     {
+            //         validator.ValidateEnumOrThrow(
+            //             kv.Key, out NumericComparisonOperator numOp);
+            //         return numOp;
+            //     },
+            //     kv => kv.Value);
+
             var handler = services.GetServiceOrThrow<IMassiveApi>();
             
-            var result = await handler.GetShortVolumeResponseAsync(
+            var result = await handler.GetShortInterestResponseAsync(
                 tickers.ToValueArray(),
-                dateFilter: dateFilters,
-                shortVolumeRatio: ratioFilters,
+                settlementDate,
+                dtcFilter,
+                advFilter,
                 limit,
                 cancellationToken);
 

@@ -9,6 +9,7 @@ services:
         - GITHUB_USER
         - GITHUB_PAT
     image: ghcr.io/hoeyi/marksapi:latest
+    user: ${CUID-0}:${CGID-0}
     volumes:
     - ${HOME}/marksapi:/app/data
     secrets:

@@ -1,93 +1,78 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ApiClient.Massive.Parameters;
 using ApiClient.Massive.Response.Stocks;
 using ApiClient.Services;
 using Microsoft.Extensions.Logging;
 
-namespace ApiClient.Massive;
-
-public partial class MassiveApi
+namespace ApiClient.Massive
 {
-    /// <inheritdoc/>
-    public async Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
-        string ticker,
-        DateTime fromDate,
-        DateTime toDate,
-        Interval<float>? shortVolumeRatio = null,
-        int? limit = 10,
-        CancellationToken? cancellationToken = null)
+    public partial class MassiveApi
     {
-        ArgumentException.ThrowIfNullOrEmpty(ticker);
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(fromDate, toDate);
-
-        var queryBuilder = GetQueryBuilder();
-        queryBuilder.AddParameter("ticker", ticker);
-        queryBuilder.AddParameter("date.gte", $"{fromDate:yyyy-MM-dd}");
-        queryBuilder.AddParameter("date.lte", $"{toDate:yyyy-MM-dd}");
-
-        if (shortVolumeRatio.HasValue)
+        /// <inheritdoc/>
+        public async Task<ShortInterestResponse> GetShortInterestResponseAsync(
+            string[]? tickers = null,
+            DateTime? settlementDate = null,
+            Dictionary<NumericComparisonOperator, float>? daysToCover = null,
+            Dictionary<NumericComparisonOperator, float>? averageDailyVolume = null,
+            int? limit = 10,
+            CancellationToken? cancellationToken = null)
         {
-            queryBuilder.AddParameter(
-                shortVolumeRatio.Value.OpenLeft ? "short_volume_ratio.gt" : "short_volume_ratio.gte",
-                $"{shortVolumeRatio.Value.Start}");
-            queryBuilder.AddParameter(
-                shortVolumeRatio.Value.OpenRight ? "short_volume_ratio.lt" : "short_volume_ratio.lte",
-                $"{shortVolumeRatio.Value.End}");
+            // Entries will be dropped, but log a warning if possible.
+            string[] nonEmptyTickers = tickers?.Where(x => string.IsNullOrEmpty(x)).ToArray() ?? [];
+            if(nonEmptyTickers.Length == 0)
+                _logger?.LogWarning("Ignoring empty entries in '{parameter}'.", nameof(tickers));
+
+            var queryBuilder = GetQueryBuilder();
+
+            queryBuilder.AddAnyParameter("ticker", nonEmptyTickers);
+            queryBuilder.AddComparisonFilterParameters("days_to_cover", daysToCover);
+            queryBuilder.AddComparisonFilterParameters("avg_daily_volume", averageDailyVolume);
+
+            queryBuilder.AddParameter("limit", $"{limit}");
+
+            var response = await GetResponseAsync<ShortInterestResponse>(
+                                    queryBuilder, 
+                                    Endpoint.StocksFundamentalsShortInterest,
+                                    cancellationToken);
+
+            return response;
         }
 
-        queryBuilder.AddParameter("limit", $"{limit}");
-
-        var response = await GetResponseAsync<ShortVolumeResponse>(
-                                queryBuilder, 
-                                Endpoint.StocksFundamentalsShortVolume,
-                                cancellationToken);
-
-        return response;
-    }
-
-    /// <inheritdoc/>
-    public async Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
-        string[] tickers,
-        DateTime fromDate,
-        DateTime toDate,
-        Interval<float>? shortVolumeRatio = null,
-        int? limit = 10,
-        CancellationToken? cancellationToken = null)
-    {
-        if(tickers.Length == 0)
-            throw new ArgumentException($"Parameter '{tickers} must be non-empty.");
-        
-        // Entries will be dropped, but log a warning if possible.
-        if(tickers.Any(x => string.IsNullOrEmpty(x)))
-            _logger?.LogWarning("Ignoring empty entries in '{parameter}'.", nameof(tickers));
-
-        ArgumentOutOfRangeException.ThrowIfGreaterThan(fromDate, toDate);
-
-        var queryBuilder = GetQueryBuilder();
-        var tickersDelimited = string.Join(",", tickers.Where(x => !string.IsNullOrEmpty(x)));
-        queryBuilder.AddParameter("ticker.any_of", string.Join(",", tickersDelimited));
-        queryBuilder.AddParameter("date.gte", $"{fromDate:yyyy-MM-dd}");
-        queryBuilder.AddParameter("date.lte", $"{toDate:yyyy-MM-dd}");
-
-        if (shortVolumeRatio.HasValue)
+        /// <inheritdoc/>
+        public async Task<ShortVolumeResponse> GetShortVolumeResponseAsync(
+            string[]? tickers,
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilter = null,
+            Dictionary<NumericComparisonOperator, float>? shortVolumeRatio = null,
+            int? limit = 10,
+            CancellationToken? cancellationToken = null)
         {
-            queryBuilder.AddParameter(
-                shortVolumeRatio.Value.OpenLeft ? "short_volume_ratio.gt" : "short_volume_ratio.gte",
-                $"{shortVolumeRatio.Value.Start}");
-            queryBuilder.AddParameter(
-                shortVolumeRatio.Value.OpenRight ? "short_volume_ratio.lt" : "short_volume_ratio.lte",
-                $"{shortVolumeRatio.Value.End}");
+            // Entries will be dropped, but log a warning if possible.
+            string[] nonEmptyTickers = tickers?.Where(x => string.IsNullOrEmpty(x)).ToArray() ?? [];
+            if(nonEmptyTickers.Length == 0)
+                _logger?.LogWarning("Ignoring empty entries in '{parameter}'.", nameof(tickers));
+
+            var queryBuilder = GetQueryBuilder();
+
+            queryBuilder.AddAnyParameter("ticker", nonEmptyTickers);
+            queryBuilder.AddComparisonFilterParameters(
+                            "date",
+                            dateFilter,
+                            customFormat: QueryBuilderExtensions.DateFormat);
+            queryBuilder.AddComparisonFilterParameters("short_volume_ratio", shortVolumeRatio);
+
+            queryBuilder.AddParameter("limit", $"{limit}");
+
+            var response = await GetResponseAsync<ShortVolumeResponse>(
+                                    queryBuilder, 
+                                    Endpoint.StocksFundamentalsShortVolume,
+                                    cancellationToken);
+
+            return response;
         }
-
-        queryBuilder.AddParameter("limit", $"{limit}");
-
-        var response = await GetResponseAsync<ShortVolumeResponse>(
-                                queryBuilder, 
-                                Endpoint.StocksFundamentalsShortVolume,
-                                cancellationToken);
-
-        return response;
     }
 }
+

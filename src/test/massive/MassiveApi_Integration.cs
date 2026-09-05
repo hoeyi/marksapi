@@ -53,7 +53,7 @@ namespace ApiClient.Test.Massive.Integration
 
             // Act
             var responseResult = await ApiClient.GetAggregateBarResponseAsync(
-                marketResult, ticker, multiplier, barTimeResult, fromDate, toDate, limit);
+                marketResult, ticker, multiplier, barTimeResult, fromDate, toDate, true, limit);
 
             // Assert
             Assert.Multiple(
@@ -96,7 +96,7 @@ namespace ApiClient.Test.Massive.Integration
         [Theory]
         [InlineData("Stocks", "AAPL")]
         [InlineData("Indices", "COMP")]
-        [InlineData("Options", "SPY260821C00640000")]
+        [InlineData("Options", "SPY280121C00750000")]
         [InlineData("Crypto", "BTCUSD")]
         [InlineData("Fx", "USDEUR")]
         public async Task GetTickerOverviewResponseAsync_ReturnSuccessResponse(
@@ -154,18 +154,23 @@ namespace ApiClient.Test.Massive.Integration
         }
         #endregion
 
-        #region short-volume
+        #region short-volume / short-interest
         [Theory]
         [InlineData("AAPL", "2026-05-13", "2026-05-15")]
         public async Task GetShortVolumeResponseAsync_SingleParameter_Ticker_ReturnSuccessResponse(
             string ticker, string fromStr, string toStr)
         {
             // Arrange
-            var fromDate = DateTime.Parse(fromStr);
-            var toDate = DateTime.Parse(toStr);
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Gte, DateTime.Parse(fromStr)},
+                { NumericComparisonOperator.Lte, DateTime.Parse(toStr)},
+            };
             
             // Act
-            var responseResult = await ApiClient.GetShortVolumeResponseAsync(ticker, fromDate, toDate);
+            var responseResult = await ApiClient.GetShortVolumeResponseAsync(
+                [ticker],
+                dateFilter);
             
             // Assert
             Assert.Multiple(
@@ -186,16 +191,18 @@ namespace ApiClient.Test.Massive.Integration
             string ticker, string fromStr, string toStr)
         {
             // Arrange
-            var fromDate = DateTime.Parse(fromStr);
-            var toDate = DateTime.Parse(toStr);
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Gte, DateTime.Parse(fromStr)},
+                { NumericComparisonOperator.Lte, DateTime.Parse(toStr)},
+            };
             var tickers = ticker.Split(",");
 
             // Act
             var responseResult = 
                 await ApiClient.GetShortVolumeResponseAsync(
                     tickers,
-                    fromDate,
-                    toDate);
+                    dateFilter);
             
             // Assert
             Assert.Multiple(
@@ -209,6 +216,97 @@ namespace ApiClient.Test.Massive.Integration
                 nameof(GetShortVolumeResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse), 
                 responseResult);
         }
+
+        [Theory]
+        [InlineData("AAPL,MSFT", "2026-05-13")]
+        public async Task GetShortInterestResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse(
+            string ticker, string dateStr)
+        {
+            // Arrange
+            var settleDate = DateTime.Parse(dateStr);
+            var tickers = ticker.Split(",");
+
+            // Act
+            var responseResult = 
+                await ApiClient.GetShortInterestResponseAsync(
+                    tickers: tickers,
+                    settlementDate: settleDate);
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<ShortInterestResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result            
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetShortInterestResponseAsync_MultiParameter_Ticker_ReturnSuccessResponse), 
+                responseResult);
+        }
+
+        [Theory]
+        [InlineData("Gte", "5", "2026-05-13")]
+        [InlineData("Lte", "5", "2026-05-13")]
+        public async Task GetShortInterestResponseAsync_DaysToCover_SingleParameter_ReturnSuccessResponse(
+            string numericOperator, string daysToCover, string dateStr)
+        {
+            // Arrange
+            var settleDate = DateTime.Parse(dateStr);
+            var dtcRatio = float.Parse(daysToCover);
+            var numOperator = Enum.Parse<NumericComparisonOperator>(numericOperator);
+
+            // Act
+            var responseResult = 
+                await ApiClient.GetShortInterestResponseAsync(
+                        settlementDate: settleDate,
+                        daysToCover: new(){{ numOperator, dtcRatio }});
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<ShortInterestResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result            
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetShortInterestResponseAsync_DaysToCover_SingleParameter_ReturnSuccessResponse), 
+                responseResult);
+        }
+        
+        [Theory]
+        [InlineData("Gte,Lte", "1,5", "2026-05-13")]
+        public async Task GetShortInterestResponseAsync_DaysToCover_MultiParameter_ReturnSuccessResponse(
+            string numericOperator, string daysToCover, string dateStr)
+        {
+            // Arrange
+            var settleDate = DateTime.Parse(dateStr);
+            var ratios = daysToCover.Split(",");
+            var dtcRatios = ratios.Select(x => float.Parse(x)).ToArray();
+            var operators = numericOperator.Split(",");
+            var numOperators = operators.Select(x => 
+                                    Enum.Parse<NumericComparisonOperator>(x))
+                                .ToArray();
+
+            // Act
+            var responseResult = 
+                await ApiClient.GetShortInterestResponseAsync(
+                        settlementDate: settleDate,
+                        daysToCover: new(){
+                            { numOperators[0], dtcRatios[0] },
+                            { numOperators[1], dtcRatios[1]}});
+            
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<ShortInterestResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
+
+            // Print result            
+            _logger.LogInformation(
+                "'{method}' returned:\n{@responseResult}", 
+                nameof(GetShortInterestResponseAsync_DaysToCover_SingleParameter_ReturnSuccessResponse), 
+                responseResult);
+        }
+
         #endregion 
 
         #region economy
@@ -218,10 +316,14 @@ namespace ApiClient.Test.Massive.Integration
             string dateStr)
         {
             // Arrange
-            var dates = new[] { DateTime.Parse(dateStr) };
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Gte, DateTime.Parse(dateStr)},
+                { NumericComparisonOperator.Lte, DateTime.Parse(dateStr)},
+            };
 
             // Act
-            var responseResult = await ApiClient.GetTreasuryYieldResponseAsync(dates);
+            var responseResult = await ApiClient.GetTreasuryYieldResponseAsync(dateFilter);
 
             // Assert
             Assert.Multiple(
@@ -236,20 +338,26 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("2026-06-09")]
+        [InlineData("2026-06-15|2026-07-15")]
         public async Task GetTreasuryYieldResponseAsync_MultiDate_ReturnSuccessResponse(
             string datePipeDelim)
         {
             // Arrange
             var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Gte, dates[0]},
+                { NumericComparisonOperator.Lte, dates[1]},
+            };
 
             // Act
-            var responseResult = await ApiClient.GetTreasuryYieldResponseAsync(dates);
+            var responseResult = await ApiClient.GetTreasuryYieldResponseAsync(dateFilter);
 
             // Assert
             Assert.Multiple(
                 () => Assert.IsType<TreasuryYieldsResponse>(responseResult),
-                () => Assert.NotEmpty(responseResult.Results));
+                () => Assert.NotEmpty(responseResult.Results),
+                () => Assert.True(responseResult.Results.Count > 1));
 
             // Print result
             _logger.LogInformation(
@@ -264,10 +372,13 @@ namespace ApiClient.Test.Massive.Integration
             string dateStr)
         {
             // Arrange
-            var dates = new[] { DateTime.Parse(dateStr) };
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Any, DateTime.Parse(dateStr)}
+            };
 
             // Act
-            var responseResult = await ApiClient.GetInflationResponseAsync(dates);
+            var responseResult = await ApiClient.GetInflationResponseAsync(dateFilter);
 
             // Assert
             Assert.Multiple(
@@ -288,9 +399,14 @@ namespace ApiClient.Test.Massive.Integration
         {
             // Arrange
             var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Gte, dates[0]},
+                { NumericComparisonOperator.Lte, dates[1]},
+            };
 
             // Act
-            var responseResult = await ApiClient.GetInflationResponseAsync(dates);
+            var responseResult = await ApiClient.GetInflationResponseAsync(dateFilter);
 
             // Assert
             Assert.Multiple(
@@ -310,11 +426,14 @@ namespace ApiClient.Test.Massive.Integration
             string dateStr)
         {
             // Arrange
-            var dates = new[] { DateTime.Parse(dateStr) };
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Any, DateTime.Parse(dateStr)}
+            };
 
             // Act
             var responseResult =
-                await ApiClient.GetInflationExpectationResponseAsync(dates);
+                await ApiClient.GetInflationExpectationResponseAsync(dateFilter);
 
             // Assert
             Assert.Multiple(
@@ -335,10 +454,15 @@ namespace ApiClient.Test.Massive.Integration
         {
             // Arrange
             var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Gte, dates[0]},
+                { NumericComparisonOperator.Lte, dates[1]},
+            };
 
             // Act
             var responseResult =
-                await ApiClient.GetInflationExpectationResponseAsync(dates);
+                await ApiClient.GetInflationExpectationResponseAsync(dateFilter);
 
             // Assert
             Assert.Multiple(
@@ -358,10 +482,13 @@ namespace ApiClient.Test.Massive.Integration
             string dateStr)
         {
             // Arrange
-            var dates = new[] { DateTime.Parse(dateStr) };
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Any, DateTime.Parse(dateStr)}
+            };
 
             // Act
-            var responseResult = await ApiClient.GetLaborMarketResponseAsync(dates);
+            var responseResult = await ApiClient.GetLaborMarketResponseAsync(dateFilter);
 
             // Assert
             Assert.Multiple(
@@ -376,15 +503,20 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("2026-06-05|2026-05-01")]
+        [InlineData("2026-05-01|2026-07-01")]
         public async Task GetLaborMarketResponseAsync_MultiDate_ReturnSuccessResponse(
             string datePipeDelim)
         {
             // Arrange
             var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Gte, dates[0]},
+                { NumericComparisonOperator.Lte, dates[1]},
+            };
 
             // Act
-            var responseResult = await ApiClient.GetLaborMarketResponseAsync(dates);
+            var responseResult = await ApiClient.GetLaborMarketResponseAsync(dateFilter);
 
             // Assert
             Assert.Multiple(
@@ -399,17 +531,25 @@ namespace ApiClient.Test.Massive.Integration
         }
 
         [Theory]
-        [InlineData("2026-06-08|2026-06-09")]
-        public async Task GetTreasuryYieldResponseAsync_NumOpWithMultipleDates_Throws(
+        [InlineData("2026-05-01|2026-07-01")]
+        public async Task GetTreasuryYieldResponseAsync_MultiDate_ReturnsSuccessResponse(
             string datePipeDelim)
         {
             // Arrange
             var dates = datePipeDelim.Split("|").Select(DateTime.Parse).ToArray();
-            var numOp = NumericComparisonOperator.Gt;
+            var dateFilter = new Dictionary<NumericComparisonOperator, DateTime>()
+            {
+                { NumericComparisonOperator.Gte, dates[0]},
+                { NumericComparisonOperator.Lte, dates[1]},
+            };
 
-            // Act & Assert
-            await Assert.ThrowsAsync<ArgumentException>(() =>
-                ApiClient.GetTreasuryYieldResponseAsync(dates, numOp: numOp));
+            // Act
+            var responseResult = await ApiClient.GetTreasuryYieldResponseAsync(dateFilter);
+
+            // Assert
+            Assert.Multiple(
+                () => Assert.IsType<TreasuryYieldsResponse>(responseResult),
+                () => Assert.NotEmpty(responseResult.Results));
         }
     }
     #endregion

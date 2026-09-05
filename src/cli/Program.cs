@@ -149,7 +149,9 @@ namespace Ichyd.Marksapi.Cli
                 .AddJsonFile("appsettings.json");
             #endif
 
-            return configBuilder.Build();
+            var config = configBuilder.Build();
+
+            return config;
         }
         
         private static ILogger InitLogger<T>(IConfiguration configuration)

@@ -4,34 +4,39 @@ A unified command line interface for querying financial, economic, and relatedd 
 **Current services**
 - [Massive](https://www.massive.com/)
 
+**Planned services**
+- [FRED](https://fred.stlouisfed.org/docs/api/fred/)
+
 ## Contents
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Commands](#commands)
     - [General syntax](#general-syntax)
     - [MASSIVE](#massive)
-    - [Output](#output-formats)
+    - [Common options](#common-options)
 - [Troubleshooting](#troubleshooting)
 - [Attribution / Acknowledgements](#attribution--acknowledgements)
 
 ## Installation
 
 ### Building from source
-Use the [Dockerfile](./Dockerfile) to build from source:
+Use the [Dockerfile](./build/Dockerfile) and [compose](./build/docker-compose.yml) to build from source:
 
-#### Bash
+#### Docker compose
+The recommended approach to building and running the application is to use docker. A [compose](./build/docker-compose.yml) and companion [Dockerfile](./build/Dockerfile) are provided in the `build` directory for this project.
+
 ```bash
 git clone https://github.com/hoeyi/marksapi.git
 cd marksapi/src/cli/build
 GITHUB_USER="<your user id>"
-GITHUB_PAT="<your github personal token>; Requires read pacakges permission"
+GITHUB_PAT="<your github personal token>; Requires read packages permission"
 export GITHUB_USER GITHUB_PAT
 docker compose build
 ```
 
 You can now access the app by running the image interactively:
 ```bash
-docker run -it marksapi:latest bash
+docker run -it -v ${HOME}/marksapi:/app/data  marksapi:latest bash
 ```
 
 and from within the container:
@@ -39,30 +44,32 @@ and from within the container:
 ```bash
 marksapi --version
 ```
-
 The container will start as `root@<container_tag>` in the working directory `/app` by default. The working directory is added to `$PATH` during the Docker build.
 
-### Using <em>docker compose</em>
-You can also use `src/cli/build/docker-compose.yml`. The volume mount provides an output location. Application logs are ephemeral unless copy to a mount location during the session.
+**_Note:_** This omits the configuration of required secrets used by some services. Therefore, running using a **docker-compose** file is recommended. See the following section for details.
 
-#### docker-compose.yml
+### Using public image
+You can also use a custom or modified version of the `docker-compose` file, omitting the build arguments. Note that this requires being able to access to the GitHub docker image repository in order to pull the latest image version.
+
+**docker-compose.yml**
 ```yaml <>
 services:
   marksapi:
-    build:
-      context: ../../../. # context: {project-root}/src/. 
-      dockerfile: ./cli/build/Dockerfile
     image: ghcr.io/hoeyi/marksapi:latest
+    user: ${CUID-0}:${CGID-0}
     volumes:
-    - ${HOME}/marksapi:/data
-```
+    - ${HOME}/marksapi:/app/data
+    secrets:
+        - MASSIVE_API_KEY
 
-#### Bash
+secrets:
+  MASSIVE_API_KEY:
+    file: ${HOME}/.docker-secrets/massive_api_key.txt   
+```
+**Bash**
 ```bash
-git clone https://github.com/hoeyi/marksapi.git
-cd marksapi/src
-# build the image then run
-docker compose build marksapi
+# directory where docker-compose.yml is saved
+cd marksapi/docker 
 docker compose run marksapi
 ```
 
@@ -92,6 +99,7 @@ secrets:
 This approach requires [Ichyd.Extensions.Configuration.Docker](https://github.com/ichyd/dotnet-Extensions.Configuration.Docker).
 
 Alternatively, set your Massive API key as an environment variable (not recommended).
+
 **Linux/macOS (bash/zsh)**
 ```bash
 export MASSIVE_API_KEY="your_api_key_here"
@@ -106,6 +114,18 @@ $env:MASSIVE_API_KEY = "your_api_key_here"
 ```bat
 set MASSIVE_API_KEY=your_api_key_here
 ```
+<sub>[Contents](#contents)</sub>
+
+### Optional
+By default, the container will run using `root` as the user/group. This is not ideal, as writting files will have ownership set to this user. This behavior may be overridden by providing values for the `${CUID}` and `${CGID}` parameters.
+
+**Bash**
+```bash
+CUID=$UID
+CGID=$UID
+export CUID CGID
+docker compose run marksapi
+```
 
 <sub>[Contents](#contents)</sub>
 
@@ -114,15 +134,15 @@ set MASSIVE_API_KEY=your_api_key_here
 ### General Syntax
 
 ```bash
-$ marksapi <service> <verb> [arguments] [options]
+marksapi <service> <verb> [arguments] [options]
 ```
 
 | Parameter | Description | Required | Default |
 |---|---|---:|---|
-| service | Service selector, e.g., massive | Yes | — |
-| verb | Command verb, see below | Yes | — |
-| arguments | Positional arguments depending on verb | Variable | — |
-| options | Optional flags and parameters | No | — |
+| service | Service selector, e.g., massive | Yes |  |
+| verb | Command verb, see below | Yes |  |
+| arguments | Positional arguments depending on verb | Variable |  |
+| options | Optional flags and parameters | No |  |
 
 <sub>[Contents](#contents)</sub>
 
@@ -130,9 +150,14 @@ $ marksapi <service> <verb> [arguments] [options]
 
 #### Contents
 - [aggregate-bar](#aggregate-bar)
+- [inflation](#inflation)
+- [inflation-forecast](#inflation-forecast)
+- [labor](#labor)
+- [short-interest](#short-interest)
 - [short-volume](#short-volume)
 - [ticker-info](#ticker-info)
 - [tickers](#tickers)
+- [treasury](#treasury)
 
 #### aggregate-bar
 
@@ -140,39 +165,149 @@ Retrieve aggregated historical OHLC (Open, High, Low, Close) and volume data for
 
 **Usage:**
 ```bash
-$ marksapi massive aggregate-bar <MARKET> <TICKER> --multiplier <INT> --timespan <ENUM> --from <DATE> --to <DATE> [--limit <INT>]
+marksapi massive aggregate-bar <MARKET> [options]
 ```
 
 | Argument | Description | Required | Default |
 |---|---|---:|---|
-| MARKET | Market identifier (e.g., stocks, forex) | Yes | — |
-| TICKER | Single case-sensitive ticker symbol | Yes | — |
-| from | Start date of time window (ISO format: YYYY-MM-DD) | Yes | — |
-| to | End date of time window (ISO format: YYYY-MM-DD) | Yes | — |
-| multiplier | Timespan multiplier (e.g., 1 for 1 day, 5 for 5 days). Defaults to 1 if not provided. | No | — |
-| timespan | Time window size (second, minute, hour, day, week, month, quarter, year). Defaults to 'day' if not provided. | No | — |
-| limit | Maximum records to return | No | 100 |
-
-| Option | Type | Range |
-|---|---|---|
-| --limit | Integer | Min: 1, Max: 1000 |
+| MARKET | Market identifier (e.g., stocks, forex) | Yes |  |
+| ticker | Comma-delimited tickers for the given market | Yes |  |
+| from | Start date of time window (ISO format: YYYY-MM-DD) | Yes |  |
+| to | End date of time window (ISO format: YYYY-MM-DD) | Yes |  |
+| timespan | Time window size (second, minute, hour, day, week, month, quarter, year).| No | day |
+| multiplier | Timespan multiplier (e.g., 1 for 1 day, 5 for 5 days). | No | 1 |
+| unadjusted | Flag indicating query should return non-split-adjusted results | No | false |
+ 
 
 **Examples:**
 
 **Daily candles for AAPL in 2024**
 ```bash
-$ marksapi massive aggregate-bar stocks AAPL --multiplier 1 --timespan day --from 2024-01-01 --to 2024-12-31
+marksapi massive aggregate-bar stocks AAPL --multiplier 1 --timespan day --from 2024-01-01 --to 2024-12-31
 ```
 
 **Weekly candles for multiple tickers**
 ```bash
-$ marksapi massive aggregate-bar stocks --tickers AAPL,MSFT,GOOGL --multiplier 1 --timespan week --from 2024-01-01 --to 2024-12-31 --limit 500
+marksapi massive aggregate-bar stocks --tickers AAPL,MSFT,GOOGL --multiplier 1 --timespan week --from 2024-01-01 --to 2024-12-31 --limit 500
 ```
 
 **Hourly candles for Microsoft**
 ```bash
-$ marksapi massive aggregate-bar stocks MSFT --multiplier 1 --timespan hour --from 2024-06-01 --to 2024-06-30 --limit 200
+marksapi massive aggregate-bar stocks MSFT --multiplier 1 --timespan hour --from 2024-06-01 --to 2024-06-30 --limit 200
 ```
+
+<sub>[Massive - Contents](#contents-1)</sub>
+
+#### inflation
+Retreive US historical inflation.
+
+**Usage:**
+```bash
+marksapi massive inflation [options]
+```
+
+| Argument | Description | Required | Default |
+|---|---|---:|---|
+| dates | Dates for which results are queried | Yes | |
+| operator | Comparison operator <gt, gte, lt, lte> to pair with dates parameter  | No | |
+
+**Examples:**
+
+**June - July inflation**
+```bash
+marksapi massive inflation --date '2026-06-01' '2026-07-01'
+```
+
+**Measurements since December 2025**
+```bash
+marksapi massive inflation --date '2025-12-31' --operator gt
+```
+
+<sub>[Massive - Contents](#contents-1)</sub>
+
+#### inflation-forecast
+Retrieve US forecasted inflation
+
+**Usage:**
+```bash
+marksapi massive inflation-forecast [options]
+```
+
+| Argument | Description | Required | Default |
+|---|---|---:|---|
+| dates | Dates for which results are queried | Yes | |
+| operator | Comparison operator to pair with 1 dates parameter | No | |
+
+<sub>[Massive - Contents](#contents-1)</sub>
+
+**Examples:**
+
+**September 2026 inflation forecast**
+```bash
+marksapi massive inflation --date '2026-09-01'
+```
+
+#### labor
+Retrieve US unemployment data.
+
+**Usage:**
+```bash
+marksapi massive labor --date $DATE1 $DATE2
+```
+
+| Argument | Description | Required | Default |
+|---|---|---:|---|
+| dates | Dates for which results are queried | Yes | |
+
+**Examples:**
+
+**June and July 2026 unemployment figures**
+```bash
+marksapi massive labor --date '2026-06-01' '2026-07-01'
+```
+
+<sub>[Massive - Contents](#contents-1)</sub>
+
+#### short-interest
+Retrieve daily short interest data reported to FINRA.
+
+**Usage**
+```bash
+marksapi massive short-interest [options]
+```
+
+| Argument | Description | Required | Default |
+|---|---|---:|---|
+| tickers | Comma-delimited ticker symbols | No |  |
+| settlement | Date as of which data is settled (ISO format: YYYY-MM-DD) | No |  |
+| days-to-cover | Days to cover ratio to limit results | No |  |
+| avg-volume | Average daily volume to limit results | No |  |
+
+**Examples:**
+
+**Get short interest for a single ticker**
+```bash
+marksapi massive short-interest --tickers AAPL
+```
+
+**Get short interest for multiple tickers**
+```bash
+marksapi massive short-interest --tickers AAPL,MSFT
+```
+
+**Get short interest where days to cover is less then 5**
+```bash
+marksapi massive short-interest --days-to-cover 5 --operator lt 
+```
+
+**Get short interest where days to cover is less then 5 and greater than 1**
+```bash
+marksapi massive short-interest --days-to-cover 5 --operator lt --days-to-cover 1 --operator gt
+```
+
+**Note:** this also works for `avg-volume`.
+
+<sub>[Massive - Contents](#contents-1)</sub>
 
 #### short-volume
 
@@ -180,16 +315,16 @@ Retrieve daily aggregated short sale volume data reported to FINRA from off-exch
 
 **Usage:**
 ```bash
-$ marksapi massive short-volume <TICKER> --from-date <DATE> --to-date <DATE> [--ratio-min <FLOAT>] [--ratio-max <FLOAT>] [--limit <INT>]
+marksapi massive short-volume [options]
 ```
 
 | Argument | Description | Required | Default |
 |---|---|---:|---|
-| TICKER | Primary ticker symbol | Yes | — |
-| from-date | Start date of trade activity (YYYY-MM-DD) | Yes | — |
-| to-date | End date of trade activity (YYYY-MM-DD) | Yes | — |
-| ratio-min | Minimum short volume ratio filter | No | — |
-| ratio-max | Maximum short volume ratio filter | No | — |
+| tickers | Comma-delimited ticker symbols | No |  |
+| from | Start date of trade activity (YYYY-MM-DD) | No |  |
+| to | End date of trade activity (YYYY-MM-DD) | No |  |
+| ratio-min | Minimum short volume ratio filter | No |  |
+| ratio-max | Maximum short volume ratio filter | No |  |
 | limit | Maximum records to return | No | 10 |
 
 | Option | Type | Range |
@@ -198,20 +333,21 @@ $ marksapi massive short-volume <TICKER> --from-date <DATE> --to-date <DATE> [--
 
 **Examples:**
 
-**Get short volume for AAPL**
+**Get short volume for a single ticker**
 ```bash
-$ marksapi massive short-volume AAPL --from-date 2024-01-01 --to-date 2024-01-31
+marksapi massive short-volume --tickers AAPL --from-date 2024-01-01 --to-date 2024-01-31
 ```
 
 **Filter by ratio range for multiple tickers**
 ```bash
-$ marksapi massive short-volume GME,AMC --from-date 2024-01-01 --to-date 2024-03-31 --ratio-min 0.3 --ratio-max 1.0 --limit 1000
+marksapi massive short-volume GME,AMC --from-date 2024-01-01 --to-date 2024-03-31 --ratio-min 0.3 --ratio-max 1.0 --limit 1000
 ```
 
 **Bulk query with higher limit**
 ```bash
-$ marksapi massive short-volume TSLA,NVDA,AMD --from-date 2024-06-01 --to-date 2024-06-30 --limit 5000
+marksapi massive short-volume TSLA,NVDA,AMD --from-date 2024-06-01 --to-date 2024-06-30 --limit 5000
 ```
+<sub>[Massive - Contents](#contents-1)</sub>
 
 #### tickers
 
@@ -219,9 +355,7 @@ Query for tickers matching given conditions.
 
 **Usage:**
 ```bash
-$ marksapi massive tickers [--ticker <STRING>] [--type <TYPE>] [--market <STRING>] [--exchange <MIC>] \
-                           [--cusip <CODE>] [--cik <KEY>] [--date <DATE>] [--search <TERM>] \
-                           [--inactive] [--desc] [--sort <FIELD>] [--limit <INT>]
+marksapi massive tickers [options]
 ```
 
 | Argument | Description | Required | Default |
@@ -247,28 +381,29 @@ $ marksapi massive tickers [--ticker <STRING>] [--type <TYPE>] [--market <STRING
 
 **List all active tickers (paginated)**
 ```bash
-$ marksapi massive tickers --limit 500
+marksapi massive tickers --limit 500
 ```
 
 **Search for specific company**
 ```bash
-$ marksapi massive tickers --search "Apple Inc" --limit 50
+marksapi massive tickers --search "Apple Inc" --limit 50
 ```
 
 **Find ticker by CIK**
 ```bash
-$ marksapi massive tickers --cik 0000320193 --limit 10
+marksapi massive tickers --cik 0000320193 --limit 10
 ```
 
 **Historical snapshot**
 ```bash
-$ marksapi massive tickers --date 2023-06-15 --limit 200
+marksapi massive tickers --date 2023-06-15 --limit 200
 ```
 
 **Filter by exchange and market**
 ```bash
-$ marksapi massive tickers --exchange XNYS --market stocks --limit 100
+marksapi massive tickers --exchange XNYS --market stocks --limit 100
 ```
+<sub>[Massive - Contents](#contents-1)</sub>
 
 #### ticker-info
 
@@ -276,35 +411,48 @@ Retrieve comprehensive details for a single ticker supported by Massive.
 
 **Usage:**
 ```bash
-$ marksapi massive ticker-info <MARKET> <TICKER> [--date <DATE>]
+marksapi massive ticker-info [options]
 ```
 
 | Argument | Description | Required | Default |
 |---|---|---:|---|
-| MARKET | Applicable market identifier | Yes | — |
-| TICKER | Single ticker symbol | Yes | — |
+| MARKET | Applicable market identifier | Yes |  |
+| TICKER | Single ticker symbol | Yes |  |
 | date | Snapshot date (YYYY-MM-DD) | No | Most recent |
 
 **Examples:**
 
 **Single ticker overview**
 ```bash
-$ marksapi massive ticker-info stocks AAPL
+marksapi massive ticker-info stocks AAPL
 ```
 
 **Specific date snapshot**
 ```bash
-$ marksapi massive ticker-info stocks MSFT --date 2024-01-01
+marksapi massive ticker-info stocks MSFT --date 2024-01-01
 ```
 
 **Multiple tickers**
 ```bash
-$ marksapi massive ticker-info stocks GOOGL,NASDAQ:AAPL,ARCA:TSLA
+marksapi massive ticker-info stocks GOOGL,NASDAQ:AAPL,ARCA:TSLA
 ```
 
-### Output Formats
+<sub>[Massive - Contents](#contents-1)</sub>
 
-All commands support output formatting via `--format` flag:
+#### treasury
+Retreive US treasury yield quotes.
+
+**Usage:**
+```bash
+marksapi massive treasury [options]
+```
+
+<sub>[Massive - Contents](#contents-1)</sub>
+
+### Common options
+
+#### Formatting output
+All commands support output formatting using the `--format` option.
 
 | Format | Description |
 |---|---|
@@ -312,10 +460,17 @@ All commands support output formatting via `--format` flag:
 | csv | CSV table export |
 
 ```bash
-$ marksapi massive aggregate-bar stocks AAPL --from 2024-01-01 --to 2024-01-31 --timespan day --format csv
+marksapi massive aggregate-bar stocks AAPL --from 2024-01-01 --to 2024-01-31 --timespan day --format csv
 ```
 
 All output is written as **utf-8**-encoded text.
+
+#### Limiting results
+API limits vary by endpoints and service. All commands support user supplied limits using the `--limit` option.
+
+```bash
+marksapi massive tickers --exchange XNYS --market stocks --limit 100
+```
 
 <sub>[Contents](#contents)</sub>
 

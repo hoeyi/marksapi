@@ -56,6 +56,8 @@ namespace ApiClient.Massive
 
             public const string StocksFundamentalsShortVolume = "/stocks/v1/short-volume";
 
+            public const string StocksFundamentalsShortInterest = "/stocks/v1/short-interest";
+            
             // TODO: Impement endpoint
             // public const string StocksTickerSummary = "/v1/open-close/{stocksTicker}/{date}";
 
@@ -154,6 +156,8 @@ namespace ApiClient.Massive
             };
             var requestUrl = uriBuilder.Uri.AbsoluteUri;
 
+            LogInfo_ResponseRequest(_logger, requestUrl);
+            
             try
             {
                 // increment counter
@@ -220,6 +224,11 @@ namespace ApiClient.Massive
     #region Logger methods
     public partial class MassiveApi
     {
+        static void LogInfo_ResponseRequest(ILogger? logger, string uri)
+        {
+            if(logger?.IsEnabled(LogLevel.Information) ?? false)
+                logger.LogInformation(eventId: 1, "Sent request via {uri}/", uri);
+        }
         static void LogInfo_ResponseRequest_Submitting(ILogger? logger, object request)
         {
             if(logger?.IsEnabled(LogLevel.Information) ?? false)
@@ -279,6 +288,7 @@ namespace ApiClient.Massive
         /// <param name="timeSpan">Size of the time window.</param>
         /// <param name="from">Start of the time window.</param>
         /// <param name="to">End of the time window.</param>
+        /// <param name="adjusted">Whether to return split-adjusted results. Default is <see langword="true"/></param>.
         /// <param name="limit">Maximum number of records to return (Min = 1, Max = 1000, Default = 100).</param>
         /// <param name="cancellationToken">Provide a token for synchronizing cancels.</param>
         /// <returns>A <see cref="Task"/> containing an <see cref="AggregateBarResponse"/>.</returns>
@@ -289,6 +299,7 @@ namespace ApiClient.Massive
             BarTimespan timeSpan,
             DateTime from,
             DateTime to,
+            bool adjusted = true,
             int limit = 100,
             CancellationToken? cancellationToken = null)
         {

@@ -65,8 +65,10 @@ namespace Ichyd.Marksapi.Cli.Extensions
                 TickerHandler.CreateCommand(),
                 TickerInfoHandler.CreateCommand(),
                 AggregateBarHandler.CreateCommand(),
+                ShortInterestHandler.CreateCommand(),
                 ShortVolumeHandler.CreateCommand(),
                 InflationHandler.CreateCommand(),
+                InflationForecastHandler.CreateCommand(),
                 LaborHandler.CreateCommand(),
                 TreasuryHandler.CreateCommand()
             };

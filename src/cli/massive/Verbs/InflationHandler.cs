@@ -6,6 +6,7 @@ using Ichyd.Marksapi.Cli.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -20,29 +21,28 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         {
             var command = new Command(
                 "inflation",
-                "Retreive US historical or forecasted inflation");
+                "Retreive US historical inflation");
 
             command
                 .AddDateArrayOption()
-                .AddComparisonOption()
+                .AddComparisonArrayOption()
                 .AddFormatOption()
                 .AddLimitOption()
                 .AddFileOutputOption();
         
             command.SetAction((pr, ct) =>
             {
-                DateTime[] dates = pr.GetValue<DateTime[]>("--dates") ?? [];
-                bool forecast = pr.GetValue<bool>("--forecast");
+                DateTime[]? dates = pr.GetValue<DateTime[]>("--date") ?? [];
+                var ops = pr.GetValue<NumericComparisonOperator[]>("--operator");
                 string? format = pr.GetValue<string>("--format");
-                string? numOperator = pr.GetValue<string>("--operator");
                 int? limit = pr.GetValue<int?>("--limit");
                 string? outputPath = pr.GetValue<string>("--to-file");
 
+                var dateArgs = CommandBuilder.ConvertNumericArguments(dates, ops);
+
                 return Handle(
                     Program.Services,
-                    dates,
-                    forecast,
-                    numOperator,
+                    dateArgs,
                     format,
                     limit,
                     outputPath,
@@ -54,9 +54,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
         private static async Task Handle(
                 IServiceProvider services,
-                DateTime[] dates,
-                bool forecast,
-                string? numOperator,
+                Dictionary<NumericComparisonOperator, DateTime>? dateFilters,
                 string? format,
                 int? limit,
                 string? outputPath,
@@ -72,23 +70,12 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             validator
                 .ValidateFormatOrThrow(format)
                 .ValidateLimitOrThrow(limit, queryLimit)
-                .ValidateFileOuputOrThrow(outputPath)
-                .ValidateDateArrayWithComparisonOrThrow(dates, numOperator);
+                .ValidateFileOuputOrThrow(outputPath);
             
-            NumericComparisonOperator? numOp = null;
-            if (!string.IsNullOrEmpty(numOperator))
-            {
-                validator.ValidateEnumOrThrow(
-                    numOperator,
-                    out NumericComparisonOperator numOpEnum);
-                numOp = numOpEnum;
-            }
-
             var handler = services.GetServiceOrThrow<IMassiveApi>();
 
             var results = await handler.GetInflationResponseAsync(
-                                    dates,
-                                    numOp,
+                                    dateFilters,
                                     limit,
                                     cancellationToken);
 
