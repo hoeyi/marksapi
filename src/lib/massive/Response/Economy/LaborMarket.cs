@@ -12,32 +12,36 @@ namespace ApiClient.Massive.Response.Economy
         /// Average hourly earnings of all employees on private nonfarm payrolls in USD (CES0500000003 series from FRED).
         /// </summary>
         [JsonPropertyName("avg_hourly_earnings")]
+        [JsonProperty(PropertyName = "avg_hourly_earnings")]
         public double? AvgHourlyEarnings { get; set; }
 
         /// <summary>
         /// Calendar date of the observation in YYYY-MM-DD format.
         /// </summary>
         [JsonPropertyName("date")]
+        [JsonProperty(PropertyName = "date")]
         public string Date { get; set; } = string.Empty;
 
         /// <summary>
         /// Total nonfarm job openings in thousands (JTSJOL series from FRED).
         /// </summary>
         [JsonPropertyName("job_openings")]
+        [JsonProperty(PropertyName = "job_openings")]
         public double? JobOpenings { get; set; }
 
         /// <summary>
         /// Civilian labor force participation rate as a percentage of the civilian noninstitutional population (CIVPART series from FRED).
         /// </summary>
         [JsonPropertyName("labor_force_participation_rate")]
+        [JsonProperty(PropertyName = "labor_force_participation_rate")]
         public double? LaborForceParticipationRate { get; set; }
 
         /// <summary>
         /// Civilian unemployment rate as a percentage of the labor force (UNRATE series from FRED).
         /// </summary>
         [JsonPropertyName("unemployment_rate")]
+        [JsonProperty(PropertyName = "unemployment_rate")]
         public double? UnemploymentRate { get; set; }
-
 
         #region Non-json properties
         /// <summary>
