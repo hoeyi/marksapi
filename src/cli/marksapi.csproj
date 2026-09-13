@@ -11,6 +11,7 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Deterministic>false</Deterministic>
     <UserSecretsId>4f9d2c1c-71c1-4814-9121-7dc35de2f70c</UserSecretsId>
+    <UserSecretsId>4f9d2c1c-71c1-4814-9121-7dc35de2f70c</UserSecretsId>
   </PropertyGroup>
 
   <!-- Assembly / build details -->
