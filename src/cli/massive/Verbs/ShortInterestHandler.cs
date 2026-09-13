@@ -29,7 +29,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 .AddSettlementDateOption()
                 .AddDaysToCoverOptions()
                 .AddAverageDailyVolumeOptions()
-                .AddComparisonOptions()
+                .AddComparisonArrayOption()
                 .AddLimitOption()
                 .AddFormatOption()
                 .AddFileOutputOption();

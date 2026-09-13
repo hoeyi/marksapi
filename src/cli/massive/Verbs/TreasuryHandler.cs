@@ -23,6 +23,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
             command
                 .AddDateArrayOption(arity: ArgumentArity.ZeroOrMore)
+                .AddComparisonArrayOption()
                 .AddFormatOption()
                 .AddLimitOption()
                 .AddFileOutputOption();

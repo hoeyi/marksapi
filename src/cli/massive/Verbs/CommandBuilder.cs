@@ -360,24 +360,6 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return command;
         }
 
-        public static Command AddComparisonOptions(this Command command)
-        {
-            var option = new Option<string[]>(name: $"--operator" )
-            {
-                Description = "Comparison operator.",
-                Arity = ArgumentArity.ZeroOrMore
-            };
-            var names = Enum
-                        .GetValues<NumericComparisonOperator>()
-                        .Select(x => x.ToString().ToLowerInvariant())
-                        .ToArray();
-            option.AcceptOnlyFromAmong(names);
-
-            command.Add(option);
-
-            return command;
-        }
-
         public static Command AddDaysToCoverOptions(this Command command)
         {
             var option = new Option<float[]>(name: "--days-to-cover")

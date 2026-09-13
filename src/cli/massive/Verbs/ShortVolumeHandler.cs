@@ -43,8 +43,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 int? limit = pr.GetValue<int?>("--limit");
                 string? outputPath = pr.GetValue<string>("--to-file");
 
-                var dateArgs = CommandBuilder
-                                .ConvertNumericArguments(dateFilters, ops);
+                var dateArgs = CommandBuilder.ConvertNumericArguments(dateFilters, ops);
                 var ratioArgs = CommandBuilder.ConvertNumericArguments(
                                     ratioFilters,
                                     ops,
