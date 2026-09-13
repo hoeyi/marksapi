@@ -67,6 +67,6 @@
   </ItemGroup>
 
   <!-- For development. This dropped for Release builds. -->
-  <Import Project="../dev/development.csproj" Condition="'$(Configuration)' == 'Debug'">
+  <Import Project="../dev/development.proj" Condition="'$(Configuration)' == 'Debug'">
   </Import>
 </Project>

@@ -33,7 +33,7 @@ RUN --mount=type=secret,id=GITHUB_USER,target=/run/secrets/GITHUB_USER \
 RUN dotnet restore
 
 # Publish the application
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish -p IncludeSourceRevision=true
 
 # Stage 2: Final Runtime Image
 FROM mcr.microsoft.com/dotnet/runtime:10.0 AS final
