@@ -66,9 +66,7 @@
     <None Include="./NOTICE" CopyToOutputDirectory="IfDifferent" />
   </ItemGroup>
 
-  <!-- For development -->
-  <!-- <Import Project="../dev/development.csproj" Condition="'$(DEV_MODE)' == 'true'">
-  </Import> -->
+  <!-- For development. This dropped for Release builds. -->
   <Import Project="../dev/development.csproj" Condition="'$(Configuration)' == 'Debug'">
   </Import>
 </Project>
