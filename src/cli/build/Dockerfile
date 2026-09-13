@@ -33,12 +33,14 @@ RUN --mount=type=secret,id=GITHUB_USER,target=/run/secrets/GITHUB_USER \
 RUN dotnet restore
 
 # Publish the application
-RUN dotnet publish -c Release -o /app/publish -p IncludeSourceRevision=true
+# -p IncludeSourceRevision=true approach to commit tagging likely
+# does not work because git directory is in parent.
+ARG GIT_COMMIT
+RUN dotnet publish -c Release -o /app/publish -p GIT_COMMIT=$GIT_COMMIT
 
 # Stage 2: Final Runtime Image
 FROM mcr.microsoft.com/dotnet/runtime:10.0 AS final
 
-ARG GIT_COMMIT
 LABEL git_commit="$GIT_COMMIT"
 
 WORKDIR /app
