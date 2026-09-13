@@ -10,13 +10,8 @@
     <RootNamespace>Ichyd.Marksapi.Cli</RootNamespace>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <Deterministic>false</Deterministic>
+    <UserSecretsId>4f9d2c1c-71c1-4814-9121-7dc35de2f70c</UserSecretsId>
   </PropertyGroup>
-
-  <!-- For development -->
-  <!-- <Import Project="../dev/development.csproj" Condition="'$(DEV_MODE)' == 'true'">
-  </Import> -->
-  <Import Project="../dev/development.csproj" Condition="'$(Configuration)' == 'Debug'">
-  </Import>
 
   <!-- Assembly / build details -->
   <PropertyGroup>
@@ -70,4 +65,10 @@
     <None Include="./LICENSE" CopyToOutputDirectory="IfDifferent" />
     <None Include="./NOTICE" CopyToOutputDirectory="IfDifferent" />
   </ItemGroup>
+
+  <!-- For development -->
+  <!-- <Import Project="../dev/development.csproj" Condition="'$(DEV_MODE)' == 'true'">
+  </Import> -->
+  <Import Project="../dev/development.csproj" Condition="'$(Configuration)' == 'Debug'">
+  </Import>
 </Project>
