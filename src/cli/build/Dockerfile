@@ -47,6 +47,9 @@ ENV PATH="$PATH:/app"
 # Copy the published output from the build stage
 COPY --from=build /app/publish .
 
+# Add execute permission to the app.
+RUN chmod +x /app/marksapi
+
 # No ENTRYPOINT defined; container runs interactively
 # Example usage: docker run -it <image-name> bash
 # Within container:
