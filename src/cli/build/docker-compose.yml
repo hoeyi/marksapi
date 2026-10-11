@@ -1,3 +1,5 @@
+name: marksapi
+
 services:
   marksapi:
     build:

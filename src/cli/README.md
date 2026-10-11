@@ -70,8 +70,10 @@ secrets:
 ```bash
 # directory where docker-compose.yml is saved
 cd marksapi/docker 
-docker compose run marksapi
+docker compose run --rm rmarksapi
 ```
+
+**Note:** The use of `--rm` removes the container after it closes to avoid warnings about orphaned containers on successive runs.
 
 <sub>[Contents](#contents)</sub>
 
