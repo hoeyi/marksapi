@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace Ichyd.Marksapi.Cli.Verbs
 {
@@ -15,6 +16,10 @@ namespace Ichyd.Marksapi.Cli.Verbs
     [ExcludeFromCodeCoverage]
     public sealed class CustomVersionAction : SynchronousCommandLineAction
     {
+        private const string BUILD_DATE_KEY = "BUILD_DATE";
+        
+        private const string GIT_COMMIT_KEY = "GIT_COMMIT";
+
         /// <inheritdoc/>
         public override int Invoke(ParseResult parseResult)
         {
@@ -22,29 +27,41 @@ namespace Ichyd.Marksapi.Cli.Verbs
             AnsiConsole.WriteLine(
                 $"\n{parseResult.RootCommandResult.Command.Description!}");
 
-            var appInfoVersion = Assembly
-                .GetExecutingAssembly()
-                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-                ?.InformationalVersion;
 
-            var appBuildDateStr = Assembly
+            var customAttr = Assembly
                 .GetExecutingAssembly()
                 .GetCustomAttributes<AssemblyMetadataAttribute>()
-                .FirstOrDefault(x => x.Key == "BuildDate")
-                ?.Value;
+                .Where(x => x.Key == "BUILD_DATE" || x.Key == "GIT_COMMIT")
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
+
             bool hasBuildDate = DateTime.TryParseExact(
-                appBuildDateStr,
+                customAttr[BUILD_DATE_KEY],
                 "yyyyMMddHHmmss",
                 CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
                 out DateTime buildDate);
             
+            var appInfoVersion = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion;
+
             var runtimeVersion = Environment.Version;
 
-            Console.WriteLine($"App Version: {appInfoVersion}");
+            string? commitModifier = customAttr[GIT_COMMIT_KEY];
+            var appInfoCommit = string.IsNullOrEmpty(commitModifier) | 
+                                    // if already tagged, don't append the commit again
+                                    (appInfoVersion?.Contains('+') ?? false) ? 
+                                    appInfoVersion : $"{appInfoVersion}+{commitModifier}";
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"App Version: {appInfoCommit}");
+            
             if(hasBuildDate)
-                Console.WriteLine($"Build date: {buildDate:yyyyMMdd-HHmmss}");
-            Console.WriteLine($".NET Runtime Version: {runtimeVersion}");
+                sb.AppendLine($"Build date: {buildDate:yyyyMMdd-HHmmss}");
+            sb.AppendLine($".NET Runtime Version: {runtimeVersion}");
+
+            Console.WriteLine(sb.ToString());
             return 0;
         }
     }

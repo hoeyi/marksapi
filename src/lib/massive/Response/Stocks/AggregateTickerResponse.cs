@@ -1,17 +1,19 @@
 using System.Text.Json.Serialization;
 using ApiClient.Massive.Response.Generic;
 
-namespace ApiClient.Massive.Response.Stocks;
-
-/// <summary>
-/// Represents the response from th Massive API endpoint for retrieving ticker data.
-/// </summary>
-public class AggregateTickerResponse : CollectionResponse<Ticker>
+namespace ApiClient.Massive.Response.Stocks
 {
     /// <summary>
-    /// The total number of results for this request.
+    /// Represents the response from th Massive API endpoint for retrieving ticker data.
     /// </summary>
-    [JsonPropertyName("count")]
-    [JsonProperty(PropertyName = "count")]
-    public int Count { get; set; }
+    public class AggregateTickerResponse : CollectionResponse<Ticker>
+    {
+        /// <summary>
+        /// The total number of results for this request.
+        /// </summary>
+        [JsonPropertyName("count")]
+        [JsonProperty(PropertyName = "count")]
+        public int Count { get; set; }
+    }
 }
+

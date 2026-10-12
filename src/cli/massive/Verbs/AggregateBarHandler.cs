@@ -21,13 +21,13 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             
             command
                 .AddMarketArgument()
-                .AddTickerArgument()
-                .AddMultiplierOption()
-                .AddTimespanOption()
+                .AddTickersOptionRequired()
                 .AddFromDateOption()
                 .AddToDateOption()
+                .AddTimespanOption()
+                .AddMultiplierOption()
+                .AddUnadjustedOption()
                 .AddLimitOption()
-                .AddTickersOption()
                 .AddFormatOption()
                 .AddFileOutputOption();
 
@@ -36,12 +36,12 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             command.SetAction((pr, ct) =>
             {
                 string? market = pr.GetValue<string>("MARKET");
-                string? ticker = pr.GetValue<string>("TICKER");
                 string? tickers = pr.GetValue<string>("--tickers");
                 int multiplier = pr.GetValue<int>("--multiplier");
                 string? timespan = pr.GetValue<string>("--timespan");
                 DateTime? fromDate = pr.GetValue<DateTime?>("--from");
                 DateTime? toDate = pr.GetValue<DateTime?>("--to");
+                bool unadjusted = pr.GetValue<bool>("--unadjusted");
                 string? format = pr.GetValue<string>("--format");
                 int? limit = pr.GetValue<int?>("--limit");
                 string? outputPath = pr.GetValue<string>("--to-file");
@@ -49,12 +49,12 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 return Handle(
                     Program.Services,
                     market,
-                    ticker,
                     tickers,
                     multiplier,
                     timespan,
                     fromDate,
                     toDate,
+                    !unadjusted,
                     format,
                     limit,
                     outputPath,
@@ -67,12 +67,12 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
         private static async Task Handle(
             IServiceProvider services,
             string? market,
-            string? ticker,
             string? tickers,
             int multiplier,
             string? timespan,
             DateTime? fromDate,
             DateTime? toDate,
+            bool adjusted,
             string? format,
             int? limit,
             string? outputPath,
@@ -87,16 +87,14 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             var validator = new CommandValidator(logger);
             validator
                 .ValidateEnumOrThrow(market!, out Market marketEnum)
-                .ValidateTickerOrTickersOrThrow(ticker, tickers)
+                .ValidateTickerOrTickersOrThrow(null, tickers)
                 .ValidateLimitOrThrow(limit, queryLimit)
                 .ValidateDateRangeOrThrow(fromDate, toDate)
                 .ValidateFileOuputOrThrow(outputPath)
                 .ValidateTimespanOrThrow(timespan, out BarTimespan? barTimespan);
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
-            var tickerArgs = !string.IsNullOrEmpty(ticker) ?
-                ticker.ToValueArray() : 
-                tickers.ToValueArray();
+            var tickerArgs = tickers.ToValueArray();
 
             var results = await handler.GetAggregateBarResponseAsync(
                     market: marketEnum,
@@ -105,6 +103,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                     timeSpan: barTimespan ?? BarTimespan.Day,
                     fromDate!.Value,
                     toDate!.Value,
+                    adjusted,
                     limit ?? queryLimit.End,
                     cancellationToken);
             

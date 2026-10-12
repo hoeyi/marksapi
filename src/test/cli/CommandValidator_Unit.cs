@@ -326,7 +326,7 @@ namespace ApiClient.Test.Marksapi.Unit
             var validator = new CommandValidator();
 
             // Act
-            var result = validator.ValidateRatioRangeOrThrow(min, max);
+            var result = validator.ValidateNumericRangeOrThrow(min, max);
 
             // Assert
             Assert.Same(validator, result);
@@ -342,7 +342,7 @@ namespace ApiClient.Test.Marksapi.Unit
             var validator = new CommandValidator();
 
             // Act
-            var result = validator.ValidateRatioRangeOrThrow(min, max);
+            var result = validator.ValidateNumericRangeOrThrow(min, max);
 
             // Assert
             Assert.Same(validator, result);
@@ -358,7 +358,7 @@ namespace ApiClient.Test.Marksapi.Unit
 
             // Act & Assert
             var ex = Assert.Throws<ArgumentException>(() => 
-                validator.ValidateRatioRangeOrThrow(ratioMin, ratioMax));
+                validator.ValidateNumericRangeOrThrow(ratioMin, ratioMax));
             Assert.Contains(nameof(ratioMin), ex.Message);
             Assert.Contains(nameof(ratioMax), ex.Message);
         }
@@ -372,7 +372,7 @@ namespace ApiClient.Test.Marksapi.Unit
             var ratioMax = 0.5f;
 
             // Act
-            var result = validator.ValidateRatioRangeOrThrow(ratioMin, ratioMax);
+            var result = validator.ValidateNumericRangeOrThrow(ratioMin, ratioMax);
 
             // Assert
             Assert.Same(validator, result);
