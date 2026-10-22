@@ -1,19 +1,21 @@
-namespace ApiClient.Massive;
-
-/// <summary>
-/// Represents asset class definitions.
-/// </summary>
-public enum Market
+namespace ApiClient.Massive
 {
+    /// <summary>
+    /// Represents asset class definitions.
+    /// </summary>
+    public enum Market
+    {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    Crypto,
+        Crypto,
 
-    Fx,
+        Fx,
 
-    Indices,
+        Indices,
 
-    Options,
+        Options,
 
-    Stocks
+        Stocks
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+    }
 }
+

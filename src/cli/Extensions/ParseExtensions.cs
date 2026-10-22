@@ -1,26 +1,28 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Ichyd.Marksapi.Cli.Extensions;
-
-[ExcludeFromCodeCoverage]
-static class ParseHelper
+namespace Ichyd.Marksapi.Cli.Extensions
 {
-    public static string[] ToValueArray(this string? delimitedString)
+    [ExcludeFromCodeCoverage]
+    static class ParseHelper
     {
-        if (!string.IsNullOrEmpty(delimitedString))
+        public static string[] ToValueArray(this string? delimitedString)
         {
-            var strArray = delimitedString
-                            .Split(
-                                separator: ',', 
-                                options: 
-                                    StringSplitOptions.RemoveEmptyEntries | 
-                                    StringSplitOptions.TrimEntries
-                            );
+            if (!string.IsNullOrEmpty(delimitedString))
+            {
+                var strArray = delimitedString
+                                .Split(
+                                    separator: ',', 
+                                    options: 
+                                        StringSplitOptions.RemoveEmptyEntries | 
+                                        StringSplitOptions.TrimEntries
+                                );
 
-            return strArray;
+                return strArray;
+            }
+
+            return [delimitedString ?? string.Empty];
         }
-
-        return [delimitedString ?? string.Empty];
     }
 }
+

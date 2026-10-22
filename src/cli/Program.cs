@@ -130,10 +130,8 @@ namespace Ichyd.Marksapi.Cli
             else
                 section.Bind(options);
 
-            ArgumentException.ThrowIfNullOrWhiteSpace(configuration[MASSIVE_API_KEYPATH]);
-            
             return new MassiveApi(
-                configuration[MASSIVE_API_KEYPATH]!,
+                configuration: configuration,
                 rateOptions: options,
                 logger: logger);
         }
@@ -149,7 +147,9 @@ namespace Ichyd.Marksapi.Cli
                 .AddJsonFile("appsettings.json");
             #endif
 
-            return configBuilder.Build();
+            var config = configBuilder.Build();
+
+            return config;
         }
         
         private static ILogger InitLogger<T>(IConfiguration configuration)

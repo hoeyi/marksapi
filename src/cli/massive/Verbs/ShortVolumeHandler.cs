@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiClient.Massive;
+using ApiClient.Massive.Parameters;
 using ApiClient.Services;
 using Ichyd.Marksapi.Cli.Extensions;
 using Ichyd.Marksapi.Cli.Services;
@@ -17,15 +19,15 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
     {
         public static Command CreateCommand()
         {
-            var command = new Command("short-volume", "Retrieve daily aggregated short sale volume data reported to FINRA");
+            var command = new Command(
+                "short-volume",
+                "Retrieve daily aggregated short sale volume data reported to FINRA");
 
             command
-                .AddTickerArgument()
                 .AddTickersOption()
-                .AddFromDateOption()
-                .AddToDateOption()
-                .AddRatioMinOption()
-                .AddRatioMaxOption()
+                .AddDateArrayOption()
+                .AddShortDailyVolumeOptions()
+                .AddComparisonArrayOption()
                 .AddLimitOption()
                 .AddFormatOption()
                 .AddFileOutputOption();
@@ -33,24 +35,25 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             // TODO: Register action.
             command.SetAction((pr, ct) =>
             {
-                string? ticker = pr.GetValue<string>("TICKER");
                 string? tickers = pr.GetValue<string>("--tickers");
-                DateTime? fromDate = pr.GetValue<DateTime?>("--from");
-                DateTime? toDate = pr.GetValue<DateTime?>("--to");
-                float? ratioMin = pr.GetValue<float?>("--ratio-min");
-                float? ratioMax = pr.GetValue<float?>("--ratio-max");
+                DateTime[]? dateFilters = pr.GetValue<DateTime[]>("--date");
+                float[]? ratioFilters = pr.GetValue<float[]>("--short-volume-ratio");
+                var ops = pr.GetValue<NumericComparisonOperator[]>("--operator");
                 string? format = pr.GetValue<string>("--format");
                 int? limit = pr.GetValue<int?>("--limit");
                 string? outputPath = pr.GetValue<string>("--to-file");
 
+                var dateArgs = CommandBuilder.ConvertNumericArguments(dateFilters, ops);
+                var ratioArgs = CommandBuilder.ConvertNumericArguments(
+                                    ratioFilters,
+                                    ops,
+                                    offset: dateArgs?.Count ?? 0);
+
                 return Handle(
                     Program.Services,
-                    ticker,
                     tickers,
-                    fromDate,
-                    toDate,
-                    ratioMin,
-                    ratioMax,
+                    dateArgs,
+                    ratioArgs,
                     format,
                     limit,
                     outputPath,
@@ -63,12 +66,9 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
 
         private static async Task Handle(
             IServiceProvider services,
-            string? ticker,
             string? tickers,
-            DateTime? fromDate,
-            DateTime? toDate,
-            float? ratioMin,
-            float? ratioMax,
+            Dictionary<NumericComparisonOperator, DateTime>? dateFilters,
+            Dictionary<NumericComparisonOperator, float>? ratioFilters,
             string? format,
             int? limit,
             string? outputPath,
@@ -82,56 +82,27 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
                 
             var validator = new CommandValidator(logger);
             validator 
-                .ValidateTickerOrTickersOrThrow(ticker, tickers)
-                .ValidateDateRangeOrThrow(fromDate, toDate)
-                .ValidateRatioRangeOrThrow(ratioMin, ratioMax)
                 .ValidateFormatOrThrow(format)
                 .ValidateFileOuputOrThrow(outputPath)
                 .ValidateLimitOrThrow(limit, queryLimit);
 
             var handler = services.GetServiceOrThrow<IMassiveApi>();
             
-            Interval<float>? interval = ratioMin.HasValue && ratioMax.HasValue ? 
-                new Interval<float>(ratioMin.Value, ratioMax.Value, open: true) : null;
+            var result = await handler.GetShortVolumeResponseAsync(
+                tickers.ToValueArray(),
+                dateFilter: dateFilters,
+                shortVolumeRatio: ratioFilters,
+                limit,
+                cancellationToken);
 
-            if (!string.IsNullOrEmpty(ticker))
-            {
-                var result = await handler.GetShortVolumeResponseAsync(
-                    ticker,
-                    fromDate!.Value.Date,
-                    toDate!.Value.Date,
-                    interval,
-                    limit,
-                    cancellationToken);
-
-                var path = OutputService.CombinePath(
-                        outputPath ?? config["output_path"] ?? "./",
-                        result.RequestId);
-                await OutputService.WriteAsync(
-                    result.Results,
-                    format!,
-                    path,
-                    cancellationToken);
-            }
-            else if (!string.IsNullOrEmpty(tickers))
-            {
-                var result = await handler.GetShortVolumeResponseAsync(
-                    tickers.ToValueArray(),
-                    fromDate!.Value.Date,
-                    toDate!.Value.Date,
-                    interval,
-                    limit,
-                    cancellationToken);
-
-                var path = OutputService.CombinePath(
-                        outputPath ?? config["output_path"] ?? "./",
-                        result.RequestId);
-                await OutputService.WriteAsync(
-                    result.Results,
-                    format!,
-                    path,
-                    cancellationToken);
-            }
+            var path = OutputService.CombinePath(
+                    outputPath ?? config["output_path"] ?? "./",
+                    result.RequestId);
+            await OutputService.WriteAsync(
+                result.Results,
+                format!,
+                path,
+                cancellationToken);
         }
     }
 }

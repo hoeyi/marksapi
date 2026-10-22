@@ -97,7 +97,7 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             return this;
         }
 
-        public CommandValidator ValidateRatioRangeOrThrow(float? ratioMin, float? ratioMax)
+        public CommandValidator ValidateNumericRangeOrThrow(float? ratioMin, float? ratioMax)
         {
             if (ratioMin.HasValue && ratioMax.HasValue && ratioMin > ratioMax)
             {
@@ -135,12 +135,12 @@ namespace Ichyd.Marksapi.Cli.Massive.Verbs
             if(_logger?.IsEnabled(LogLevel.Error) ?? false)
                 _logger?.LogError(
                     "Expecting <{opt}> to have length 1 when <{opt}> specified",
-                    "--dates",
+                    "--date",
                     "--operator"
                 );
 
             throw new ArgumentException(
-                    $"Invalid --operator parameter for given --dates");
+                    $"Invalid --operator parameter for given --date");
         }
         public CommandValidator ValidateTickerOrTickersOrThrow(string? ticker, string? tickers)
         {

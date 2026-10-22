@@ -1,0 +1,8 @@
+<Project>
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug'">
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.10" />
+    <None Update="appsettings.debug.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
