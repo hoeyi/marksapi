@@ -20,36 +20,12 @@ namespace ApiClient.Test.Massive.Unit
     public partial class MassiveApi_Test
     {
         [Fact]
-        public void Constructor_ReturnsNewInstance()
-        {
-            // Arrange
-            // Act
-            var apiClient = new MassiveApi(apiKey: Test_ApiKey);
-
-            // Assert
-            Assert.IsType<MassiveApi>(apiClient);
-        }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("\t")]
-        [InlineData("\r")]
-        public void Constructor_EmptyApiKey_ThrowsArgumentException(string apiKey)
-        {
-            // Arrange
-            // Act
-            // Assert
-            Assert.Throws<ArgumentException>(() => new MassiveApi(apiKey));
-        }
-
-        [Fact]
         public void Constructor_NullApiKey_ThrowsArgumentException()
         {
             // Arrange
             // Act
             // Assert
-            Assert.Throws<ArgumentNullException>(() => new MassiveApi(null!));
+            Assert.Throws<ArgumentNullException>(() => new MassiveApi(configuration: null!));
         }
     }
 }

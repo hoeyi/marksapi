@@ -72,7 +72,7 @@ namespace ApiClient.Test
             LogInitialize(Logger, typeof(T).FullName!);
 
             MassiveApi = new MassiveApi(
-                apiKey: Configuration[Program.MASSIVE_API_KEYPATH]!,
+                configuration: Configuration,
                 rateOptions: options,
                 logger: Logger);
         }
