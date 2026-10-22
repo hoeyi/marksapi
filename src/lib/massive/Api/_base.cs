@@ -8,6 +8,7 @@ using ApiClient.Massive.Response;
 using System.Threading;
 using System.Net.Http.Headers;
 using static ApiClient.Services.RateTimer;
+using Microsoft.Extensions.Configuration;
 
 namespace ApiClient.Massive
 {
@@ -64,39 +65,31 @@ namespace ApiClient.Massive
             // TODO: Impement endpoint
             // public const string StocksPreviousDayBar = "/v2/aggs/ticker/{stocksTicker}/prev";
         }
-
+        private const string MASSIVE_API_KEYPATH = "MASSIVE_API_KEY";
         private const string _baseUrl = "https://api.massive.com";
         private readonly Uri _baseUri = new(_baseUrl);
         private readonly short _maximumDateRangeInDays = 30;
         private readonly ILogger? _logger;
         private readonly RateTimer? _rateTimer;
+        private readonly IConfiguration _config;
 
         /// <summary>
         /// Creates a new instance of <see cref="MassiveApi"/>.
         /// </summary>
-        /// <param name="apiKey">API key for Massive authentication.</param>
+        /// <param name="configuration"></param>
         /// <param name="rateOptions">The <see cref="RateOptions"/> instance for this client.</param>
         /// <param name="logger">The <see cref="ILogger"/> instance for this client.</param>
-        public MassiveApi(string apiKey, RateOptions? rateOptions = null, ILogger? logger = null)
-            : this(new HttpClient(), apiKey, rateOptions, logger)
+        public MassiveApi(IConfiguration configuration, RateOptions? rateOptions = null, ILogger? logger = null) 
+            : base(baseUrl: _baseUrl, httpClient: new HttpClient())
         {
-        }
+            ArgumentNullException.ThrowIfNull(configuration);
 
-        internal MassiveApi(
-            HttpClient httpClient,
-            string apiKey,
-            RateOptions? rateOptions = null,
-            ILogger? logger = null)
-            : base(
-                baseUrl: _baseUrl,
-                httpClient: httpClient
-            )
-        {
-            ArgumentNullException.ThrowIfNull(httpClient);
+            string? apiKey = configuration[MASSIVE_API_KEYPATH];
+
             ArgumentException.ThrowIfNullOrEmpty(apiKey);
             ArgumentException.ThrowIfNullOrWhiteSpace(apiKey);
 
-            RequiredParams.Add("apiKey", apiKey);
+            apiKey = default; // clean-up
 
             RateOptions options = rateOptions ?? new()
             {
@@ -104,6 +97,7 @@ namespace ApiClient.Massive
                 Interval = 60
             };
 
+            _config = configuration;
             _logger = logger;
             _rateTimer = new RateTimer(options.Limit, options.Interval, _logger);
             _rateTimer.RateLimited += HandleRateLimit;
@@ -163,7 +157,10 @@ namespace ApiClient.Massive
                 // increment counter
                 _rateTimer?.Increment();
 
-                HttpResponseMessage response = await HttpClient.GetAsync(requestUrl, cancellationToken: token.Value);
+                using var requestMessage = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _config[MASSIVE_API_KEYPATH]!);
+                
+                HttpResponseMessage response = await HttpClient.SendAsync(requestMessage, cancellationToken: token.Value);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
