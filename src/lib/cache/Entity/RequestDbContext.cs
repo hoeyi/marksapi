@@ -17,5 +17,8 @@ namespace ApiClient.Cache.Entity
 
             modelBuilder.ApplyConfiguration(new StructuredRequestConfiguration());
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+            => options.UseSqlite("Data Source=/app/data/request_cache.db,Mode=ReadWriteCreate");
     }
 }
