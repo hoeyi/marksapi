@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ApiClient.Cache</RootNamespace>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>  
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <NoWarn>$(NoWarn);CS7035</NoWarn>
+  </PropertyGroup>
+
+  <!-- NuGet package details -->
+  <PropertyGroup>
+    <AssemblyName>Ichyd.ApiClient.Cache</AssemblyName>
+    <AssemblyVersion>0.0.1</AssemblyVersion>
+    <AssemblyFileVersion>0.0.1.*</AssemblyFileVersion>
+    <IsPackable>true</IsPackable>
+    <PackageId>Ichyd.ApiClient.Cache</PackageId>
+    <PackageVersion>0.0.1</PackageVersion>
+    <Title>ApiClient request and data caching.</Title>
+    <Authors>hoeyi</Authors>
+    <Company>ichyd</Company>
+    <PackageDescription>A class library handling API request caching.</PackageDescription>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Include must be the fully qualified .NET type name of the Attribute to create. -->
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <!-- _Parameter1, _Parameter2, etc. correspond to the
+          matching parameter of a constructor of that .NET attribute type -->
+      <_Parameter1>BuildDate</_Parameter1>
+      <_Parameter2>$(Date)</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- SQLite provider (pulls in Microsoft.EntityFrameworkCore transitively) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.13" />
+    <PackageReference Include="System.Data.SQLite" Version="2.0.3"/>
+    <PackageReference Include="SQLite" Version="3.53.4"/>
+    <!-- Design-time support for migrations (dotnet ef) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference> 
+  </ItemGroup>
+</Project>
