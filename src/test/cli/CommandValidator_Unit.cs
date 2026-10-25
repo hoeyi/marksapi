@@ -6,18 +6,37 @@ using Microsoft.Extensions.Configuration;
 
 namespace ApiClient.Test.Marksapi.Unit
 {
-    [Trait(nameof(TestAttributeName.Category), "Unit")]
-    public class CommandValidator_Test : IClassFixture<Fixture>
+    public class CommandValidatorFixture : UnitFixture<MassiveApi>
     {
-        private Interval<int> _queryLimit;
-        private Fixture _fixture;
-        public CommandValidator_Test(Fixture fixture)
+        public CommandValidatorFixture() : base()
+        {
+        }
+        
+        /// <inheritdoc/>
+        protected override IConfiguration GetConfiguration()
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.command.json")
+                .Build();
+        
+            return config;
+        }
+    }
+    
+    [Trait(nameof(TestAttributeName.Category), "Unit")]
+    public class CommandValidator_Test : IClassFixture<CommandValidatorFixture>
+    {
+        readonly Interval<int> _queryLimit;
+        readonly CommandValidatorFixture _fixture;
+        public CommandValidator_Test(CommandValidatorFixture fixture)
         {
             _fixture = fixture;
+
             QueryOptions options = new();
             var section = _fixture.Configuration
-                .GetSection("massive")?
                 .GetSection(nameof(QueryOptions));
+
             if (section is null)
             {
                 options.UpperLimit = 5000;

@@ -10,19 +10,21 @@ using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ApiClient.Test
 {
+    #region Fixture
     public class Fixture
     {
         public Fixture()
         {
             Configuration = GetConfiguration();
             Logger = CreateLogger<Fixture>(Configuration);
+
+            ArgumentNullException.ThrowIfNull(Configuration);
+            ArgumentNullException.ThrowIfNull(Logger);
         }
 
         public required ILogger Logger { get; init; }
     
         public required IConfiguration Configuration { get; init; }
-
-        protected virtual string SettingsFile { get; set; } = "appsettings.json";
 
         protected virtual IConfiguration GetConfiguration() => 
                             new ConfigurationBuilder()
@@ -49,23 +51,26 @@ namespace ApiClient.Test
             return loggerFactory.CreateLogger<T>();
         }
     }
-    public class IntegrationFixture<T> : Fixture, IDisposable
+    #endregion
+
+    #region Integration fixture
+    public abstract class IntegrationFixture<T> : Fixture, IDisposable
         where T : IDisposable
     {
-        public IntegrationFixture()
+        public IntegrationFixture() : base()
         {
-            Configuration = GetConfiguration();
-        
-            Logger = CreateLogger<T>(Configuration);
             LogInitialize(Logger, typeof(T).FullName!);
 
-            TestInstance = new MassiveApi(
-                configuration: Configuration,
-                logger: Logger);
+            TestInstance = CreateTestInstance();
         }
 
-        public MassiveApi TestInstance { get; init; }
+        /// <summary>
+        /// Represents the <typeparamref name="T"/> instance shared across integration 
+        /// tests. For a fresh instance from the same configuration, see <see cref="CreateTestInstance"/>.
+        /// </summary>
+        public T TestInstance { get; init; }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             LogStartCleanup(Logger, typeof(T).FullName!);
@@ -77,35 +82,17 @@ namespace ApiClient.Test
             GC.SuppressFinalize(this);
         }
 
-        protected override IConfiguration GetConfiguration()
+        /// <summary>
+        /// Creates a fresh <typeparamref name="T"/> instance from the <see cref="IConfiguration"/> and 
+        /// <see cref="ILogger"/> members.
+        /// </summary>
+        /// <returns>An <typeparamref name="T"/>./returns>
+        public abstract T CreateTestInstance();
+
+        #region Logger methods
+        private static void LogInitialize(ILogger? logger, string @class)
         {
-            var config = new ConfigurationBuilder()
-                .AddUserSecrets<IntegrationFixture<T>>()
-                .AddJsonFile("appsettings.json")
-                .Build();
-        
-            RateOptions options = new();
-                var section = config
-                    .GetSection("massive")?
-                    .GetSection(nameof(RateOptions));
-
-                if (section is null)
-                {
-                    options.Limit = 5;
-                    options.Interval = 60;
-                }
-                else
-                    section.Bind(options);
-
-
-            ArgumentException.ThrowIfNullOrWhiteSpace(config?[Program.MASSIVE_API_KEYPATH]);
-        
-            return config;
-        }
-
-        private static void LogInitialize(ILogger logger, string @class)
-        {
-            if(logger.IsEnabled(LogLevel.Information))
+            if(logger?.IsEnabled(LogLevel.Information) ?? false)
                 logger.LogInformation(
                     "Initialzed integration test context for {class}.",
                     @class);
@@ -116,6 +103,7 @@ namespace ApiClient.Test
             if(logger.IsEnabled(LogLevel.Information))
                 logger.LogInformation("Cleaning integration test context for {class}", @class);
         }
+
         private static void LogCleanup(ILogger logger, string member)
         {
             if(logger.IsEnabled(LogLevel.Information))
@@ -127,33 +115,25 @@ namespace ApiClient.Test
             if(logger.IsEnabled(LogLevel.Information))
                 logger.LogInformation("Done.");
         }
+        #endregion
     }
+    #endregion
 
+    #region Unit fixture
     public class UnitFixture<T> : Fixture
     {
-        public UnitFixture()
+        public UnitFixture() : base()
         {
-            Configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-            
-            Logger = CreateLogger<T>(Configuration);
-
             LogInitialize(Logger, typeof(T).FullName!);
         }
 
-        protected override IConfiguration GetConfiguration()
-            => new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-        private static void LogInitialize(ILogger logger, string @class)
+        private static void LogInitialize(ILogger? logger, string @class)
         {
-            if(logger.IsEnabled(LogLevel.Information))
+            if(logger?.IsEnabled(LogLevel.Information) ?? false)
                 logger.LogInformation(
                     "Initialzed unit test context for {class}.",
                     @class);
         }
     }
-
+    #endregion
 }

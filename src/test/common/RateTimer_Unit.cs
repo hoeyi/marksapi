@@ -3,11 +3,11 @@ using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Test.Unit
 {
+
     [Trait(nameof(TestAttributeName.Category), "Unit")]
     public class RateTimer_Unit : IClassFixture<UnitFixture<RateTimer>>
     {
         readonly UnitFixture<RateTimer> _fixture;
-        ILogger _logger => _fixture.Logger;
         public RateTimer_Unit(UnitFixture<RateTimer> fixture)
         {
             ArgumentNullException.ThrowIfNull(fixture);
@@ -22,7 +22,9 @@ namespace ApiClient.Test.Unit
 
             // Act
             // Do nothing
-            _logger.LogDebug("After action: {method} changed state for {@rateTime}.",
+            LogDebug(
+                _fixture.Logger,
+                "Post-Act",
                 nameof(InitialState_IsRateLimited_Returns_False),
                 rateTimer);
 
@@ -42,7 +44,9 @@ namespace ApiClient.Test.Unit
             // Act
             rateTimer.Increment();
         
-            _logger.LogDebug("After action: {method} changed state for {@rateTimer}.",
+            LogDebug(
+                _fixture.Logger,
+                "Post-Act",
                 nameof(Increment_IsRateLimited_Returns_True),
                 rateTimer);
 
@@ -86,14 +90,17 @@ namespace ApiClient.Test.Unit
             var cts = new CancellationTokenSource();
             cts.CancelAfter(3000);
 
-            _logger.LogDebug(
-                "Post-Arrange: {method} {@rateTime}", 
+            LogDebug(
+                _fixture.Logger,
+                "Post-Arrange",
                 nameof(AwaitIntervalResetAsync_IsRateLimited_Not_Returns),
                 rateTimer);
 
             // Act
             await rateTimer.CheckLimitOrAwaitIntervalResetAsync();
-            _logger.LogDebug("After action: {method} changed state for {@rateTime}.",
+            LogDebug(
+                _fixture.Logger,
+                "Post-Act",
                 nameof(AwaitIntervalResetAsync_IsRateLimited_Not_Returns),
                 rateTimer);
 
@@ -107,12 +114,13 @@ namespace ApiClient.Test.Unit
         public async Task AwaitIntervalResetAsync_IsRateLimited_Returns()
         {
             // Arrange
-            var rateTimer = new RateTimer(1, 5, _logger);
+            var rateTimer = new RateTimer(1, 5, _fixture.Logger);
             var cts = new CancellationTokenSource();
             cts.CancelAfter(15000);
 
-            _logger.LogDebug(
-                "Post-Arrange: {method} {@rateTime}", 
+            LogDebug(
+                _fixture.Logger,
+                "Post-Arrange",
                 nameof(AwaitIntervalResetAsync_IsRateLimited_Returns),
                 rateTimer);
 
@@ -122,8 +130,9 @@ namespace ApiClient.Test.Unit
             int hadCounter = rateTimer.Counter;
             await rateTimer.CheckLimitOrAwaitIntervalResetAsync(ct: cts.Token);
 
-            _logger.LogDebug(
-                "Post-Act: {method} {@rateTime}", 
+            LogDebug(
+                _fixture.Logger,
+                "Post-Act",
                 nameof(AwaitIntervalResetAsync_IsRateLimited_Returns),
                 rateTimer);
 
@@ -144,8 +153,9 @@ namespace ApiClient.Test.Unit
             var rateTimer = new RateTimer(1, 5);
             rateTimer.Increment();
 
-            _logger.LogDebug(
-                "{method} {@rateTime}", 
+            LogDebug(
+                _fixture.Logger,
+                "Post-Arrange",
                 nameof(AwaitIntervalResetAsync_CancelRequested_ThrowsCancellationException),
                 rateTimer);
 
@@ -156,6 +166,16 @@ namespace ApiClient.Test.Unit
             // Act
             // Assert
             await Assert.ThrowsAsync<OperationCanceledException>(async () => await task);
+        }
+
+        private static void LogDebug(ILogger logger, string @event, string caller, RateTimer? rateTimer)
+        {
+            if(logger?.IsEnabled(LogLevel.Debug) ?? false)
+                logger.LogDebug(
+                    "{event}: {method} {@rateTime}", 
+                    @event,
+                    caller,
+                    rateTimer);
         }
     }
 }

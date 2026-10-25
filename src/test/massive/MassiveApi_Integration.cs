@@ -3,20 +3,47 @@ using ApiClient.Massive.Parameters;
 using ApiClient.Massive.Response;
 using ApiClient.Massive.Response.Economy;
 using ApiClient.Massive.Response.Stocks;
+using Ichyd.Marksapi.Cli;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace ApiClient.Test.Massive.Integration
 {
-    [Trait(nameof(TestAttributeName.Category), "Integration")]
-    public class MassiveApi_Test : IClassFixture<IntegrationFixture<MassiveApi>>
+    public class MassiveApiFixture : IntegrationFixture<MassiveApi>
     {
-        readonly IntegrationFixture<MassiveApi> _fixture;
+        public MassiveApiFixture() : base()
+        {
+        }
+        
+        /// <inheritdoc/>
+        protected override IConfiguration GetConfiguration()
+        {
+            var config = new ConfigurationBuilder()
+                .AddUserSecrets<MassiveApiFixture>()
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile("appsettings.massive.json")
+                .Build();
+        
+            ArgumentException.ThrowIfNullOrWhiteSpace(
+                    config?[Program.MASSIVE_API_KEYPATH]);
+        
+            return config;
+        }
+
+        public override MassiveApi CreateTestInstance()
+            => new(Configuration, Logger);
+    }
+
+    [Trait(nameof(TestAttributeName.Category), "Integration")]
+    public class MassiveApi_Test : IClassFixture<MassiveApiFixture>
+    {
+        readonly MassiveApiFixture _fixture;
         ILogger _logger => _fixture.Logger;
 
         MassiveApi ApiClient => 
             _fixture.TestInstance ?? 
             throw new InvalidOperationException($"Instance of {nameof(MassiveApi)} required.");
-        public MassiveApi_Test(IntegrationFixture<MassiveApi> fixture)
+        public MassiveApi_Test(MassiveApiFixture fixture)
         {
             _fixture = fixture;
         }
