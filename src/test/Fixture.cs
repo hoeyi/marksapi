@@ -14,16 +14,21 @@ namespace ApiClient.Test
     {
         public Fixture()
         {
-            Configuration = new ConfigurationBuilder()
-                                .AddJsonFile("appsettings.json")
-                                .Build();
+            Configuration = GetConfiguration();
             Logger = CreateLogger<Fixture>(Configuration);
         }
+
         public required ILogger Logger { get; init; }
     
         public required IConfiguration Configuration { get; init; }
 
-        public static ILogger CreateLogger<T>(
+        protected virtual string SettingsFile { get; set; } = "appsettings.json";
+
+        protected virtual IConfiguration GetConfiguration() => 
+                            new ConfigurationBuilder()
+                                .AddJsonFile("appsettings.json")
+                                .Build();
+        protected static ILogger CreateLogger<T>(
             IConfiguration configuration)
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -45,16 +50,42 @@ namespace ApiClient.Test
         }
     }
     public class IntegrationFixture<T> : Fixture, IDisposable
+        where T : IDisposable
     {
         public IntegrationFixture()
         {
-            Configuration = new ConfigurationBuilder()
+            Configuration = GetConfiguration();
+        
+            Logger = CreateLogger<T>(Configuration);
+            LogInitialize(Logger, typeof(T).FullName!);
+
+            TestInstance = new MassiveApi(
+                configuration: Configuration,
+                logger: Logger);
+        }
+
+        public MassiveApi TestInstance { get; init; }
+
+        public void Dispose()
+        {
+            LogStartCleanup(Logger, typeof(T).FullName!);
+
+            TestInstance.Dispose();
+            LogCleanup(Logger, nameof(TestInstance));
+            LogComplete(Logger);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected override IConfiguration GetConfiguration()
+        {
+            var config = new ConfigurationBuilder()
                 .AddUserSecrets<IntegrationFixture<T>>()
                 .AddJsonFile("appsettings.json")
                 .Build();
         
             RateOptions options = new();
-                var section = Configuration
+                var section = config
                     .GetSection("massive")?
                     .GetSection(nameof(RateOptions));
 
@@ -66,28 +97,10 @@ namespace ApiClient.Test
                 else
                     section.Bind(options);
 
-            ArgumentException.ThrowIfNullOrWhiteSpace(Configuration?[Program.MASSIVE_API_KEYPATH]);
+
+            ArgumentException.ThrowIfNullOrWhiteSpace(config?[Program.MASSIVE_API_KEYPATH]);
         
-            Logger = CreateLogger<T>(Configuration);
-            LogInitialize(Logger, typeof(T).FullName!);
-
-            MassiveApi = new MassiveApi(
-                configuration: Configuration,
-                rateOptions: options,
-                logger: Logger);
-        }
-    
-        public MassiveApi MassiveApi { get; init; }
-
-        public void Dispose()
-        {
-            LogStartCleanup(Logger, typeof(MassiveApi).FullName!);
-
-            MassiveApi.Dispose();
-            LogCleanup(Logger, nameof(MassiveApi));
-            LogComplete(Logger);
-
-            GC.SuppressFinalize(this);
+            return config;
         }
 
         private static void LogInitialize(ILogger logger, string @class)
@@ -128,6 +141,11 @@ namespace ApiClient.Test
 
             LogInitialize(Logger, typeof(T).FullName!);
         }
+
+        protected override IConfiguration GetConfiguration()
+            => new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
 
         private static void LogInitialize(ILogger logger, string @class)
         {

@@ -77,9 +77,8 @@ namespace ApiClient.Massive
         /// Creates a new instance of <see cref="MassiveApi"/>.
         /// </summary>
         /// <param name="configuration"></param>
-        /// <param name="rateOptions">The <see cref="RateOptions"/> instance for this client.</param>
         /// <param name="logger">The <see cref="ILogger"/> instance for this client.</param>
-        public MassiveApi(IConfiguration configuration, RateOptions? rateOptions = null, ILogger? logger = null) 
+        public MassiveApi(IConfiguration configuration, ILogger? logger = null) 
             : base(baseUrl: _baseUrl, httpClient: new HttpClient())
         {
             ArgumentNullException.ThrowIfNull(configuration);
@@ -91,11 +90,18 @@ namespace ApiClient.Massive
 
             apiKey = default; // clean-up
 
-            RateOptions options = rateOptions ?? new()
+            RateOptions options = new();
+            var section = configuration
+                .GetSection("massive")?
+                .GetSection(nameof(RateOptions));
+
+            if (section is null)
             {
-                Limit = 5,
-                Interval = 60
-            };
+                options.Limit = 5;
+                options.Interval = 60;
+            }
+            else
+                section.Bind(options);
 
             _config = configuration;
             _logger = logger;

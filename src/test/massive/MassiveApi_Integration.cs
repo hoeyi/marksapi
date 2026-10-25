@@ -14,7 +14,7 @@ namespace ApiClient.Test.Massive.Integration
         ILogger _logger => _fixture.Logger;
 
         MassiveApi ApiClient => 
-            _fixture.MassiveApi ?? 
+            _fixture.TestInstance ?? 
             throw new InvalidOperationException($"Instance of {nameof(MassiveApi)} required.");
         public MassiveApi_Test(IntegrationFixture<MassiveApi> fixture)
         {

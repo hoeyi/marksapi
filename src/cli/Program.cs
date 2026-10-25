@@ -132,7 +132,6 @@ namespace Ichyd.Marksapi.Cli
 
             return new MassiveApi(
                 configuration: configuration,
-                rateOptions: options,
                 logger: logger);
         }
 
