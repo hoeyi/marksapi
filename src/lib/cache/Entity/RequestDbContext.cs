@@ -4,6 +4,10 @@ namespace ApiClient.Cache.Entity
 {
     public class RequestDbContext : DbContext
     {
+        public RequestDbContext()
+        {
+        }
+
         public RequestDbContext(DbContextOptions<RequestDbContext> options)
             : base(options)
         {
