@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="/workspaces/marksapi/src/cli/marksapi.csproj" />
+  <Project Path="/workspaces/marksapi/src/lib/common/ApiClient.Common.csproj" />
+  <Project Path="/workspaces/marksapi/src/lib/massive/ApiClient.massive.csproj" />
+  <Project Path="/workspaces/marksapi/src/test/ApiClient.test.csproj" />
+</Solution>
