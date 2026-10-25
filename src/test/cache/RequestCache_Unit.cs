@@ -1,11 +1,33 @@
 using ApiClient.Cache;
+using ApiClient.Cache.Entity;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace ApiClient.Test.Cache;
 
+public class RequestCacheFixture : UnitFixture<RequestCache>
+{
+    protected readonly RequestDbContext _dbContext;
+
+    public RequestCacheFixture() : base()
+    {
+        ArgumentNullException.ThrowIfNull(Configuration);
+        _dbContext = new RequestDbContext(Configuration);
+    }
+
+    protected override IConfiguration GetConfiguration() => 
+                            new ConfigurationBuilder()
+                                .AddJsonFile("appsettings.json")
+                                .AddJsonFile("appsettings.cache.json")
+                                .Build();
+}
+
+/// <summary>
+/// Handles interaction with the SQLite data store as an in-memory database.
+/// </summary>
 public sealed class RequestCache_Unit_InMemory : RequestCache_UnitTest_Contract
 {
-    public RequestCache_Unit_InMemory(UnitFixture<RequestCache> fixture) : base(fixture)
+    public RequestCache_Unit_InMemory(RequestCacheFixture fixture) : base(fixture)
     {
     }
 
@@ -13,11 +35,11 @@ public sealed class RequestCache_Unit_InMemory : RequestCache_UnitTest_Contract
         new RequestCache(_unitFixture.Configuration);
 }
 
-public abstract class RequestCache_UnitTest_Contract : IClassFixture<UnitFixture<RequestCache>>
+public abstract class RequestCache_UnitTest_Contract : IClassFixture<RequestCacheFixture>
 {
-    protected readonly UnitFixture<RequestCache> _unitFixture;
+    protected readonly RequestCacheFixture _unitFixture;
 
-    public RequestCache_UnitTest_Contract(UnitFixture<RequestCache> unitFixture)
+    public RequestCache_UnitTest_Contract(RequestCacheFixture unitFixture)
     {
         ArgumentNullException.ThrowIfNull(unitFixture);
         _unitFixture = unitFixture;
