@@ -1,19 +1,28 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using System;
 
 namespace ApiClient.Cache.Entity
 {
     public class RequestDbContext : DbContext
     {
-        public RequestDbContext()
+        readonly IConfiguration _configuration;
+        public RequestDbContext(IConfiguration configuration)
         {
+            ArgumentNullException.ThrowIfNull(configuration);
+            _configuration = configuration;
         }
 
-        public RequestDbContext(DbContextOptions<RequestDbContext> options)
+        public RequestDbContext(
+            IConfiguration configuration,
+            DbContextOptions<RequestDbContext> options)
             : base(options)
         {
+            ArgumentNullException.ThrowIfNull(configuration);
+            _configuration = configuration;
         }
 
-        public DbSet<StructuredRequest> StructuredRequests => Set<StructuredRequest>();
+        public DbSet<StructuredRequest> CachedRequests => Set<StructuredRequest>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +32,9 @@ namespace ApiClient.Cache.Entity
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite("Data Source=/app/data/request_cache.db,Mode=ReadWriteCreate");
+        {
+            if(!options.IsConfigured)
+                options.UseSqlite(_configuration.GetConnectionString("SQLite"));
+        }
     }
 }
