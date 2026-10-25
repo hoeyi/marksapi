@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ApiClient.Cache.Entity
 {
+    [ExcludeFromCodeCoverage]
     public class RequestDbContext : DbContext
     {
         readonly IConfiguration _configuration;

@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
-		"chat.disableAIFeatures": true
+		"chat.disableAIFeatures": true,
+		"dotnet.unitTests.runSettingsPath": "\"${workspaceFolder}/src/test/coverage.runsettings\""
 	}
 }

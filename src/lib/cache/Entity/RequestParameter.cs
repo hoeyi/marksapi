@@ -7,7 +7,7 @@ namespace ApiClient.Cache.Entity
     /// <summary>
         /// A single name/value pair. Immutable after construction; invalid instances cannot be created.
         /// </summary>
-        public partial class RequestParameter
+        public partial record RequestParameter
         {
             public const int MaxNameLength = 64;
             public const int MaxValueLength = 4000;

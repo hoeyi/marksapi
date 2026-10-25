@@ -9,7 +9,7 @@ namespace ApiClient.Cache.Entity
     /// <summary>
     /// A structured request with a variable set of named parameters.
     /// </summary>
-    public class StructuredRequest
+    public record StructuredRequest
     {
         public const int MaxParameters = 100;
 
