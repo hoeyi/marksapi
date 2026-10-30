@@ -3,10 +3,7 @@ using ApiClient.Cache.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,14 +29,12 @@ namespace ApiClient.Cache
                                 .Set<StructuredRequest>()
                                 .FindAsync([request.Id], cancellationToken);
 
-            if(matchedById is null)
-                return false;
+            if(matchedById is not null)
+                return true;
                                 
             var matchedResult = await dbContext
                 .Set<StructuredRequest>()
-                .AnyAsync(
-                    x => x.Command == request.Command && x.Parameters == request.Parameters,
-                    cancellationToken);
+                .AnyAsync(x => x.Command == request.Command, cancellationToken);
 
             return matchedResult;
         }
