@@ -1,21 +1,18 @@
-﻿using Ichyd.Extensions.Configuration.Docker;
-using System;
-using System.CommandLine;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+﻿using ApiClient.Cache;
 using ApiClient.Massive;
 using ApiClient.Services;
 using Ichyd.Marksapi.Cli.Extensions;
-using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Ichyd.Marksapi.Cli.Services;
-using Ichyd.Marksapi.Cli.Verbs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Formatting.Compact;
 using Spectre.Console;
+using System;
+using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using System.Threading.Tasks.Dataflow;
 
 namespace Ichyd.Marksapi.Cli
 {
@@ -30,7 +27,7 @@ namespace Ichyd.Marksapi.Cli
         /// </summary>
         static IConfiguration Configuration { get; set; } = default!;
         
-        static IMassiveApi MassiveApi  { get; set; } = default!;
+        // static IMassiveApi MassiveApi  { get; set; } = default!;
         
         /// <summary>
         /// Gets the default <see cref="ILogger"/> for the program.
@@ -62,7 +59,7 @@ namespace Ichyd.Marksapi.Cli
 
                 Logger.LogDebug_Services_Initializing();
 
-                MassiveApi = InitMassiveApi(Configuration, Logger);
+                // MassiveApi = InitMassiveApi(Configuration, Logger);
                 QueryLimit = Configuration
                                 .GetQueryOptionsOrDefault()
                                 .QueryLimit();
@@ -77,6 +74,13 @@ namespace Ichyd.Marksapi.Cli
                     provider.RegisterService(InitMassiveApi(Configuration, Logger));
 
                     Logger.LogDebug_Service_Registered(nameof(MassiveApi));
+                }
+
+                if (Configuration.GetValue<bool>("enable_cache"))
+                {
+                    provider.RegisterService(InitRequestCache(Configuration));
+
+                    Logger.LogDebug_Service_Registered(nameof(RequestCache));
                 }
                 
                 Services = provider;
@@ -133,6 +137,13 @@ namespace Ichyd.Marksapi.Cli
             return new MassiveApi(
                 configuration: configuration,
                 logger: logger);
+        }
+
+        private static IRequestCache InitRequestCache(IConfiguration configuration)
+        {
+            var requestCache = new RequestCache(configuration);
+
+            return requestCache;
         }
 
         private static IConfiguration InitConfiguration()

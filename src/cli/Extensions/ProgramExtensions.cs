@@ -1,11 +1,11 @@
-using System;
-using System.CommandLine;
-using System.Diagnostics.CodeAnalysis;
 using ApiClient.Services;
 using Ichyd.Marksapi.Cli.Massive.Verbs;
 using Ichyd.Marksapi.Cli.Verbs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.CommandLine;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ichyd.Marksapi.Cli.Extensions
 {
@@ -93,6 +93,9 @@ namespace Ichyd.Marksapi.Cli.Extensions
                     rootCommand.Options[i].Action = new CustomVersionAction();
             }
 
+            if(configuration.GetValue<bool>("enable_cache"))
+                rootCommand.Add(CacheHandler.CreateCommand());
+                
             return rootCommand;
         }        
     }
